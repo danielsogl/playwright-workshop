@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "id": "seed-user-1",
+      "email": "test@example.com",
+      "name": "Test User",
+      "password": "password"
+    }
+  ],
+  "privateNewsFeeds": {
+    "seed-user-1": [
+      {
+        "id": "feed-1",
+        "url": "https://www.techradar.com/rss",
+        "name": "TechRadar",
+        "category": "Technology"
+      }
+    ]
+  },
+  "rssFeeds": {
+    "sources": [
+      {
+        "id": "techcrunch",
+        "name": "TechCrunch",
+        "url": "https://techcrunch.com/feed/",
+        "category": "Technology"
+      },
+      {
+        "id": "hackernews",
+        "name": "Hacker News",
+        "url": "https://hnrss.org/frontpage",
+        "category": "Technology"
+      },
+      {
+        "id": "reuters-business",
+        "name": "Reuters Business",
+        "url": "https://www.reutersagency.com/feed/?best-topics=business",
+        "category": "Business"
+      },
+      {
+        "id": "bbc-world",
+        "name": "BBC World",
+        "url": "http://feeds.bbci.co.uk/news/world/rss.xml",
+        "category": "World News"
+      }
+    ],
+    "categories": ["Technology", "Business", "World News"]
+  }
+}
