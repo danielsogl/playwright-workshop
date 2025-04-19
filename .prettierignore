@@ -1,0 +1,14 @@
+# Ignore artifacts:
+node_modules
+.next
+build
+dist
+coverage
+public
+.vercel
+.github
+.husky
+.vscode
+*.lock
+*.log
+*.md 
