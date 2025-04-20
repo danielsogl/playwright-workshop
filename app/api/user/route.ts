@@ -1,98 +1,66 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { z } from 'zod'; // Import Zod for validation
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import type { Session } from 'next-auth';
 
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { withAuth } from '@/lib/api/middleware/withAuth';
+import {
+  jsonSuccess,
+  jsonError,
+  jsonValidationError,
+  jsonNotFound,
+} from '@/lib/utils/api';
 import { findUserById, updateUserProfile } from '@/lib/db/repositories/users';
-// TODO: Import updateUser function when created in users repository
 
-/**
- * API handler to get the current authenticated user's details.
- */
-export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
+const getHandler = async (_req: NextRequest, session: Session) => {
   try {
-    const userId = session.user.id;
-    const user = await findUserById(userId);
+    const user = await findUserById(session.user.id);
 
     if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      return jsonNotFound('User');
     }
 
-    // Return user data, excluding the password hash
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userData } = user;
 
-    return NextResponse.json(userData);
-  } catch {
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 },
-    );
+    return jsonSuccess(userData);
+  } catch (error) {
+    console.error('Failed to fetch user details:', error);
+
+    return jsonError('Failed to fetch user details');
   }
-}
+};
 
-/**
- * API handler to update the current authenticated user's details.
- * Currently only supports updating the name.
- */
-
-// Define validation schema for update
 const UpdateUserSchema = z.object({
   name: z.string().min(1, 'Name cannot be empty'),
-  // Add other fields here if they become updatable
 });
 
-export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
+const putHandler = async (req: NextRequest, session: Session) => {
   try {
-    const userId = session.user.id;
-    const body = await request.json();
+    const body = await req.json();
 
-    // Validate input
     const validationResult = UpdateUserSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          message: 'Invalid input',
-          errors: validationResult.error.flatten().fieldErrors,
-        },
-        { status: 400 },
-      );
+      return jsonValidationError(validationResult.error);
     }
 
-    const { name } = validationResult.data; // Destructure validated data
+    const { name } = validationResult.data;
 
-    // Perform the update using the repository function
-    const updatedUser = await updateUserProfile(userId, { name });
+    const updatedUser = await updateUserProfile(session.user.id, { name });
 
-    // Return the updated user data, excluding the password hash
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userData } = updatedUser;
 
-    return NextResponse.json(userData);
+    return jsonSuccess(userData);
   } catch (error: unknown) {
+    console.error('Failed to update user profile:', error);
     if (error instanceof Error && error.message === 'User not found') {
-      // This shouldn't happen if the session is valid, but handle defensively
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      return jsonNotFound('User');
     }
 
-    return NextResponse.json(
-      { message: 'Internal Server Error' },
-      { status: 500 },
-    );
+    return jsonError('Failed to update user profile');
   }
-}
+};
 
-// TODO: Implement password change functionality (likely a separate endpoint)
+export const GET = withAuth(getHandler);
+export const PUT = withAuth(putHandler);

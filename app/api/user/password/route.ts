@@ -1,11 +1,16 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
+import type { Session } from 'next-auth';
 
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Adjust path as needed
-import { updateUserPassword } from '@/lib/db/repositories/users'; // Adjust path as needed
+import { withAuth } from '@/lib/api/middleware/withAuth';
+import {
+  jsonSuccess,
+  jsonError,
+  jsonValidationError,
+  jsonNotFound,
+} from '@/lib/utils/api';
+import { updateUserPassword } from '@/lib/db/repositories/users';
 
-// Define validation schema using Zod
 const ChangePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, 'Current password is required'),
@@ -16,62 +21,40 @@ const ChangePasswordSchema = z
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: 'New passwords do not match',
-    path: ['confirmPassword'], // Path of the error
+    path: ['confirmPassword'],
   });
 
-export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user?.id) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
+const putHandler = async (req: NextRequest, session: Session) => {
   try {
-    const body = await request.json();
+    const body = await req.json();
 
-    // Validate input
     const validationResult = ChangePasswordSchema.safeParse(body);
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          message: 'Invalid input',
-          errors: validationResult.error.flatten().fieldErrors,
-        },
-        { status: 400 },
-      );
+      return jsonValidationError(validationResult.error);
     }
 
     const { currentPassword, newPassword } = validationResult.data;
     const userId = session.user.id;
 
-    // Attempt to update the password
     await updateUserPassword(userId, currentPassword, newPassword);
 
-    return NextResponse.json(
-      { message: 'Password updated successfully' },
-      { status: 200 },
-    );
+    return jsonSuccess({ message: 'Password updated successfully' });
   } catch (error: unknown) {
-    // Handle specific errors from the repository
+    console.error('Password update error:', error);
+
     if (
       error instanceof Error &&
       error.message === 'Incorrect current password'
     ) {
-      return NextResponse.json(
-        { message: 'Incorrect current password' },
-        { status: 400 }, // Bad Request might be more appropriate than 401/403
-      );
+      return jsonError('Incorrect current password', 400);
     }
     if (error instanceof Error && error.message === 'User not found') {
-      // This shouldn't happen if the session is valid, but handle defensively
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      return jsonNotFound('User');
     }
 
-    // Generic error response
-    return NextResponse.json(
-      { message: 'An internal server error occurred' },
-      { status: 500 },
-    );
+    return jsonError('An internal server error occurred');
   }
-}
+};
+
+export const PUT = withAuth(putHandler);

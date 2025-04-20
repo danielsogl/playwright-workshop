@@ -1,32 +1,10 @@
 import type { RSSFeed } from '@/types/rss';
-
-import fs from 'fs';
-import path from 'path';
-
 import { v4 as uuidv4 } from 'uuid';
 
-// In-memory store for private feeds
+import { loadSeedData } from '../services/data-service';
+
 const privateFeeds = new Map<string, RSSFeed[]>();
 
-interface SeedData {
-  privateNewsFeeds: {
-    [userId: string]: RSSFeed[];
-  };
-}
-
-// Load seed data from JSON file
-const loadSeedData = (): SeedData | null => {
-  try {
-    const filePath = path.resolve(process.cwd(), 'config/data.json');
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-
-    return JSON.parse(fileContent) as SeedData;
-  } catch {
-    return null;
-  }
-};
-
-// Seed private feeds from the JSON file
 const seedPrivateFeeds = () => {
   const seedData = loadSeedData();
 
@@ -35,7 +13,6 @@ const seedPrivateFeeds = () => {
   }
 
   Object.entries(seedData.privateNewsFeeds).forEach(([userId, feeds]) => {
-    // Ensure each feed has a category
     const feedsWithCategories = feeds.map((feed) => ({
       ...feed,
       category: feed.category || 'Uncategorized',
@@ -45,10 +22,8 @@ const seedPrivateFeeds = () => {
   });
 };
 
-// Initialize seed data
 seedPrivateFeeds();
 
-// Repository functions
 export const getPrivateFeedsByUserId = async (
   userId: string,
 ): Promise<RSSFeed[]> => {
@@ -79,7 +54,7 @@ export const deletePrivateFeed = async (
   const updatedFeeds = userFeeds.filter((feed) => feed.id !== feedId);
 
   if (updatedFeeds.length === userFeeds.length) {
-    return false; // Feed not found
+    return false;
   }
 
   privateFeeds.set(userId, updatedFeeds);

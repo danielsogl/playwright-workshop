@@ -1,26 +1,10 @@
-import fs from 'fs'; // Import fs for file reading
-import path from 'path'; // Import path for resolving file path
-
-import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
-import bcrypt from 'bcryptjs'; // For password hashing
+import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcryptjs';
 
 import { User } from '../models/user';
+import { loadSeedData } from '../services/data-service';
 
-// Define the structure of the data file
-interface SeedData {
-  users: Array<{
-    id: string;
-    email: string;
-    name?: string | null;
-    password: string;
-  }>;
-  // Add other data types like publicNews, privateNewsFeeds later
-}
-
-// In-memory store for users
 const users = new Map<string, User>();
-
-// Define functions before calling seedUsers to avoid initialization errors
 
 /**
  * Finds a user by their email address.
@@ -125,7 +109,7 @@ export const updateUserPassword = async (
  */
 export const updateUserProfile = async (
   userId: string,
-  data: Partial<Pick<User, 'name'>>, // Allows updating only specific fields like 'name'
+  data: Partial<Pick<User, 'name'>>,
 ): Promise<User> => {
   const user = await findUserById(userId);
 
@@ -133,10 +117,9 @@ export const updateUserProfile = async (
     throw new Error('User not found');
   }
 
-  // Merge existing user data with new data
   const updatedUser: User = {
     ...user,
-    ...data, // Overwrite fields provided in data
+    ...data,
   };
 
   users.set(userId, updatedUser);
@@ -144,38 +127,21 @@ export const updateUserProfile = async (
   return updatedUser;
 };
 
-// TODO: Add functions for updating and deleting users if needed for the settings page.
-
 // --- Seeding Logic ---
 
-// Function to load seed data from JSON file
-const loadSeedData = (): SeedData | null => {
-  try {
-    const filePath = path.resolve(process.cwd(), 'config/data.json');
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-
-    return JSON.parse(fileContent) as SeedData;
-  } catch {
-    return null;
-  }
-};
-
-// Seed users from the JSON file
 const seedUsers = async () => {
   const seedData = loadSeedData();
 
-  if (!seedData || !seedData.users) {
+  if (!seedData?.users) {
     return;
   }
 
   for (const seedUser of seedData.users) {
-    // Now findUserByEmail is defined before this call
     const existingUser = await findUserByEmail(seedUser.email);
 
     if (!existingUser) {
       try {
         const hashedPassword = await bcrypt.hash(seedUser.password, 10);
-        // Use the ID from the seed file or generate a new one if needed
         const userId = seedUser.id || uuidv4();
         const newUser: User = {
           id: userId,
@@ -185,21 +151,11 @@ const seedUsers = async () => {
         };
 
         users.set(userId, newUser);
-      } catch {
-        // Consider adding more robust error handling/logging here in a real app
+      } catch (error) {
+        console.error(`Failed to seed user ${seedUser.email}:`, error);
       }
-    } else {
-      // User already exists, skip seeding
     }
   }
 };
 
-// Initialize seed data after functions are defined
 seedUsers();
-
-export interface UserData {
-  id: string;
-  email: string;
-  name: string;
-  password: string;
-}
