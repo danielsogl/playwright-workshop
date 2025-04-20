@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     const newUser = await addUser({ name, email, password });
 
     // Exclude passwordHash from the response - We don't need passwordHash here
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userWithoutPassword } = newUser;
 
     return NextResponse.json(
@@ -42,9 +43,9 @@ export async function POST(request: Request) {
       },
       { status: 201 },
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle specific error for existing email
-    if (error.message === "Email already exists") {
+    if (error instanceof Error && error.message === "Email already exists") {
       return NextResponse.json(
         { message: "Email already registered" },
         { status: 409 }, // Conflict

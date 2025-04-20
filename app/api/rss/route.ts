@@ -50,13 +50,12 @@ export async function GET(request: Request) {
         snippet: item.contentSnippet?.substring(0, 200), // Limit snippet length
       }))
       .slice(0, 20); // Limit number of items returned
-
     return NextResponse.json({ items });
-  } catch (error: any) {
+  } catch (error: unknown) {
     let errorMessage = "Failed to fetch or parse RSS feed.";
     let statusCode = 500;
 
-    if (error.message.includes("Status code")) {
+    if (error instanceof Error && error.message.includes("Status code")) {
       // Try to extract status code if available (e.g., 404, 403)
       const match = error.message.match(/Status code (\d+)/);
 
@@ -71,14 +70,19 @@ export async function GET(request: Request) {
           errorMessage = `Error fetching RSS feed from the source (Status: ${httpStatus}).`;
         }
       }
-    } else if (error.message.includes("Invalid XML")) {
+    } else if (
+      error instanceof Error &&
+      error.message.includes("Invalid XML")
+    ) {
       statusCode = 400;
       errorMessage =
         "The provided URL does not point to a valid RSS/Atom feed.";
     }
-
     return NextResponse.json(
-      { message: errorMessage, details: error.message },
+      {
+        message: errorMessage,
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: statusCode },
     );
   }

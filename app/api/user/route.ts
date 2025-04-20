@@ -25,6 +25,7 @@ export async function GET() {
     }
 
     // Return user data, excluding the password hash
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userData } = user;
 
     return NextResponse.json(userData);
@@ -77,11 +78,12 @@ export async function PUT(request: Request) {
     const updatedUser = await updateUserProfile(userId, { name });
 
     // Return the updated user data, excluding the password hash
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userData } = updatedUser;
 
     return NextResponse.json(userData);
-  } catch (error: any) {
-    if (error.message === "User not found") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "User not found") {
       // This shouldn't happen if the session is valid, but handle defensively
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }

@@ -52,15 +52,18 @@ export async function PUT(request: Request) {
       { message: "Password updated successfully" },
       { status: 200 },
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle specific errors from the repository
-    if (error.message === "Incorrect current password") {
+    if (
+      error instanceof Error &&
+      error.message === "Incorrect current password"
+    ) {
       return NextResponse.json(
         { message: "Incorrect current password" },
         { status: 400 }, // Bad Request might be more appropriate than 401/403
       );
     }
-    if (error.message === "User not found") {
+    if (error instanceof Error && error.message === "User not found") {
       // This shouldn't happen if the session is valid, but handle defensively
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }

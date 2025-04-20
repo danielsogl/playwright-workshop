@@ -143,8 +143,12 @@ export default function PrivateNewsPage() {
       setNewFeedUrl("");
       setNewFeedCategory("");
       mutate("/api/news/private"); // Revalidate SWR cache
-    } catch (err: any) {
-      setFeedError(err.message || "An unexpected error occurred.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setFeedError(error.message || "An unexpected error occurred.");
+      } else {
+        setFeedError("An unexpected error occurred.");
+      }
     } finally {
       setAddingFeed(false);
     }

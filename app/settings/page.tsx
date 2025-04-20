@@ -99,8 +99,10 @@ export default function SettingsPage() {
 
       // Trigger session update with the new name
       await updateSession({ name: updatedUserData.name });
-    } catch (err: any) {
-      setUpdateError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      setUpdateError(
+        err instanceof Error ? err.message : "An unexpected error occurred.",
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -135,8 +137,10 @@ export default function SettingsPage() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err: any) {
-      setPasswordChangeError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      setPasswordChangeError(
+        err instanceof Error ? err.message : "An unexpected error occurred.",
+      );
     } finally {
       setIsChangingPassword(false);
     }
