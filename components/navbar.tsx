@@ -1,4 +1,4 @@
-"use client"; // Add client directive for useSession hook
+'use client'; // Add client directive for useSession hook
 
 import {
   Navbar as HeroUINavbar,
@@ -8,37 +8,37 @@ import {
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-} from "@heroui/navbar";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
-import { link as linkStyles } from "@heroui/theme";
+} from '@heroui/navbar';
+import { Button } from '@heroui/button';
+import { Link } from '@heroui/link';
+import { link as linkStyles } from '@heroui/theme';
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from "@heroui/dropdown";
-import { Avatar } from "@heroui/avatar";
-import NextLink from "next/link";
-import clsx from "clsx";
-import { useSession, signOut } from "next-auth/react"; // Import useSession and signOut
+} from '@heroui/dropdown';
+import { Avatar } from '@heroui/avatar';
+import NextLink from 'next/link';
+import clsx from 'clsx';
+import { useSession, signOut } from 'next-auth/react'; // Import useSession and signOut
 
-import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
-import { Logo } from "@/components/icons"; // Added Logo import
+import { siteConfig } from '@/config/site';
+import { ThemeSwitch } from '@/components/theme-switch';
+import { Logo } from '@/components/icons'; // Added Logo import
 
 export const Navbar = () => {
   const { data: session, status } = useSession(); // Get session data and status
-  const isLoading = status === "loading";
+  const isLoading = status === 'loading';
 
   // Helper function to get initials
   const getInitials = (name?: string | null) => {
-    if (!name) return "";
+    if (!name) return '';
 
     return name
-      .split(" ")
+      .split(' ')
       .map((n) => n[0])
-      .join("");
+      .join('');
   };
 
   return (
@@ -74,8 +74,8 @@ export const Navbar = () => {
               <NextLink
                 aria-label={`Navigate to ${item.label}`} // Added aria-label
                 className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                  linkStyles({ color: 'foreground' }),
+                  'data-[active=true]:text-primary data-[active=true]:font-medium',
                 )}
                 color="foreground"
                 href={item.href}
@@ -177,7 +177,7 @@ export const Navbar = () => {
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems
-            .filter((item) => item.href !== "/logout") // Keep filtering logout if needed
+            .filter((item) => item.href !== '/logout') // Keep filtering logout if needed
             .map((item, index) => (
               <NavbarMenuItem
                 key={`${item.href}-${index}`}
@@ -187,10 +187,10 @@ export const Navbar = () => {
                   aria-label={`Navigate to ${item.label}`} // Added aria-label
                   color={
                     index === 2
-                      ? "primary"
+                      ? 'primary'
                       : index === siteConfig.navMenuItems.length - 2 // Adjust index if filter changes length
-                        ? "danger"
-                        : "foreground"
+                        ? 'danger'
+                        : 'foreground'
                   }
                   href={item.href}
                   size="lg"

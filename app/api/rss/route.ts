@@ -1,22 +1,22 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import Parser from "rss-parser";
-import { z } from "zod";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import Parser from 'rss-parser';
+import { z } from 'zod';
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const parser = new Parser();
 
 // Define validation schema for query parameters
 const RssQuerySchema = z.object({
-  feedUrl: z.string().url("Invalid URL format"),
+  feedUrl: z.string().url('Invalid URL format'),
 });
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
   if (!validationResult.success) {
     return NextResponse.json(
       {
-        message: "Invalid input",
+        message: 'Invalid input',
         errors: validationResult.error.flatten().fieldErrors,
       },
       { status: 400 },
@@ -52,10 +52,10 @@ export async function GET(request: Request) {
       .slice(0, 20); // Limit number of items returned
     return NextResponse.json({ items });
   } catch (error: unknown) {
-    let errorMessage = "Failed to fetch or parse RSS feed.";
+    let errorMessage = 'Failed to fetch or parse RSS feed.';
     let statusCode = 500;
 
-    if (error instanceof Error && error.message.includes("Status code")) {
+    if (error instanceof Error && error.message.includes('Status code')) {
       // Try to extract status code if available (e.g., 404, 403)
       const match = error.message.match(/Status code (\d+)/);
 
@@ -72,11 +72,11 @@ export async function GET(request: Request) {
       }
     } else if (
       error instanceof Error &&
-      error.message.includes("Invalid XML")
+      error.message.includes('Invalid XML')
     ) {
       statusCode = 400;
       errorMessage =
-        "The provided URL does not point to a valid RSS/Atom feed.";
+        'The provided URL does not point to a valid RSS/Atom feed.';
     }
     return NextResponse.json(
       {

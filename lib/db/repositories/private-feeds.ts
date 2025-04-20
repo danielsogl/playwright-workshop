@@ -1,9 +1,9 @@
-import type { RSSFeed } from "@/types/rss";
+import type { RSSFeed } from '@/types/rss';
 
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 // In-memory store for private feeds
 const privateFeeds = new Map<string, RSSFeed[]>();
@@ -17,8 +17,8 @@ interface SeedData {
 // Load seed data from JSON file
 const loadSeedData = (): SeedData | null => {
   try {
-    const filePath = path.resolve(process.cwd(), "config/data.json");
-    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const filePath = path.resolve(process.cwd(), 'config/data.json');
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
 
     return JSON.parse(fileContent) as SeedData;
   } catch {
@@ -38,7 +38,7 @@ const seedPrivateFeeds = () => {
     // Ensure each feed has a category
     const feedsWithCategories = feeds.map((feed) => ({
       ...feed,
-      category: feed.category || "Uncategorized",
+      category: feed.category || 'Uncategorized',
     }));
 
     privateFeeds.set(userId, feedsWithCategories);
@@ -57,13 +57,13 @@ export const getPrivateFeedsByUserId = async (
 
 export const addPrivateFeed = async (
   userId: string,
-  feed: Omit<RSSFeed, "id">,
+  feed: Omit<RSSFeed, 'id'>,
 ): Promise<RSSFeed> => {
   const userFeeds = await getPrivateFeedsByUserId(userId);
   const newFeed: RSSFeed = {
     ...feed,
     id: uuidv4(),
-    category: feed.category || "Uncategorized",
+    category: feed.category || 'Uncategorized',
   };
 
   privateFeeds.set(userId, [...userFeeds, newFeed]);

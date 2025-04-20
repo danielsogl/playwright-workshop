@@ -1,4 +1,4 @@
-import { RSSItem, RSSSource } from "../types/rss";
+import { RSSItem, RSSSource } from '../types/rss';
 
 export async function fetchRSSFeed(source: RSSSource): Promise<RSSItem[]> {
   try {
@@ -10,14 +10,14 @@ export async function fetchRSSFeed(source: RSSSource): Promise<RSSItem[]> {
 
     // Parse XML
     const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(text, "text/xml");
-    const items = xmlDoc.querySelectorAll("item");
+    const xmlDoc = parser.parseFromString(text, 'text/xml');
+    const items = xmlDoc.querySelectorAll('item');
 
     return Array.from(items).map((item) => ({
-      title: item.querySelector("title")?.textContent || "",
-      link: item.querySelector("link")?.textContent || "",
-      description: item.querySelector("description")?.textContent || "",
-      pubDate: item.querySelector("pubDate")?.textContent || "",
+      title: item.querySelector('title')?.textContent || '',
+      link: item.querySelector('link')?.textContent || '',
+      description: item.querySelector('description')?.textContent || '',
+      pubDate: item.querySelector('pubDate')?.textContent || '',
       category: source.category,
       source: source.name,
     }));
@@ -47,13 +47,13 @@ export function filterFeedItems(
 ): RSSItem[] {
   return items.filter((item) => {
     const matchesSearch =
-      searchQuery === "" ||
+      searchQuery === '' ||
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (item.description && // Check if description exists
         item.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesCategory =
-      selectedCategory === "" || item.category === selectedCategory;
+      selectedCategory === '' || item.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });

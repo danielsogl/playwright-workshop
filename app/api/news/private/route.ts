@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { z } from "zod";
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { z } from 'zod';
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import {
   getPrivateFeedsByUserId,
   addPrivateFeed,
   deletePrivateFeed,
-} from "@/lib/db/repositories/private-feeds";
+} from '@/lib/db/repositories/private-feeds';
 
 const addFeedSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  url: z.string().url("Must be a valid URL"),
+  name: z.string().min(1, 'Name is required'),
+  url: z.string().url('Must be a valid URL'),
   category: z.string().optional(), // Added optional category
 });
 
@@ -22,7 +22,7 @@ export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -31,7 +31,7 @@ export async function GET() {
     return NextResponse.json(feeds);
   } catch {
     return NextResponse.json(
-      { message: "Failed to fetch private feeds" },
+      { message: 'Failed to fetch private feeds' },
       { status: 500 },
     );
   }
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Provide a default category if not present
     const feedData = {
       ...validatedData,
-      category: validatedData.category || "Uncategorized",
+      category: validatedData.category || 'Uncategorized',
     };
 
     const newFeed = await addPrivateFeed(session.user.id, feedData);
@@ -63,13 +63,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { message: "Invalid feed data", errors: error.errors },
+        { message: 'Invalid feed data', errors: error.errors },
         { status: 400 },
       );
     }
 
     return NextResponse.json(
-      { message: "Failed to add private feed" },
+      { message: 'Failed to add private feed' },
       { status: 500 },
     );
   }
@@ -83,15 +83,15 @@ export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
-  const feedId = searchParams.get("feedId");
+  const feedId = searchParams.get('feedId');
 
   if (!feedId) {
     return NextResponse.json(
-      { message: "Feed ID is required" },
+      { message: 'Feed ID is required' },
       { status: 400 },
     );
   }
@@ -100,13 +100,13 @@ export async function DELETE(request: NextRequest) {
     const success = await deletePrivateFeed(session.user.id, feedId);
 
     if (!success) {
-      return NextResponse.json({ message: "Feed not found" }, { status: 404 });
+      return NextResponse.json({ message: 'Feed not found' }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(
-      { message: "Failed to delete private feed" },
+      { message: 'Failed to delete private feed' },
       { status: 500 },
     );
   }

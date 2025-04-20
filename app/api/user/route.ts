@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { z } from "zod"; // Import Zod for validation
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { z } from 'zod'; // Import Zod for validation
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { findUserById, updateUserProfile } from "@/lib/db/repositories/users";
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { findUserById, updateUserProfile } from '@/lib/db/repositories/users';
 // TODO: Import updateUser function when created in users repository
 
 /**
@@ -13,7 +13,7 @@ export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -21,7 +21,7 @@ export async function GET() {
     const user = await findUserById(userId);
 
     if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
     // Return user data, excluding the password hash
@@ -31,7 +31,7 @@ export async function GET() {
     return NextResponse.json(userData);
   } catch {
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: 'Internal Server Error' },
       { status: 500 },
     );
   }
@@ -44,7 +44,7 @@ export async function GET() {
 
 // Define validation schema for update
 const UpdateUserSchema = z.object({
-  name: z.string().min(1, "Name cannot be empty"),
+  name: z.string().min(1, 'Name cannot be empty'),
   // Add other fields here if they become updatable
 });
 
@@ -52,7 +52,7 @@ export async function PUT(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -65,7 +65,7 @@ export async function PUT(request: Request) {
     if (!validationResult.success) {
       return NextResponse.json(
         {
-          message: "Invalid input",
+          message: 'Invalid input',
           errors: validationResult.error.flatten().fieldErrors,
         },
         { status: 400 },
@@ -83,13 +83,13 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(userData);
   } catch (error: unknown) {
-    if (error instanceof Error && error.message === "User not found") {
+    if (error instanceof Error && error.message === 'User not found') {
       // This shouldn't happen if the session is valid, but handle defensively
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: 'Internal Server Error' },
       { status: 500 },
     );
   }

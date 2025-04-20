@@ -1,10 +1,10 @@
-import fs from "fs"; // Import fs for file reading
-import path from "path"; // Import path for resolving file path
+import fs from 'fs'; // Import fs for file reading
+import path from 'path'; // Import path for resolving file path
 
-import { v4 as uuidv4 } from "uuid"; // For generating unique IDs
-import bcrypt from "bcryptjs"; // For password hashing
+import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
+import bcrypt from 'bcryptjs'; // For password hashing
 
-import { User } from "../models/user";
+import { User } from '../models/user';
 
 // Define the structure of the data file
 interface SeedData {
@@ -55,12 +55,12 @@ export const findUserById = async (id: string): Promise<User | undefined> => {
  * @throws Error if the email already exists.
  */
 export const addUser = async (
-  userData: Omit<User, "id" | "passwordHash"> & { password: string },
+  userData: Omit<User, 'id' | 'passwordHash'> & { password: string },
 ): Promise<User> => {
   const existingUser = await findUserByEmail(userData.email);
 
   if (existingUser) {
-    throw new Error("Email already exists");
+    throw new Error('Email already exists');
   }
 
   const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -93,7 +93,7 @@ export const updateUserPassword = async (
   const user = await findUserById(userId);
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   const isPasswordValid = await bcrypt.compare(
@@ -102,7 +102,7 @@ export const updateUserPassword = async (
   );
 
   if (!isPasswordValid) {
-    throw new Error("Incorrect current password");
+    throw new Error('Incorrect current password');
   }
 
   const newPasswordHash = await bcrypt.hash(newPassword, 10);
@@ -125,12 +125,12 @@ export const updateUserPassword = async (
  */
 export const updateUserProfile = async (
   userId: string,
-  data: Partial<Pick<User, "name">>, // Allows updating only specific fields like 'name'
+  data: Partial<Pick<User, 'name'>>, // Allows updating only specific fields like 'name'
 ): Promise<User> => {
   const user = await findUserById(userId);
 
   if (!user) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   // Merge existing user data with new data
@@ -151,8 +151,8 @@ export const updateUserProfile = async (
 // Function to load seed data from JSON file
 const loadSeedData = (): SeedData | null => {
   try {
-    const filePath = path.resolve(process.cwd(), "config/data.json");
-    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const filePath = path.resolve(process.cwd(), 'config/data.json');
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
 
     return JSON.parse(fileContent) as SeedData;
   } catch {

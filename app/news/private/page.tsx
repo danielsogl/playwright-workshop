@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import type { RSSItem, RSSFeed } from "@/types/rss";
+import type { RSSItem, RSSFeed } from '@/types/rss';
 
-import { Card, CardBody } from "@heroui/react";
-import React, { useState } from "react";
-import useSWR, { mutate } from "swr";
-import { Spinner } from "@heroui/spinner";
-import { useSession } from "next-auth/react";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
+import { Card, CardBody } from '@heroui/react';
+import React, { useState } from 'react';
+import useSWR, { mutate } from 'swr';
+import { Spinner } from '@heroui/spinner';
+import { useSession } from 'next-auth/react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
+import { Link } from '@heroui/link';
 
-import { subtitle, title } from "@/components/primitives";
-import { TrashIcon } from "@/components/icons";
+import { subtitle, title } from '@/components/primitives';
+import { TrashIcon } from '@/components/icons';
 
 // Define fetcher for SWR
 const fetcher = async (url: string) => {
   const res = await fetch(url);
 
   if (!res.ok) {
-    let errorMessage = "Failed to fetch feeds";
+    let errorMessage = 'Failed to fetch feeds';
 
     try {
       // Try to get a more specific message from the API response
@@ -38,14 +38,14 @@ const fetcher = async (url: string) => {
 
 // Function to safely clean HTML from text
 const cleanHtml = (text?: string) => {
-  if (!text) return "";
+  if (!text) return '';
 
-  return text.replace(/<[^>]*>/g, "");
+  return text.replace(/<[^>]*>/g, '');
 };
 
 // Function to format date
 const formatDate = (dateStr?: string) => {
-  if (!dateStr) return "";
+  if (!dateStr) return '';
   try {
     return new Date(dateStr).toLocaleDateString();
   } catch {
@@ -57,7 +57,7 @@ const formatDate = (dateStr?: string) => {
 const truncateText = (text: string, maxLength: number) => {
   if (text.length <= maxLength) return text;
 
-  return text.substring(0, maxLength) + "...";
+  return text.substring(0, maxLength) + '...';
 };
 
 // Define types for RSS feed items (adjust based on API response)
@@ -67,15 +67,15 @@ interface RssApiResponse {
 
 export default function PrivateNewsPage() {
   const { status } = useSession(); // Removed unused 'session'
-  const isLoadingSession = status === "loading";
-  const isAuthenticated = status === "authenticated";
+  const isLoadingSession = status === 'loading';
+  const isAuthenticated = status === 'authenticated';
 
   // Fetch user's saved feeds
   const {
     data: userFeeds,
     error: feedsError,
     isLoading: feedsLoading,
-  } = useSWR<RSSFeed[]>("/api/news/private", fetcher);
+  } = useSWR<RSSFeed[]>('/api/news/private', fetcher);
 
   // State for the currently selected feed
   const [selectedFeed, setSelectedFeed] = useState<RSSFeed | null>(null);
@@ -93,9 +93,9 @@ export default function PrivateNewsPage() {
     { shouldRetryOnError: false }, // Prevent retrying on bad feed URLs
   );
 
-  const [newFeedName, setNewFeedName] = useState("");
-  const [newFeedUrl, setNewFeedUrl] = useState("");
-  const [newFeedCategory, setNewFeedCategory] = useState("");
+  const [newFeedName, setNewFeedName] = useState('');
+  const [newFeedUrl, setNewFeedUrl] = useState('');
+  const [newFeedCategory, setNewFeedCategory] = useState('');
   const [addingFeed, setAddingFeed] = useState(false);
   const [feedError, setFeedError] = useState<string | null>(null);
   const [deletingFeedId, setDeletingFeedId] = useState<string | null>(null);
@@ -114,7 +114,7 @@ export default function PrivateNewsPage() {
   const handleAddFeed = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFeedName || !newFeedUrl) {
-      setFeedError("Both name and URL are required.");
+      setFeedError('Both name and URL are required.');
 
       return;
     }
@@ -122,9 +122,9 @@ export default function PrivateNewsPage() {
     setFeedError(null);
 
     try {
-      const res = await fetch("/api/news/private", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/news/private', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: newFeedName,
           url: newFeedUrl,
@@ -135,19 +135,19 @@ export default function PrivateNewsPage() {
       if (!res.ok) {
         const errorData = await res.json();
 
-        throw new Error(errorData.message || "Failed to add feed");
+        throw new Error(errorData.message || 'Failed to add feed');
       }
 
       // Clear form and refresh data
-      setNewFeedName("");
-      setNewFeedUrl("");
-      setNewFeedCategory("");
-      mutate("/api/news/private"); // Revalidate SWR cache
+      setNewFeedName('');
+      setNewFeedUrl('');
+      setNewFeedCategory('');
+      mutate('/api/news/private'); // Revalidate SWR cache
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setFeedError(error.message || "An unexpected error occurred.");
+        setFeedError(error.message || 'An unexpected error occurred.');
       } else {
-        setFeedError("An unexpected error occurred.");
+        setFeedError('An unexpected error occurred.');
       }
     } finally {
       setAddingFeed(false);
@@ -160,20 +160,20 @@ export default function PrivateNewsPage() {
 
     try {
       const res = await fetch(`/api/news/private?feedId=${feedId}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       if (!res.ok) {
         const errorData = await res.json();
 
-        throw new Error(errorData.message || "Failed to delete feed");
+        throw new Error(errorData.message || 'Failed to delete feed');
       }
 
       // If deleting the selected feed, clear selection
       if (selectedFeed?.id === feedId) {
         setSelectedFeed(null);
       }
-      mutate("/api/news/private"); // Revalidate SWR cache
+      mutate('/api/news/private'); // Revalidate SWR cache
     } catch {
     } finally {
       setDeletingFeedId(null);
@@ -202,7 +202,7 @@ export default function PrivateNewsPage() {
         data-testid="section-access-denied-private"
       >
         <h1
-          className={title({ color: "pink" })}
+          className={title({ color: 'pink' })}
           data-testid="title-access-denied-private"
         >
           Access Denied
@@ -299,7 +299,7 @@ export default function PrivateNewsPage() {
                 onValueChange={setNewFeedCategory}
               />
               <Button
-                aria-label={addingFeed ? "Adding new feed" : "Add new feed"}
+                aria-label={addingFeed ? 'Adding new feed' : 'Add new feed'}
                 className="min-w-[120px]"
                 color="primary"
                 data-testid="btn-add-feed"
@@ -359,8 +359,8 @@ export default function PrivateNewsPage() {
                       key={feed.id}
                       className={`rounded-lg border-2 ${
                         selectedFeed?.id === feed.id
-                          ? "border-primary"
-                          : "border-transparent"
+                          ? 'border-primary'
+                          : 'border-transparent'
                       }`}
                       data-testid={`feed-list-item-container-${feed.id}`}
                     >
@@ -373,7 +373,7 @@ export default function PrivateNewsPage() {
                               data-testid={`feed-item-select-${feed.id}`}
                               onClick={() => handleSelectFeed(feed)}
                               onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
+                                if (e.key === 'Enter' || e.key === ' ') {
                                   e.preventDefault();
                                   handleSelectFeed(feed);
                                 }
@@ -503,7 +503,7 @@ export default function PrivateNewsPage() {
                               aria-label={`Read article: ${item.title}`}
                               className="hover:text-primary"
                               data-testid={`feed-content-item-link-${selectedFeed.id}-${index}`}
-                              href={item.link || "#"}
+                              href={item.link || '#'}
                               target="_blank"
                             >
                               {item.title}

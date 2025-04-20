@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import useSWR, { mutate } from "swr";
-import { Spinner } from "@heroui/spinner";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import useSWR, { mutate } from 'swr';
+import { Spinner } from '@heroui/spinner';
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
+import { Link } from '@heroui/link';
 
-import { title, subtitle } from "@/components/primitives";
-import { User } from "@/lib/db/models/user"; // Use the User type without passwordHash
+import { title, subtitle } from '@/components/primitives';
+import { User } from '@/lib/db/models/user'; // Use the User type without passwordHash
 
 // Define fetcher for SWR
 const fetcher = async (url: string) => {
   const res = await fetch(url);
 
   if (!res.ok) {
-    let errorMessage = "Failed to fetch user data";
+    let errorMessage = 'Failed to fetch user data';
 
     try {
       const errorData = await res.json();
@@ -32,29 +32,29 @@ const fetcher = async (url: string) => {
 };
 
 // Define the type for user data returned by the API (excluding passwordHash)
-type UserData = Omit<User, "passwordHash">;
+type UserData = Omit<User, 'passwordHash'>;
 
 export default function SettingsPage() {
   const { status, update: updateSession } = useSession(); // Removed unused 'session'
-  const isLoadingSession = status === "loading";
-  const isAuthenticated = status === "authenticated";
+  const isLoadingSession = status === 'loading';
+  const isAuthenticated = status === 'authenticated';
 
   // Fetch user data if authenticated
   const {
     data: userData,
     error: fetchError,
     isLoading: isLoadingUser,
-  } = useSWR<UserData>(isAuthenticated ? "/api/user" : null, fetcher);
+  } = useSWR<UserData>(isAuthenticated ? '/api/user' : null, fetcher);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
 
   // State for password change
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordChangeError, setPasswordChangeError] = useState<string | null>(
     null,
@@ -68,7 +68,7 @@ export default function SettingsPage() {
     if (userData?.name) {
       setName(userData.name);
     } else {
-      setName(""); // Clear name if not set or user data is not available
+      setName(''); // Clear name if not set or user data is not available
     }
   }, [userData]);
 
@@ -79,29 +79,29 @@ export default function SettingsPage() {
     setUpdateSuccess(null);
 
     try {
-      const res = await fetch("/api/user", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
       });
 
       if (!res.ok) {
         const errorData = await res.json();
 
-        throw new Error(errorData.message || "Failed to update profile");
+        throw new Error(errorData.message || 'Failed to update profile');
       }
 
       // Update local SWR cache and show success message
       const updatedUserData = await res.json();
 
-      mutate("/api/user", updatedUserData, false); // Update cache without revalidation
-      setUpdateSuccess("Profile updated successfully!");
+      mutate('/api/user', updatedUserData, false); // Update cache without revalidation
+      setUpdateSuccess('Profile updated successfully!');
 
       // Trigger session update with the new name
       await updateSession({ name: updatedUserData.name });
     } catch (err: unknown) {
       setUpdateError(
-        err instanceof Error ? err.message : "An unexpected error occurred.",
+        err instanceof Error ? err.message : 'An unexpected error occurred.',
       );
     } finally {
       setIsUpdating(false);
@@ -111,7 +111,7 @@ export default function SettingsPage() {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setPasswordChangeError("New passwords do not match.");
+      setPasswordChangeError('New passwords do not match.');
 
       return;
     }
@@ -120,26 +120,26 @@ export default function SettingsPage() {
     setPasswordChangeSuccess(null);
 
     try {
-      const res = await fetch("/api/user/password", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/user/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to change password");
+        throw new Error(data.message || 'Failed to change password');
       }
 
-      setPasswordChangeSuccess("Password changed successfully!");
+      setPasswordChangeSuccess('Password changed successfully!');
       // Clear password fields after successful change
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (err: unknown) {
       setPasswordChangeError(
-        err instanceof Error ? err.message : "An unexpected error occurred.",
+        err instanceof Error ? err.message : 'An unexpected error occurred.',
       );
     } finally {
       setIsChangingPassword(false);
@@ -255,7 +255,7 @@ export default function SettingsPage() {
           />
           <Button
             aria-label={
-              isUpdating ? "Submitting profile update" : "Submit profile update"
+              isUpdating ? 'Submitting profile update' : 'Submit profile update'
             }
             color="primary"
             data-testid="btn-update-profile"
@@ -263,7 +263,7 @@ export default function SettingsPage() {
             isLoading={isUpdating}
             type="submit"
           >
-            {isUpdating ? "Updating..." : "Update Profile"}
+            {isUpdating ? 'Updating...' : 'Update Profile'}
           </Button>
         </form>
       )}
@@ -338,12 +338,12 @@ export default function SettingsPage() {
             data-testid="input-confirm-password"
             disabled={isChangingPassword}
             errorMessage={
-              newPassword !== confirmPassword && confirmPassword !== ""
-                ? "Passwords do not match"
+              newPassword !== confirmPassword && confirmPassword !== ''
+                ? 'Passwords do not match'
                 : undefined
             }
             isInvalid={
-              newPassword !== confirmPassword && confirmPassword !== ""
+              newPassword !== confirmPassword && confirmPassword !== ''
             }
             label="Confirm New Password"
             placeholder="Confirm your new password"
@@ -354,8 +354,8 @@ export default function SettingsPage() {
           <Button
             aria-label={
               isChangingPassword
-                ? "Submitting password change"
-                : "Submit password change"
+                ? 'Submitting password change'
+                : 'Submit password change'
             }
             color="secondary"
             data-testid="btn-change-password"
@@ -369,7 +369,7 @@ export default function SettingsPage() {
             isLoading={isChangingPassword}
             type="submit"
           >
-            {isChangingPassword ? "Changing Password..." : "Change Password"}
+            {isChangingPassword ? 'Changing Password...' : 'Change Password'}
           </Button>
         </form>
       )}

@@ -1,9 +1,9 @@
-import { Link } from "@heroui/link";
-import { button as buttonStyles } from "@heroui/theme";
-import NextLink from "next/link"; // Import NextLink for internal navigation
-import { Card, CardBody } from "@heroui/card";
+import { Link } from '@heroui/link';
+import { button as buttonStyles } from '@heroui/theme';
+import NextLink from 'next/link'; // Import NextLink for internal navigation
+import { Card, CardBody } from '@heroui/card';
 
-import { title, subtitle } from "@/components/primitives";
+import { title, subtitle } from '@/components/primitives';
 // Keep GithubIcon if needed, or remove if not
 
 export default function Home() {
@@ -18,10 +18,10 @@ export default function Home() {
           <h1 className={title()} data-testid="hero-title-1">
             Welcome to the&nbsp;
           </h1>
-          <h1 className={title({ color: "violet" })} data-testid="hero-title-2">
+          <h1 className={title({ color: 'violet' })} data-testid="hero-title-2">
             Playwright Demo App
           </h1>
-          <p className={subtitle({ class: "mt-4" })}>
+          <p className={subtitle({ class: 'mt-4' })}>
             This application is designed to showcase various features and
             testing scenarios for the Playwright testing framework. Explore the
             different sections to see examples of authentication, API
@@ -37,9 +37,9 @@ export default function Home() {
             aria-label="Navigate to public news page" // Added aria-label
             as={NextLink}
             className={buttonStyles({
-              color: "primary",
-              radius: "md",
-              variant: "solid",
+              color: 'primary',
+              radius: 'md',
+              variant: 'solid',
             })}
             data-testid="link-public-news" // Added data-testid
             href="/news/public" // Link to Public News
@@ -50,9 +50,9 @@ export default function Home() {
             aria-label="Navigate to private news page" // Added aria-label
             as={NextLink}
             className={buttonStyles({
-              color: "secondary",
-              radius: "md",
-              variant: "solid",
+              color: 'secondary',
+              radius: 'md',
+              variant: 'solid',
             })}
             data-testid="link-private-news" // Added data-testid
             href="/news/private" // Link to Private News (will show access denied if not logged in)
@@ -63,9 +63,9 @@ export default function Home() {
             aria-label="Navigate to sign in page" // Added aria-label
             as={NextLink}
             className={buttonStyles({
-              color: "default",
-              radius: "md",
-              variant: "bordered",
+              color: 'default',
+              radius: 'md',
+              variant: 'bordered',
             })}
             data-testid="link-signin" // Added data-testid
             href="/auth/signin" // Link to Sign In
@@ -87,7 +87,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="flex flex-col gap-8" data-testid="section-features">
         <h2
-          className={title({ size: "sm", class: "text-center" })}
+          className={title({ size: 'sm', class: 'text-center' })}
           data-testid="features-title"
         >
           Key Features

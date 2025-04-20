@@ -1,29 +1,29 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
 
-import { findUserByEmail } from "@/lib/db/repositories/users"; // Import user repository functions
+import { findUserByEmail } from '@/lib/db/repositories/users'; // Import user repository functions
 
 // Note: Ensure NEXTAUTH_SECRET environment variable is set in production!
 const secret = process.env.NEXTAUTH_SECRET;
 
-if (!secret && process.env.NODE_ENV === "production") {
+if (!secret && process.env.NODE_ENV === 'production') {
   throw new Error(
-    "NEXTAUTH_SECRET environment variable is not set for production",
+    'NEXTAUTH_SECRET environment variable is not set for production',
   );
 }
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
         email: {
-          label: "Email",
-          type: "email",
-          placeholder: "jsmith@example.com",
+          label: 'Email',
+          type: 'email',
+          placeholder: 'jsmith@example.com',
         },
-        password: { label: "Password", type: "password" },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -56,13 +56,13 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt", // Use JWT for session management
+    strategy: 'jwt', // Use JWT for session management
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 24 hours - How often to update session data
   },
-  secret: secret || "fallback-super-secret-for-dev", // Use env var or fallback for dev
+  secret: secret || 'fallback-super-secret-for-dev', // Use env var or fallback for dev
   pages: {
-    signIn: "/auth/signin", // Custom sign-in page path
+    signIn: '/auth/signin', // Custom sign-in page path
     // Add other custom pages if needed (e.g., signUp, error)
   },
   callbacks: {
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Handle session update trigger (e.g., after profile update)
-      if (trigger === "update" && session?.name) {
+      if (trigger === 'update' && session?.name) {
         token.name = session.name;
         // Optional: Could re-fetch user data here if more fields needed updating
         // const dbUser = await findUserById(token.id as string);

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Input } from '@heroui/input';
+import { Button } from '@heroui/button';
+import { Link } from '@heroui/link';
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -20,23 +20,23 @@ export default function SignInPage() {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         redirect: false, // Prevent NextAuth from redirecting automatically
         email,
         password,
       });
 
       if (result?.error) {
-        setError("Invalid email or password. Please try again.");
+        setError('Invalid email or password. Please try again.');
       } else if (result?.ok) {
         // Redirect to home page or dashboard upon successful sign-in
-        router.push("/"); // Or '/dashboard' or wherever appropriate
+        router.push('/'); // Or '/dashboard' or wherever appropriate
         router.refresh(); // Refresh server components
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        setError('An unexpected error occurred. Please try again.');
       }
     } catch {
-      setError("An unexpected error occurred. Please try again.");
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -94,10 +94,10 @@ export default function SignInPage() {
           isLoading={isLoading}
           type="submit"
           aria-label={
-            isLoading ? "Submitting sign in form" : "Submit sign in form"
+            isLoading ? 'Submitting sign in form' : 'Submit sign in form'
           } // Added aria-label
         >
-          {isLoading ? "Signing In..." : "Sign In"}
+          {isLoading ? 'Signing In...' : 'Sign In'}
         </Button>
         <div className="text-center text-sm">
           {/* Link to Sign Up page - to be created later */}
@@ -108,7 +108,7 @@ export default function SignInPage() {
             </Link>
           </p> */}
           <p>
-            Don&#39;t have an account?{" "}
+            Don&#39;t have an account?{' '}
             <Link
               aria-label="Navigate to sign up page" // Sorted props
               data-testid="link-signup" // Sorted props

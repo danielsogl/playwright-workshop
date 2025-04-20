@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const url = searchParams.get("url");
+  const url = searchParams.get('url');
 
   if (!url) {
     return NextResponse.json(
-      { error: "URL parameter is required" },
+      { error: 'URL parameter is required' },
       { status: 400 },
     );
   }
@@ -17,13 +17,13 @@ export async function GET(request: Request) {
 
     return new NextResponse(data, {
       headers: {
-        "Content-Type": "application/xml",
-        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/xml',
+        'Access-Control-Allow-Origin': '*',
       },
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch RSS feed" },
+      { error: 'Failed to fetch RSS feed' },
       { status: 500 },
     );
   }

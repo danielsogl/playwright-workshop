@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { addUser } from "@/lib/db/repositories/users"; // Adjust path as needed
+import { addUser } from '@/lib/db/repositories/users'; // Adjust path as needed
 
 // Define validation schema using Zod
 const SignUpSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
 });
 
 export async function POST(request: Request) {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     if (!validationResult.success) {
       return NextResponse.json(
         {
-          message: "Invalid input",
+          message: 'Invalid input',
           errors: validationResult.error.flatten().fieldErrors,
         },
         { status: 400 },
@@ -38,23 +38,23 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "User created successfully",
+        message: 'User created successfully',
         user: userWithoutPassword,
       },
       { status: 201 },
     );
   } catch (error: unknown) {
     // Handle specific error for existing email
-    if (error instanceof Error && error.message === "Email already exists") {
+    if (error instanceof Error && error.message === 'Email already exists') {
       return NextResponse.json(
-        { message: "Email already registered" },
+        { message: 'Email already registered' },
         { status: 409 }, // Conflict
       );
     }
 
     // Generic error response
     return NextResponse.json(
-      { message: "An internal server error occurred" },
+      { message: 'An internal server error occurred' },
       { status: 500 },
     );
   }
