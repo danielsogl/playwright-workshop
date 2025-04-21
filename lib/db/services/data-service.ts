@@ -31,7 +31,6 @@ let cachedSeedData: SeedData | null = null;
  * @returns The parsed seed data object, or null if the file cannot be read or parsed.
  */
 export const loadSeedData = (): SeedData | null => {
-  // Return cached data if available
   if (cachedSeedData) {
     return cachedSeedData;
   }

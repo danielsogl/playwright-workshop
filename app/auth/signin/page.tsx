@@ -45,9 +45,9 @@ export default function SignInPage() {
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
       <form
-        aria-label="Sign in form" // Added aria-label
+        aria-label="Sign in form"
         className="w-full max-w-sm p-8 space-y-6 bg-content1 rounded-lg shadow-md"
-        data-testid="form-signin" // Added data-testid
+        data-testid="form-signin"
         onSubmit={handleSubmit}
       >
         <h1 className="text-2xl font-bold text-center">Sign In</h1>
@@ -55,7 +55,7 @@ export default function SignInPage() {
         {error && (
           <div
             className="p-3 bg-danger-100 text-danger-700 rounded-md"
-            data-testid="error-signin" // Added data-testid
+            data-testid="error-signin"
             role="alert" // Added role for accessibility
           >
             {error}
@@ -64,9 +64,9 @@ export default function SignInPage() {
 
         <Input
           isRequired
-          aria-label="Email address for sign in" // Added aria-label
+          aria-label="Email address for sign in"
           autoComplete="email"
-          data-testid="input-signin-email" // Added data-testid
+          data-testid="input-signin-email"
           disabled={isLoading}
           label="Email"
           placeholder="you@example.com"
@@ -76,9 +76,9 @@ export default function SignInPage() {
         />
         <Input
           isRequired
-          aria-label="Password for sign in" // Added aria-label
+          aria-label="Password for sign in"
           autoComplete="current-password"
-          data-testid="input-signin-password" // Added data-testid
+          data-testid="input-signin-password"
           disabled={isLoading}
           label="Password"
           placeholder="Your password"
@@ -89,13 +89,13 @@ export default function SignInPage() {
         <Button
           className="w-full"
           color="primary"
-          data-testid="btn-signin-submit" // Added data-testid
+          data-testid="btn-signin-submit"
           disabled={isLoading}
           isLoading={isLoading}
           type="submit"
           aria-label={
             isLoading ? 'Submitting sign in form' : 'Submit sign in form'
-          } // Added aria-label
+          }
         >
           {isLoading ? 'Signing In...' : 'Sign In'}
         </Button>

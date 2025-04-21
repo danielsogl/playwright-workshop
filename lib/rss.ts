@@ -2,7 +2,6 @@ import { RSSItem, RSSSource } from '../types/rss';
 
 export async function fetchRSSFeed(source: RSSSource): Promise<RSSItem[]> {
   try {
-    // Use a CORS proxy for client-side requests
     const response = await fetch(
       `/api/rss-proxy?url=${encodeURIComponent(source.url)}`,
     );

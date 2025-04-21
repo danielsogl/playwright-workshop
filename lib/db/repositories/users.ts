@@ -127,8 +127,6 @@ export const updateUserProfile = async (
   return updatedUser;
 };
 
-// --- Seeding Logic ---
-
 const seedUsers = async () => {
   const seedData = loadSeedData();
 

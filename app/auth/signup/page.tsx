@@ -79,9 +79,9 @@ export default function SignUpPage() {
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
       <form
-        aria-label="Sign up form" // Added aria-label
+        aria-label="Sign up form"
         className="w-full max-w-sm p-8 space-y-6 bg-content1 rounded-lg shadow-md"
-        data-testid="form-signup" // Added data-testid
+        data-testid="form-signup"
         onSubmit={handleSubmit}
       >
         <h1 className="text-2xl font-bold text-center">Sign Up</h1>
@@ -89,7 +89,7 @@ export default function SignUpPage() {
         {error && (
           <div
             className="p-3 bg-danger-100 text-danger-700 rounded-md"
-            data-testid="error-signup" // Added data-testid
+            data-testid="error-signup"
             role="alert" // Added role for accessibility
           >
             {error}
@@ -98,9 +98,9 @@ export default function SignUpPage() {
 
         <Input
           isRequired
-          aria-label="Your name for sign up" // Added aria-label
+          aria-label="Your name for sign up"
           autoComplete="name"
-          data-testid="input-signup-name" // Added data-testid
+          data-testid="input-signup-name"
           disabled={isLoading}
           label="Name"
           placeholder="Your Name"
@@ -110,9 +110,9 @@ export default function SignUpPage() {
         />
         <Input
           isRequired
-          aria-label="Email address for sign up" // Added aria-label
+          aria-label="Email address for sign up"
           autoComplete="email"
-          data-testid="input-signup-email" // Added data-testid
+          data-testid="input-signup-email"
           disabled={isLoading}
           label="Email"
           placeholder="you@example.com"
@@ -122,9 +122,9 @@ export default function SignUpPage() {
         />
         <Input
           isRequired
-          aria-label="Password for sign up" // Added aria-label
+          aria-label="Password for sign up"
           autoComplete="new-password"
-          data-testid="input-signup-password" // Added data-testid
+          data-testid="input-signup-password"
           disabled={isLoading}
           label="Password"
           placeholder="Choose a password"
@@ -136,13 +136,13 @@ export default function SignUpPage() {
         <Button
           className="w-full"
           color="primary"
-          data-testid="btn-signup-submit" // Added data-testid
+          data-testid="btn-signup-submit"
           disabled={isLoading || !name || !email || !password}
           isLoading={isLoading}
           type="submit"
           aria-label={
             isLoading ? 'Submitting sign up form' : 'Submit sign up form'
-          } // Added aria-label
+          }
         >
           {isLoading ? 'Signing Up...' : 'Sign Up'}
         </Button>

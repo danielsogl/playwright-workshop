@@ -6,7 +6,7 @@ import * as React from 'react';
 import { HeroUIProvider } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { SessionProvider } from 'next-auth/react'; // Import SessionProvider
+import { SessionProvider } from 'next-auth/react';
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -25,7 +25,6 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
 
   return (
-    // Wrap with SessionProvider
     <SessionProvider>
       <HeroUIProvider navigate={router.push}>
         <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>

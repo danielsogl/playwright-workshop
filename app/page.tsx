@@ -1,10 +1,9 @@
 import { Link } from '@heroui/link';
 import { button as buttonStyles } from '@heroui/theme';
-import NextLink from 'next/link'; // Import NextLink for internal navigation
+import NextLink from 'next/link';
 import { Card, CardBody } from '@heroui/card';
 
 import { title, subtitle } from '@/components/primitives';
-// Keep GithubIcon if needed, or remove if not
 
 export default function Home() {
   return (
@@ -34,53 +33,44 @@ export default function Home() {
           data-testid="hero-links"
         >
           <Link
-            aria-label="Navigate to public news page" // Added aria-label
+            aria-label="Navigate to public news page"
             as={NextLink}
             className={buttonStyles({
               color: 'primary',
               radius: 'md',
               variant: 'solid',
             })}
-            data-testid="link-public-news" // Added data-testid
-            href="/news/public" // Link to Public News
+            data-testid="link-public-news"
+            href="/news/public"
           >
             View Public News
           </Link>
           <Link
-            aria-label="Navigate to private news page" // Added aria-label
+            aria-label="Navigate to private news page"
             as={NextLink}
             className={buttonStyles({
               color: 'secondary',
               radius: 'md',
               variant: 'solid',
             })}
-            data-testid="link-private-news" // Added data-testid
-            href="/news/private" // Link to Private News (will show access denied if not logged in)
+            data-testid="link-private-news"
+            href="/news/private"
           >
             View Private News
           </Link>
           <Link
-            aria-label="Navigate to sign in page" // Added aria-label
+            aria-label="Navigate to sign in page"
             as={NextLink}
             className={buttonStyles({
               color: 'default',
               radius: 'md',
               variant: 'bordered',
             })}
-            data-testid="link-signin" // Added data-testid
-            href="/auth/signin" // Link to Sign In
+            data-testid="link-signin"
+            href="/auth/signin"
           >
             Sign In
           </Link>
-          {/* Optional: Link to GitHub repo if relevant */}
-          {/* <Link
-            isExternal
-            className={buttonStyles({ variant: 'bordered', radius: 'full' })}
-            href={siteConfig.links.github}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link> */}
         </div>
       </section>
 

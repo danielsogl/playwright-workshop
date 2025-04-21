@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs';
 
 import { findUserByEmail } from '@/lib/db/repositories/users';
 
-// Note: Ensure NEXTAUTH_SECRET environment variable is set in production!
 const secret = process.env.NEXTAUTH_SECRET;
 
 if (!secret && process.env.NODE_ENV === 'production') {

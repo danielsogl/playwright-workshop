@@ -1,4 +1,4 @@
-'use client'; // Add client directive for useSession hook
+'use client';
 
 import {
   Navbar as HeroUINavbar,
@@ -21,15 +21,15 @@ import {
 import { Avatar } from '@heroui/avatar';
 import NextLink from 'next/link';
 import clsx from 'clsx';
-import { useSession, signOut } from 'next-auth/react'; // Import useSession and signOut
+import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 
 import { siteConfig } from '@/config/site';
 import { ThemeSwitch } from '@/components/theme-switch';
-import { Logo } from '@/components/icons'; // Added Logo import
+import { Logo } from '@/components/icons';
 
 export const Navbar = () => {
-  const { data: session, status } = useSession(); // Get session data and status
+  const { data: session, status } = useSession();
   const isLoading = status === 'loading';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -79,7 +79,7 @@ export const Navbar = () => {
               data-testid={`nav-item-${item.label.toLowerCase()}`}
             >
               <NextLink
-                aria-label={`Navigate to ${item.label}`} // Added aria-label
+                aria-label={`Navigate to ${item.label}`}
                 className={clsx(
                   linkStyles({ color: 'foreground' }),
                   'data-[active=true]:text-primary data-[active=true]:font-medium',
@@ -96,7 +96,7 @@ export const Navbar = () => {
 
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
-        data-testid="navbar-content-end" // Added data-testid
+        data-testid="navbar-content-end"
         justify="end"
       >
         <NavbarItem
@@ -123,11 +123,11 @@ export const Navbar = () => {
               <DropdownTrigger>
                 <Avatar
                   isBordered
-                  aria-label="User profile actions menu" // Added aria-label
+                  aria-label="User profile actions menu"
                   as="button"
                   className="transition-transform"
                   color="secondary"
-                  data-testid="dropdown-trigger-user" // Added data-testid
+                  data-testid="dropdown-trigger-user"
                   name={getInitials(session.user?.name)}
                   size="sm"
                   src={session.user?.image || undefined}
@@ -153,7 +153,7 @@ export const Navbar = () => {
                 <DropdownItem
                   key="logout"
                   color="danger"
-                  data-testid="dropdown-item-logout" // Added data-testid
+                  data-testid="dropdown-item-logout"
                   onClick={() => signOut()}
                 >
                   Log Out
@@ -162,10 +162,10 @@ export const Navbar = () => {
             </Dropdown>
           ) : (
             <Button
-              aria-label="Sign in to your account" // Added aria-label
+              aria-label="Sign in to your account"
               as={NextLink}
               color="primary"
-              data-testid="btn-signin" // Added data-testid
+              data-testid="btn-signin"
               href="/auth/signin"
               size="sm"
               variant="flat"
@@ -187,18 +187,18 @@ export const Navbar = () => {
       <NavbarMenu>
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navMenuItems
-            .filter((item) => item.href !== '/logout') // Keep filtering logout if needed
+            .filter((item) => item.href !== '/logout')
             .map((item, index) => (
               <NavbarMenuItem
                 key={`${item.href}-${index}`}
                 data-testid={`nav-menu-item-${item.label.toLowerCase()}`}
               >
                 <Link
-                  aria-label={`Navigate to ${item.label}`} // Added aria-label
+                  aria-label={`Navigate to ${item.label}`}
                   color={
                     index === 2
                       ? 'primary'
-                      : index === siteConfig.navMenuItems.length - 2 // Adjust index if filter changes length
+                      : index === siteConfig.navMenuItems.length - 2
                         ? 'danger'
                         : 'foreground'
                   }
@@ -219,10 +219,10 @@ export const Navbar = () => {
               </span>
             ) : session ? (
               <Button
-                aria-label="Sign out" // Added aria-label
+                aria-label="Sign out"
                 className="w-full"
                 color="warning"
-                data-testid="btn-signout-menu" // Added data-testid
+                data-testid="btn-signout-menu"
                 variant="flat"
                 onClick={() => signOut()}
               >
@@ -230,11 +230,11 @@ export const Navbar = () => {
               </Button>
             ) : (
               <Button
-                aria-label="Sign in to your account" // Added aria-label
+                aria-label="Sign in to your account"
                 as={NextLink}
                 className="w-full"
                 color="primary"
-                data-testid="btn-signin-menu" // Added data-testid
+                data-testid="btn-signin-menu"
                 href="/auth/signin"
                 variant="flat"
               >
