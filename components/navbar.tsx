@@ -22,6 +22,7 @@ import { Avatar } from '@heroui/avatar';
 import NextLink from 'next/link';
 import clsx from 'clsx';
 import { useSession, signOut } from 'next-auth/react'; // Import useSession and signOut
+import { useState } from 'react';
 
 import { siteConfig } from '@/config/site';
 import { ThemeSwitch } from '@/components/theme-switch';
@@ -30,6 +31,7 @@ import { Logo } from '@/components/icons'; // Added Logo import
 export const Navbar = () => {
   const { data: session, status } = useSession(); // Get session data and status
   const isLoading = status === 'loading';
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Helper function to get initials
   const getInitials = (name?: string | null) => {
@@ -42,7 +44,12 @@ export const Navbar = () => {
   };
 
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
+    <HeroUINavbar
+      maxWidth="xl"
+      position="sticky"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+    >
       <NavbarContent
         className="basis-1/5 sm:basis-full"
         data-testid="navbar-content-start"
@@ -147,7 +154,7 @@ export const Navbar = () => {
                   key="logout"
                   color="danger"
                   data-testid="dropdown-item-logout" // Added data-testid
-                  onPress={() => signOut()}
+                  onClick={() => signOut()}
                 >
                   Log Out
                 </DropdownItem>
@@ -171,7 +178,10 @@ export const Navbar = () => {
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
-        <NavbarMenuToggle />
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        />
       </NavbarContent>
 
       <NavbarMenu>
@@ -214,7 +224,7 @@ export const Navbar = () => {
                 color="warning"
                 data-testid="btn-signout-menu" // Added data-testid
                 variant="flat"
-                onPress={() => signOut()}
+                onClick={() => signOut()}
               >
                 Sign Out ({session.user?.name || session.user?.email})
               </Button>
