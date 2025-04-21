@@ -48,7 +48,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@playwright/test": "^1.52.0",
     "@react-types/shared": "3.29.0",
-    "@types/bcryptjs": "^2.4.6",
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "20.17.30",
     "@types/react": "18.3.20",
     "@types/react-dom": "18.3.6",
