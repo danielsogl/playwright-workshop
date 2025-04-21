@@ -4,39 +4,33 @@ import type { RSSItem } from "@/types/rss";
 import type { ChangeEvent } from "react";
 
 import { Card, Input } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 
-import { fetchAllFeeds, filterFeedItems } from "@/lib/rss";
-import { RSS_CATEGORIES, RSS_SOURCES } from "@/config/rss-sources";
+import { filterFeedItems } from "@/lib/rss";
+import { RSS_CATEGORIES } from "@/config/rss-sources";
+import { fetcher } from "@/lib/utils/fetchers";
+
+interface NewsApiResponse {
+  items: RSSItem[];
+}
 
 export default function PublicNewsPage() {
-  const [items, setItems] = useState<RSSItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  useEffect(() => {
-    const loadFeeds = async () => {
-      try {
-        setLoading(true);
-        const feeds = await fetchAllFeeds(RSS_SOURCES);
+  const { data, error, isLoading } = useSWR<NewsApiResponse>(
+    "/api/news/public",
+    fetcher
+  );
 
-        setItems(feeds);
-        setError(null);
-      } catch {
-        setError("Failed to load RSS feeds");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const filteredItems = filterFeedItems(
+    data?.items || [],
+    searchQuery,
+    selectedCategory
+  );
 
-    loadFeeds();
-  }, []);
-
-  const filteredItems = filterFeedItems(items, searchQuery, selectedCategory);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div
         className="flex justify-center items-center min-h-screen"
@@ -58,7 +52,7 @@ export default function PublicNewsPage() {
         data-testid="error-news"
       >
         <div className="text-red-500" role="alert">
-          {error}
+          Failed to load RSS feeds
         </div>
       </div>
     );
