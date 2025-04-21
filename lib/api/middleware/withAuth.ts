@@ -1,4 +1,4 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth.config';
 import { jsonUnauthorized } from '@/lib/utils/api';
 import type { Session } from 'next-auth';
 import { getServerSession } from 'next-auth/next';

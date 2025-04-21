@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import Parser from 'rss-parser';
 import { z } from 'zod';
 
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth.config';
 
 const parser = new Parser();
 
