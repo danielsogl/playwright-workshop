@@ -20,12 +20,12 @@ Du implementierst einen effizienten Login-Prozess für die Feed App, indem du de
      await page.goto('http://localhost:3000/auth/signin');
 
      // Login durchführen
-     await page.getByTestId('input-signin-email').fill('test@example.com');
-     await page.getByTestId('input-signin-password').fill('password');
-     await page.getByTestId('btn-signin-submit').click();
+     await page.getByRole('textbox', { name: /email/i }).fill('test@example.com');
+     await page.getByLabel('Password for sign in').fill('password');
+     await page.getByRole('button', { name: /sign in/i }).click();
 
-     // Warte auf erfolgreichen Login
-     await expect(page.getByTestId('dropdown-trigger-user')).toBeVisible();
+     // Warte auf erfolgreichen Login (z.B. Avatar oder User-Menü sichtbar)
+     await expect(page.getByRole('button', { name: /user profile actions menu/i })).toBeVisible();
    });
    ```
    **Hinweis:** Ersetze die Credentials mit deinen echten Testdaten!
@@ -78,8 +78,8 @@ Du implementierst einen effizienten Login-Prozess für die Feed App, indem du de
      await page.goto('/news/private');
      
      // Prüfe, ob wir eingeloggt sind und Zugriff haben
-     await expect(page.getByTestId('title-private-news')).toBeVisible();
-     await expect(page.getByTestId('feed-list')).toBeVisible();
+     await expect(page.getByRole('heading', { name: /your private news feeds/i })).toBeVisible();
+     await expect(page.getByRole('region', { name: /your feeds/i })).toBeVisible();
    });
    ```
 

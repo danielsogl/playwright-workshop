@@ -9,12 +9,12 @@ Du verbesserst das Page Object Model für die Public News Seite der Feed App wei
     -   Erstelle eine neue Datei, z.B. `e2e/components/NewsItemComponent.ts`.
     -   Definiere eine Klasse `NewsItemComponent`.
     -   Der Konstruktor sollte einen `Locator` entgegennehmen, der auf das `div`- oder `Card`-Element eines einzelnen News-Artikels zeigt (`readonly root: Locator`). Verwende den Locator aus `PublicNewsPage` (`this.newsItems.nth(index)`).
-    -   Kapsele Selektoren für Elemente *innerhalb* eines News-Artikels relativ zum `root`-Locator (nutze `data-testid`):
+    -   Kapsele Selektoren für Elemente *innerhalb* eines News-Artikels relativ zum `root`-Locator (nutze ausschließlich semantische, benutzerorientierte Selektoren):
         ```typescript
-        readonly titleLink = this.root.getByTestId(/news-item-link-\d+/); // Regex für dynamische IDs
-        readonly description = this.root.getByTestId(/news-item-desc-\d+/);
-        readonly category = this.root.getByTestId(/news-item-category-\d+/);
-        readonly source = this.root.getByTestId(/news-item-source-\d+/);
+        readonly titleLink = this.root.getByRole('link');
+        readonly description = this.root.getByText(/.+/, { exact: false }); // Passe ggf. an, falls Beschreibung ein eigenes Element ist
+        readonly category = this.root.getByRole('listitem', { name: /category/i });
+        readonly source = this.root.getByRole('listitem', { name: /source/i });
         ```
     -   Implementiere Methoden für Aktionen oder Datenextraktion auf einem einzelnen Artikel:
         -   `getTitle(): Promise<string | null>`: Gibt den Text des Titels zurück.
@@ -80,4 +80,4 @@ Du verbesserst das Page Object Model für die Public News Seite der Feed App wei
 
 ---
 
-> **Tipp:** Komponenten-Objekte (`NewsItemComponent`) machen Tests noch robuster gegenüber Änderungen in der Struktur wiederholender Elemente. Das Fluent Interface (`return this;`) verbessert die Lesbarkeit von Testsequenzen, indem Aktionen aneinandergereiht werden können.
+> **Tipp:** Komponenten-Objekte (`NewsItemComponent`) machen Tests noch robuster gegenüber Änderungen in der Struktur wiederholender Elemente. Das Fluent Interface (`return this;`) verbessert die Lesbarkeit von Testsequenzen, indem Aktionen aneinandergereiht werden können. Verwende ausschließlich semantische, benutzerorientierte Selektoren (`getByRole`, `getByLabel`, `getByText`, etc.).

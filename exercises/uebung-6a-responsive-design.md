@@ -50,8 +50,8 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
 
      test('Navigation Layout anpassen', async ({ page, isMobile }) => {
        // Test der Navigation basierend auf Viewport
-       const menuButton = page.getByRole('button', { name: 'Menu' });
-       const desktopNav = page.getByTestId('desktop-nav');
+       const menuButton = page.getByRole('button', { name: /menu/i });
+       const desktopNav = page.getByRole('navigation');
        
        if (isMobile) {
          // Mobile Layout Tests
@@ -60,7 +60,7 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
          
          // Menü Interaktion
          await menuButton.click();
-         await expect(page.getByTestId('mobile-nav')).toBeVisible();
+         // Optional: Mobile Navigation prüfen, z.B. mit getByRole('navigation', { name: /mobile/i })
        } else {
          // Desktop Layout Tests
          await expect(menuButton).toBeHidden();
@@ -71,14 +71,12 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
      test('News Grid Layout', async ({ page }) => {
        await page.goto('/news/public');
        
-       // Warte auf Grid-Layout
-       const newsGrid = page.getByTestId('news-grid');
+       // Warte auf Grid-Layout, z.B. mit getByRole('list', { name: /news/i })
+       const newsGrid = page.getByRole('list', { name: /news/i });
        await expect(newsGrid).toBeVisible();
        
        // Screenshot für visuellen Vergleich
-       await expect(newsGrid).toHaveScreenshot('news-grid.png', {
-         mask: [page.getByTestId('timestamp')] // Maskiere dynamische Elemente
-       });
+       await expect(newsGrid).toHaveScreenshot('news-grid.png');
      });
    });
    ```
@@ -96,16 +94,16 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
        await page.goto('/');
 
        // Menu öffnen mit Touch
-       const menuButton = page.getByRole('button', { name: 'Menu' });
+       const menuButton = page.getByRole('button', { name: /menu/i });
        await menuButton.tap();
 
        // Navigation prüfen
-       const navItem = page.getByRole('link', { name: 'Public News' });
+       const navItem = page.getByRole('link', { name: /public news/i });
        await navItem.tap();
        
        // URL und Seiteninhalt prüfen
        await expect(page).toHaveURL('/news/public');
-       await expect(page.getByTestId('public-news-title')).toBeVisible();
+       await expect(page.getByRole('heading', { name: /news feed/i })).toBeVisible();
      });
 
      test('Pull-to-Refresh Simulation', async ({ page }) => {
@@ -117,8 +115,8 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
        await page.mouse.move(200, 400, { steps: 10 }); // Smooth movement
        await page.mouse.up();
        
-       // Prüfe ob Refresh-Indikator erscheint
-       await expect(page.getByTestId('refresh-indicator')).toBeVisible();
+       // Prüfe ob Refresh-Indikator erscheint (z.B. mit getByRole('status') oder getByText('Loading...'))
+       await expect(page.getByRole('status')).toBeVisible();
      });
    });
    ```
@@ -140,10 +138,6 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
          await page.goto(path);
          await expect(page).toHaveScreenshot(`${path.replace('/', '-')}.png`, {
            fullPage: true,
-           mask: [
-             page.getByTestId('timestamp'),
-             page.getByTestId('user-avatar')
-           ],
            threshold: 0.2 // Toleranz für kleine Unterschiede
          });
        }
@@ -155,7 +149,6 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
        // Spezifische Komponenten testen
        const components = {
          'navigation': page.getByRole('navigation'),
-         'news-grid': page.getByTestId('news-grid'),
          'footer': page.getByRole('contentinfo')
        };
 
@@ -176,9 +169,8 @@ Du implementierst umfassende Tests für das responsive Design der Next.js Feed A
 **Best Practices:**
 - Verwende `toHaveScreenshot()` statt manueller Screenshots
 - Nutze Device Descriptors statt manueller Viewport-Größen
-- Maskiere dynamische Inhalte in Screenshots
 - Gruppiere Tests nach Funktionalität und Viewport
-- Verwende semantische Selektoren (Role, TestId)
+- Verwende ausschließlich semantische Selektoren (`getByRole`, `getByLabel`, `getByText`, etc.) und keine TestIds oder CSS-Selektoren
 
 **Zeit:** 45 Minuten
 

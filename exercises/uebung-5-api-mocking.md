@@ -23,7 +23,7 @@ Du lernst, wie du Netzwerkanfragen in Playwright abfangen und mocken kannst, um 
         });
         ```
     -   Navigiere zur `/news/public`-Seite.
-    -   Prüfe, ob genau die gemockten Daten angezeigt werden (z.B. `expect(page.getByText('Mocked News 1')).toBeVisible();`, `expect(page.getByTestId('grid-news-items').locator('[data-testid^="news-item-"]')).toHaveCount(2);`).
+    -   Prüfe, ob genau die gemockten Daten angezeigt werden (z.B. `expect(page.getByText('Mocked News 1')).toBeVisible();`, `expect(page.getByRole('list').getByRole('listitem')).toHaveCount(2);`).
 3.  **Mocking für Fehlerfall:**
     -   Schreibe einen neuen Test.
     -   Verwende `page.route('**/api/news/public', ...)` um einen API-Fehler (z.B. Status 500) zu simulieren:
@@ -33,7 +33,7 @@ Du lernst, wie du Netzwerkanfragen in Playwright abfangen und mocken kannst, um 
         });
         ```
     -   Navigiere zur `/news/public`-Seite.
-    -   Prüfe, ob die Anwendung korrekt eine Fehlermeldung anzeigt (z.B. `expect(page.getByTestId('error-news')).toBeVisible();` und `expect(page.getByTestId('error-news')).toContainText('Failed to load');`).
+    -   Prüfe, ob die Anwendung korrekt eine Fehlermeldung anzeigt (z.B. `expect(page.getByRole('alert')).toBeVisible();` und `expect(page.getByRole('alert')).toContainText('Failed to load');`).
 4.  **Mocking für leere Daten:**
     -   Schreibe einen weiteren Test.
     -   Verwende `page.route('**/api/news/public', ...)` um eine erfolgreiche Antwort, aber mit einem leeren `items`-Array, zu simulieren:
@@ -44,7 +44,7 @@ Du lernst, wie du Netzwerkanfragen in Playwright abfangen und mocken kannst, um 
         });
         ```
     -   Navigiere zur `/news/public`-Seite.
-    -   Prüfe, ob die Anwendung korrekt einen "Keine Daten gefunden"-Zustand anzeigt (z.B. `expect(page.getByTestId('grid-news-items').locator('[data-testid^="news-item-"]')).toHaveCount(0);` oder prüfe auf eine spezifische Meldung, falls vorhanden).
+    -   Prüfe, ob die Anwendung korrekt einen "Keine Daten gefunden"-Zustand anzeigt (z.B. `expect(page.getByRole('list').getByRole('listitem')).toHaveCount(0);` oder prüfe auf eine spezifische Meldung, falls vorhanden).
 5.  **(Optional) Mocking mit Verzögerung:**
     -   Schreibe einen neuen Test.
     -   Simuliere eine langsame Netzwerkantwort für `/api/news/public`, um den Ladezustand der Anwendung zu testen:
@@ -56,11 +56,11 @@ Du lernst, wie du Netzwerkanfragen in Playwright abfangen und mocken kannst, um 
         });
         ```
     -   Navigiere zur `/news/public`-Seite.
-    -   Prüfe, ob *während* der Verzögerung ein Ladeindikator angezeigt wird (`expect(page.getByTestId('loading-news')).toBeVisible();`).
+    -   Prüfe, ob *während* der Verzögerung ein Ladeindikator angezeigt wird (`expect(page.getByRole('status', { name: /loading/i })).toBeVisible();`).
     -   Prüfe, ob *nach* der Verzögerung die gemockten Daten angezeigt werden und der Ladeindikator verschwindet.
 
 **Zeit:** 30 Minuten
 
 ---
 
-> **Tipp:** `page.route()` fängt Anfragen ab, bevor sie gesendet werden. `route.fulfill()` beendet die Anfrage mit einer benutzerdefinierten Antwort. Stelle sicher, dass die Struktur deiner Mock-Daten (`mockData`) dem entspricht, was die Frontend-Komponente erwartet. Der `**` Glob-Pattern ist nützlich, um die Route unabhängig von der Basis-URL abzufangen.
+> **Tipp:** `page.route()` fängt Anfragen ab, bevor sie gesendet werden. `route.fulfill()` beendet die Anfrage mit einer benutzerdefinierten Antwort. Stelle sicher, dass die Struktur deiner Mock-Daten (`mockData`) dem entspricht, was die Frontend-Komponente erwartet. Der `**` Glob-Pattern ist nützlich, um die Route unabhängig von der Basis-URL abzufangen. Verwende ausschließlich semantische, benutzerorientierte Selektoren (`getByRole`, `getByLabel`, `getByText`, etc.).

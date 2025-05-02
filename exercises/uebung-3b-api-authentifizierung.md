@@ -108,7 +108,7 @@ Du optimierst den Login-Prozess für die Next.js Feed App, indem du den UI-Login
    test('UI-Test mit API-Auth', async ({ page }) => {
      // Die Page ist bereits authentifiziert
      await page.goto('/news/private');
-     await expect(page.getByTestId('feed-list')).toBeVisible();
+     await expect(page.getByRole('region', { name: /your feeds/i })).toBeVisible();
    });
    ```
 

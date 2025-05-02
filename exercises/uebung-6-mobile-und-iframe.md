@@ -44,26 +44,26 @@ Du lernst, wie du mit Playwright mobile Geräte für die Next.js Feed App emulie
 2.  **Responsiven Test für die Navbar schreiben:**
     -   Erstelle eine neue Testdatei (z.B. `e2e/responsive-navbar.spec.ts`).
     -   Schreibe einen Test, der die Startseite (`/`) der Feed App öffnet.
-    -   **Test für Desktop:** Prüfe, ob die Desktop-Navigationslinks (`[data-testid="navbar-links-desktop"]`) sichtbar sind und der Mobile-Menü-Toggle (`NavbarMenuToggle`, hat meist `aria-label="Open menu"`) *nicht* sichtbar ist.
+    -   **Test für Desktop:** Prüfe, ob die Desktop-Navigationslinks (z.B. `page.getByRole('navigation')`) sichtbar sind und der Mobile-Menü-Toggle (`page.getByRole('button', { name: /open menu/i })`) *nicht* sichtbar ist.
         ```typescript
         test('Navbar Desktop View', async ({ page, isMobile }) => {
           test.skip(isMobile, 'Test only runs on desktop');
           await page.goto('/');
-          await expect(page.getByTestId('navbar-links-desktop')).toBeVisible();
-          await expect(page.getByLabel('Open menu')).toBeHidden();
+          await expect(page.getByRole('navigation')).toBeVisible();
+          await expect(page.getByRole('button', { name: /open menu/i })).toBeHidden();
         });
         ```
-    -   **Test für Mobile:** Prüfe, ob die Desktop-Navigationslinks *nicht* sichtbar sind und der Mobile-Menü-Toggle (`getByLabel('Open menu')`) sichtbar ist. Klicke optional den Toggle und prüfe, ob das Menü (`NavbarMenu`) erscheint.
+    -   **Test für Mobile:** Prüfe, ob die Desktop-Navigationslinks *nicht* sichtbar sind und der Mobile-Menü-Toggle sichtbar ist. Klicke optional den Toggle und prüfe, ob das Menü (`page.getByRole('navigation', { name: /menu/i })`) erscheint.
         ```typescript
         test('Navbar Mobile View', async ({ page, isMobile }) => {
           test.skip(!isMobile, 'Test only runs on mobile');
           await page.goto('/');
-          await expect(page.getByTestId('navbar-links-desktop')).toBeHidden();
-          const menuToggle = page.getByLabel('Open menu');
+          await expect(page.getByRole('navigation')).toBeHidden();
+          const menuToggle = page.getByRole('button', { name: /open menu/i });
           await expect(menuToggle).toBeVisible();
           // Optional: Menü öffnen und prüfen
           await menuToggle.click();
-          await expect(page.locator('//nav/ul')).toBeVisible(); // Selektor für NavbarMenu anpassen
+          await expect(page.getByRole('navigation', { name: /menu/i })).toBeVisible();
         });
         ```
 3.  **Tests auf mobilen Geräten ausführen:**
@@ -147,4 +147,4 @@ Du lernst, wie du mit Playwright mobile Geräte für die Next.js Feed App emulie
 
 ---
 
-> **Tipp:** Für Mobile Tests ist die `isMobile` Property im Test-Callback nützlich. `frameLocator` ist der bevorzugte Weg, um mit iframes zu interagieren, da er auf den Frame wartet. Beim Öffnen lokaler HTML-Dateien muss der korrekte Pfad (absolut oder relativ zum Test) verwendet werden.
+> **Tipp:** Für Mobile Tests ist die `isMobile` Property im Test-Callback nützlich. `frameLocator` ist der bevorzugte Weg, um mit iframes zu interagieren, da er auf den Frame wartet. Beim Öffnen lokaler HTML-Dateien muss der korrekte Pfad (absolut oder relativ zum Test) verwendet werden. Verwende ausschließlich semantische, benutzerorientierte Selektoren (`getByRole`, `getByLabel`, `getByText`, etc.).

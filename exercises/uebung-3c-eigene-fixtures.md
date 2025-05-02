@@ -96,13 +96,13 @@ Du erstellst eigene Playwright-Fixtures für die Next.js Feed App, um wiederkehr
    test.describe('Feed Management', () => {
      // Basis-Test mit publicFeeds
      test('zeigt öffentliche Feeds an', async ({ publicFeeds }) => {
-       await expect(publicFeeds.getByTestId('grid-news-items'))
+       await expect(publicFeeds.getByRole('list', { name: /news/i }))
          .toBeVisible();
      });
 
      // Test mit privateFeeds
      test('zeigt privates Feed Formular', async ({ privateFeeds }) => {
-       await expect(privateFeeds.getByTestId('form-add-feed'))
+       await expect(privateFeeds.getByRole('form', { name: /add new rss feed/i }))
          .toBeVisible();
      });
 
@@ -143,8 +143,7 @@ Du erstellst eigene Playwright-Fixtures für die Next.js Feed App, um wiederkehr
        await privateFeeds.reload();
 
        // Feed in UI prüfen
-       await expect(privateFeeds
-         .getByTestId(`feed-item-${testFeed.id}`))
+       await expect(privateFeeds.getByRole('listitem', { name: new RegExp(testFeed.title, 'i') }))
          .toBeVisible();
 
        // Aufräumen

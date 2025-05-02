@@ -10,14 +10,14 @@ Du refaktorierst die bestehenden Tests für die Public News Seite der Feed App (
     -   Definiere eine Klasse `PublicNewsPage`.
     -   Füge einen Konstruktor hinzu, der die Playwright `Page`-Instanz entgegennimmt und speichert (`readonly page: Page`).
 2.  **Selektoren kapseln:**
-    -   Definiere Locators für die wichtigen Elemente der Public News Seite als Eigenschaften der `PublicNewsPage`-Klasse. Nutze bevorzugt `data-testid` Attribute:
+    -   Definiere Locators für die wichtigen Elemente der Public News Seite als Eigenschaften der `PublicNewsPage`-Klasse. Nutze ausschließlich semantische, benutzerorientierte Selektoren:
         ```typescript
-        readonly searchInput = this.page.getByTestId('input-search-news');
-        readonly categorySelect = this.page.getByTestId('select-category-news');
-        readonly newsGrid = this.page.getByTestId('grid-news-items');
-        readonly newsItems = this.newsGrid.locator('[data-testid^="news-item-"]'); // Locator für alle News-Karten
-        readonly loadingIndicator = this.page.getByTestId('loading-news'); // Optional, falls benötigt
-        readonly errorIndicator = this.page.getByTestId('error-news'); // Optional, falls benötigt
+        readonly searchInput = this.page.getByRole('textbox', { name: /search/i });
+        readonly categorySelect = this.page.getByRole('combobox', { name: /category/i });
+        readonly newsGrid = this.page.getByRole('list', { name: /news/i });
+        readonly newsItems = this.newsGrid.getByRole('listitem'); // Locator für alle News-Karten
+        readonly loadingIndicator = this.page.getByRole('status', { name: /loading/i }); // Optional, falls benötigt
+        readonly errorIndicator = this.page.getByRole('alert'); // Optional, falls benötigt
         ```
 3.  **Interaktionsmethoden erstellen:**
     -   Implementiere Methoden in `PublicNewsPage`, die Benutzeraktionen kapseln:
@@ -29,8 +29,8 @@ Du refaktorierst die bestehenden Tests für die Public News Seite der Feed App (
     -   Implementiere Methoden, die Zustände oder Daten von der Seite zurückgeben, damit die Tests darauf prüfen können:
         -   `getNewsItemLocators()`: Gibt einen Locator zurück, der alle sichtbaren News-Item-Elemente repräsentiert (`this.newsItems`).
         -   `getNewsItemCount(): Promise<number>`: Gibt die Anzahl der sichtbaren News-Items zurück (`this.newsItems.count()`).
-        -   `getNewsItemTitle(index: number): Promise<string | null>`: Gibt den Titel eines spezifischen News-Items zurück (z.B. über `this.newsItems.nth(index).getByTestId(\`news-item-link-${index}\`).textContent()`).
-        -   `getNewsItemCategory(index: number): Promise<string | null>`: Gibt die Kategorie eines spezifischen News-Items zurück.
+        -   `getNewsItemTitle(index: number): Promise<string | null>`: Gibt den Titel eines spezifischen News-Items zurück (z.B. über `this.newsItems.nth(index).getByRole('link').textContent()`).
+        -   `getNewsItemCategory(index: number): Promise<string | null>`: Gibt die Kategorie eines spezifischen News-Items zurück (z.B. über `this.newsItems.nth(index).getByText(/category/i).textContent()`).
 5.  **Tests refaktorieren:**
     -   Gehe zurück zu deiner Testdatei für den News Feed (z.B. `news-feed.spec.ts` aus Übung 2).
     -   Importiere die `PublicNewsPage`-Klasse.
@@ -44,4 +44,4 @@ Du refaktorierst die bestehenden Tests für die Public News Seite der Feed App (
 
 ---
 
-> **Tipp:** Halte die Page Object Methoden fokussiert auf Interaktion (`searchNews`) und Datenextraktion (`getNewsItemCount`). Die eigentlichen `expect`-Assertions gehören in die Testfälle, nicht in das Page Object. Verwende `data-testid` für robuste Selektoren.
+> **Tipp:** Halte die Page Object Methoden fokussiert auf Interaktion (`searchNews`) und Datenextraktion (`getNewsItemCount`). Die eigentlichen `expect`-Assertions gehören in die Testfälle, nicht in das Page Object. Verwende ausschließlich semantische, benutzerorientierte Selektoren (`getByRole`, `getByLabel`, `getByText`, etc.).

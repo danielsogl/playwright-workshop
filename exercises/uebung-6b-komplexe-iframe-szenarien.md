@@ -24,8 +24,8 @@ Du meisterst komplexere iframe-Szenarien, einschließlich verschachtelter iframe
     -   Schreibe einen Test, der die lokale `nested-host.html` öffnet (verwende `file:///...` oder einen lokalen Webserver).
     -   Greife auf das äußere iframe zu: `const outerFrame = page.frameLocator('#outer-iframe');`
     -   Greife *vom äußeren iframe aus* auf das innere iframe zu: `const innerFrame = outerFrame.frameLocator('#inner-iframe');`
-    -   Interagiere mit dem Input-Feld im innersten iframe: `await innerFrame.locator('#inner-input').fill('Text im inneren Frame');`
-    -   Prüfe den Wert des Inputs: `await expect(innerFrame.locator('#inner-input')).toHaveValue('Text im inneren Frame');`
+    -   Interagiere mit dem Input-Feld im innersten iframe: `await innerFrame.getByRole('textbox').fill('Text im inneren Frame');`
+    -   Prüfe den Wert des Inputs: `await expect(innerFrame.getByRole('textbox')).toHaveValue('Text im inneren Frame');`
     -   Interagiere optional wieder mit Elementen im äußeren oder Host-Frame.
 2.  **Test für Cross-Origin iframe Kommunikation (postMessage):**
     -   Erstelle eine neue Testdatei (z.B. `e2e/cross-origin-iframe.spec.ts`).
@@ -41,20 +41,20 @@ Du meisterst komplexere iframe-Szenarien, einschließlich verschachtelter iframe
             });
             ```
         -   Implementiere im `cross-origin-iframe.html` einen Event Listener, der auf die Nachricht reagiert (z.B. Text in ein `<p id="message-display">` schreibt).
-        -   Prüfe im iframe (mit `frameLocator`), ob die Nachricht empfangen und angezeigt wurde: `await expect(iframe.locator('#message-display')).toContainText('Hello from Host!');`.
+        -   Prüfe im iframe (mit `frameLocator`), ob die Nachricht empfangen und angezeigt wurde: `await expect(iframe.getByRole('status')).toContainText('Hello from Host!');` (passe ggf. das Element an, z.B. `getByText` oder `getByRole('status')`).
     -   **(Optional) Vom iframe zur Host-Seite senden:**
         -   Implementiere im iframe eine Aktion (z.B. Button-Klick), die eine `postMessage` an `window.parent` mit `targetOrigin` `http://localhost:8000` sendet.
         -   Implementiere im Host einen Event Listener.
         -   Löse die Aktion im iframe aus (`await iframe.locator('#send-to-host-button').click();`).
-        -   Prüfe auf der Host-Seite (`page`), ob die Nachricht empfangen wurde (z.B. `await expect(page.locator('#host-message-display')).toContainText('Message from iframe');`).
+        -   Prüfe auf der Host-Seite (`page`), ob die Nachricht empfangen wurde (z.B. `await expect(page.getByRole('status')).toContainText('Message from iframe');`).
 3.  **(Optional) Test für iframe-basiertes Widget:**
     -   Bette ein echtes Widget (z.B. ein einfaches YouTube-Video via `<iframe>`) in eine Testseite (`e2e/test-html/widget-test.html`) ein.
     -   Schreibe einen Test, der diese Seite öffnet.
     -   Verwende `frameLocator`, um auf den iframe des Widgets zuzugreifen (finde den richtigen Selektor, z.B. `iframe[src*="youtube.com"]`).
-    -   Interagiere mit Steuerelementen innerhalb des Widget-iframes (z.B. Play-Button). Dies kann komplex sein, da die Struktur des Widgets nicht unter deiner Kontrolle ist.
+    -   Interagiere mit Steuerelementen innerhalb des Widget-iframes (z.B. Play-Button, z.B. mit `getByRole('button', { name: /play/i })`).
 
 **Zeit:** 35 Minuten
 
 ---
 
-> **Tipp:** Bei verschachtelten iframes musst du `frameLocator` relativ zum übergeordneten Frame aufrufen. Für `postMessage` ist es entscheidend, die `targetOrigin` korrekt anzugeben und Event Listener (`window.addEventListener('message', ...)` ) in beiden Seiten zu implementieren. Das Testen von Drittanbieter-Widgets in iframes kann herausfordernd sein, da deren interne Struktur sich ändern kann.
+> **Tipp:** Bei verschachtelten iframes musst du `frameLocator` relativ zum übergeordneten Frame aufrufen. Für `postMessage` ist es entscheidend, die `targetOrigin` korrekt anzugeben und Event Listener (`window.addEventListener('message', ...)` ) in beiden Seiten zu implementieren. Das Testen von Drittanbieter-Widgets in iframes kann herausfordernd sein, da deren interne Struktur sich ändern kann. Verwende ausschließlich semantische, benutzerorientierte Selektoren (`getByRole`, `getByLabel`, `getByText`, etc.).
