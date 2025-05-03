@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: 'Next.js + HeroUI',
-  description: 'Make beautiful websites regardless of your design experience.',
+  name: 'Feeds',
+  description: 'Subscribe to your favorite news feeds',
   navItems: [
     {
       label: 'Home',
@@ -15,6 +15,18 @@ export const siteConfig = {
     {
       label: 'Private News',
       href: '/news/private',
+    },
+    {
+      label: 'Pricing',
+      href: '/pricing',
+    },
+    {
+      label: 'Blog',
+      href: '/blog',
+    },
+    {
+      label: 'About',
+      href: '/about',
     },
   ],
   navMenuItems: [
@@ -29,6 +41,18 @@ export const siteConfig = {
     {
       label: 'Private News',
       href: '/news/private',
+    },
+    {
+      label: 'Pricing',
+      href: '/pricing',
+    },
+    {
+      label: 'Blog',
+      href: '/blog',
+    },
+    {
+      label: 'About',
+      href: '/about',
     },
     {
       label: 'Settings',
