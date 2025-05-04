@@ -5,12 +5,10 @@
 
 - **Code Organization and Structure**
   - **Directory Structure:**
-    - `e2e/`: Contains all test files.
-    - `e2e/e2e/`: End-to-end tests.
-    - `e2e/unit/`: Unit tests (if applicable, though Playwright is primarily for E2E).
+    - `e2e/<domain>/**`: Contains all e2e test files in sub folders named by domains
     - `e2e/utils/`: Helper functions and page object models.
   - **File Naming Conventions:**
-    - Use `.spec.ts` or `.spec.js` for test files (e.g., `login.spec.ts`).
+    - Use `.spec.ts` for test files (e.g., `login.spec.ts`).
     - Group related tests in the same file.
   - **Module Organization:**
     - Employ Page Object Model (POM) to encapsulate UI elements and interactions.
