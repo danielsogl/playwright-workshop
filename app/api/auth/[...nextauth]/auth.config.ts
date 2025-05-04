@@ -1,6 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
+import { compare } from 'bcryptjs';
 
 import { findUserByEmail } from '@/lib/db/repositories/users';
 
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Validate password
-        const isValidPassword = await bcrypt.compare(
+        const isValidPassword = await compare(
           credentials.password,
           user.passwordHash,
         );

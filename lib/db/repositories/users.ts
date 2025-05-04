@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 
 import { User } from '../models/user';
 import { loadSeedData } from '../services/data-service';
@@ -47,7 +47,7 @@ export const addUser = async (
     throw new Error('Email already exists');
   }
 
-  const hashedPassword = await bcrypt.hash(userData.password, 10);
+  const hashedPassword = await hash(userData.password, 10);
   const userId = uuidv4();
   const newUser: User = {
     id: userId,
@@ -80,7 +80,7 @@ export const updateUserPassword = async (
     throw new Error('User not found');
   }
 
-  const isPasswordValid = await bcrypt.compare(
+  const isPasswordValid = await compare(
     currentPassword,
     user.passwordHash,
   );
@@ -89,7 +89,7 @@ export const updateUserPassword = async (
     throw new Error('Incorrect current password');
   }
 
-  const newPasswordHash = await bcrypt.hash(newPassword, 10);
+  const newPasswordHash = await hash(newPassword, 10);
   const updatedUser: User = {
     ...user,
     passwordHash: newPasswordHash,
@@ -139,7 +139,7 @@ const seedUsers = async () => {
 
     if (!existingUser) {
       try {
-        const hashedPassword = await bcrypt.hash(seedUser.password, 10);
+        const hashedPassword = await hash(seedUser.password, 10);
         const userId = seedUser.id || uuidv4();
         const newUser: User = {
           id: userId,
