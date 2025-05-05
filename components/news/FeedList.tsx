@@ -33,7 +33,11 @@ export const FeedList: React.FC<FeedListProps> = ({
   onRefreshFeed,
 }) => {
   return (
-    <Card className="lg:col-span-4 bg-content1" data-testid="card-feed-list">
+    <Card
+      className="lg:col-span-4 bg-content1"
+      data-testid="card-feed-list"
+      role="listitem"
+    >
       <CardBody className="p-4">
         <h2 className="text-xl font-bold mb-4">Your Feeds</h2>
         {isLoading ? (
