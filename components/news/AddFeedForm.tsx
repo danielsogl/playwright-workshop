@@ -29,18 +29,21 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
   feedError,
 }) => {
   return (
-    <Card className="bg-content1 shadow-medium" data-testid="card-add-feed">
+    <Card
+      className="bg-content1 shadow-medium"
+      role="form"
+      aria-label="Add new RSS feed"
+    >
       <CardBody>
         <form
           aria-label="Add new RSS feed form"
           className="flex flex-col md:flex-row gap-4 items-end"
-          data-testid="form-add-feed"
           onSubmit={handleAddFeed}
+          name="add-feed-form"
         >
           <Input
             aria-label="Name for the new feed"
             className="flex-grow"
-            data-testid="input-feed-name"
             disabled={addingFeed}
             label="Feed Name"
             labelPlacement="outside"
@@ -52,12 +55,13 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
             }
             value={newFeedName}
             variant="bordered"
+            id="feed-name"
+            name="feed-name"
             onValueChange={setNewFeedName}
           />
           <Input
             aria-label="URL for the new feed"
             className="flex-grow"
-            data-testid="input-feed-url"
             disabled={addingFeed}
             label="Feed URL"
             labelPlacement="outside"
@@ -70,12 +74,13 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
             type="url"
             value={newFeedUrl}
             variant="bordered"
+            id="feed-url"
+            name="feed-url"
             onValueChange={setNewFeedUrl}
           />
           <Input
             aria-label="Optional category for the new feed"
             className="flex-grow"
-            data-testid="input-feed-category"
             disabled={addingFeed}
             label="Category (optional)"
             labelPlacement="outside"
@@ -87,25 +92,23 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
             }
             value={newFeedCategory}
             variant="bordered"
+            id="feed-category"
+            name="feed-category"
             onValueChange={setNewFeedCategory}
           />
           <Button
             aria-label={addingFeed ? 'Adding new feed' : 'Add new feed'}
             className="min-w-[120px]"
             color="primary"
-            data-testid="btn-add-feed"
             isLoading={addingFeed}
             type="submit"
+            id="add-feed-button"
           >
             Add Feed
           </Button>
         </form>
         {feedError && (
-          <p
-            className="text-danger mt-2 text-small"
-            data-testid="error-add-feed"
-            role="alert"
-          >
+          <p className="text-danger mt-2 text-small" role="alert">
             {feedError}
           </p>
         )}

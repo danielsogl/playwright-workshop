@@ -8,8 +8,7 @@ export const Counter = () => {
 
   return (
     <Button
-      aria-label={`Increment counter, current count is ${count}`} // Added dynamic aria-label
-      data-testid="btn-counter"
+      aria-label={`Increment counter, current count is ${count}`}
       radius="full"
       onPress={() => setCount(count + 1)}
     >

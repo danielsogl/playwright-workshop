@@ -34,7 +34,8 @@ export default function PublicNewsPage() {
     return (
       <div
         className="flex justify-center items-center min-h-screen"
-        data-testid="loading-news"
+        role="status"
+        aria-label="Loading news feed"
       >
         <div
           aria-label="Loading news feed"
@@ -49,7 +50,7 @@ export default function PublicNewsPage() {
     return (
       <div
         className="flex justify-center items-center min-h-screen"
-        data-testid="error-news"
+        role="alert"
       >
         <div className="text-red-500" role="alert">
           Failed to load RSS feeds
@@ -59,17 +60,18 @@ export default function PublicNewsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8" data-testid="page-public-news">
-      <h1 className="text-3xl font-bold mb-8">News Feed</h1>
+    <div className="container mx-auto px-4 py-8" role="main">
+      <h1 id="news-feed-title" className="text-3xl font-bold mb-8">News Feed</h1>
 
-      <div className="flex gap-4 mb-8" data-testid="news-filters">
+      <div className="flex gap-4 mb-8" role="search" aria-label="News filter options">
         <Input
           aria-label="Search news articles"
           className="flex-1"
-          data-testid="input-search-news"
           placeholder="Search news..."
           type="text"
           value={searchQuery}
+          id="search-news"
+          name="search-news"
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setSearchQuery(e.target.value)
           }
@@ -78,8 +80,9 @@ export default function PublicNewsPage() {
         <select
           aria-label="Filter news by category"
           className="w-48 rounded-lg border border-gray-300 px-3 py-2"
-          data-testid="select-category-news"
           value={selectedCategory}
+          id="filter-category"
+          name="filter-category"
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
           <option value="">All Categories</option>
@@ -93,38 +96,43 @@ export default function PublicNewsPage() {
 
       <div
         className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-        data-testid="grid-news-items"
+        role="list"
+        aria-label="News articles"
       >
         {filteredItems.map((item, index) => (
           <Card
             key={index}
             className="overflow-hidden"
-            data-testid={`news-item`}
+            role="article"
+            aria-labelledby={`news-title-${index}`}
+            aria-label={`News article: ${item.title}`}
           >
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <span
                   className="text-sm text-gray-500"
-                  data-testid={`news-item-source`}
+                  role="doc-subtitle"
+                  aria-label={`Source: ${item.source}`}
                 >
                   {item.source}
                 </span>
                 <span
                   className="text-sm text-gray-500"
-                  data-testid={`news-item-category`}
+                  role="doc-subtitle"
+                  aria-label={`Category: ${item.category}`}
                 >
                   {item.category}
                 </span>
               </div>
 
-              <h2 className="text-xl font-semibold mb-2">
+              <h2 className="text-xl font-semibold mb-2" id={`news-title-${index}`}>
                 <a
                   aria-label={`Read article: ${item.title}`}
                   className="hover:text-blue-600 transition-colors"
-                  data-testid={`news-item-link`}
                   href={item.link}
                   rel="noopener noreferrer"
                   target="_blank"
+                  role="link"
                 >
                   {item.title}
                 </a>
@@ -132,13 +140,18 @@ export default function PublicNewsPage() {
 
               <p
                 className="text-gray-600 mb-4 line-clamp-3"
-                data-testid={`news-item-desc`}
+                role="doc-description"
+                aria-label={`Description: ${item.description?.replace(/<[^>]*>/g, "").substring(0, 100)}...`}
               >
                 {item.description?.replace(/<[^>]*>/g, "") ??
                   "No description available"}
               </p>
 
-              <div className="text-sm text-gray-500">
+              <div 
+                className="text-sm text-gray-500" 
+                role="doc-publication-date"
+                aria-label={`Published: ${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Date unavailable"}`}
+              >
                 {item.pubDate
                   ? new Date(item.pubDate).toLocaleDateString()
                   : "Date unavailable"}

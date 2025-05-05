@@ -49,17 +49,10 @@ export const Navbar = () => {
       position="sticky"
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
+      aria-label="Main navigation bar"
     >
-      <NavbarContent
-        className="basis-1/5 sm:basis-full"
-        data-testid="navbar-content-start"
-        justify="start"
-      >
-        <NavbarBrand
-          as="li"
-          className="gap-3 max-w-fit"
-          data-testid="navbar-brand"
-        >
+      <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
+        <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink
             aria-label="Go to homepage"
             className="flex justify-start items-center gap-1"
@@ -71,13 +64,11 @@ export const Navbar = () => {
         </NavbarBrand>
         <ul
           className="hidden lg:flex gap-4 justify-start ml-2"
-          data-testid="navbar-links-desktop"
+          role="navigation"
+          aria-label="Main navigation"
         >
           {siteConfig.navItems.map((item) => (
-            <NavbarItem
-              key={item.href}
-              data-testid={`nav-item-${item.label.toLowerCase()}`}
-            >
+            <NavbarItem key={item.href}>
               <NextLink
                 aria-label={`Navigate to ${item.label}`}
                 className={clsx(
@@ -86,6 +77,7 @@ export const Navbar = () => {
                 )}
                 color="foreground"
                 href={item.href}
+                role="menuitem"
               >
                 {item.label}
               </NextLink>
@@ -96,24 +88,17 @@ export const Navbar = () => {
 
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
-        data-testid="navbar-content-end"
         justify="end"
       >
-        <NavbarItem
-          className="hidden sm:flex gap-2"
-          data-testid="nav-item-theme-switch"
-        >
+        <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem
-          className="hidden md:flex"
-          data-testid="nav-item-auth-status"
-        >
+        <NavbarItem className="hidden md:flex">
           {isLoading ? (
             <Button
               isLoading
               color="default"
-              data-testid="btn-auth-loading"
+              aria-label="Loading authentication status"
               variant="flat"
             >
               Loading...
@@ -127,7 +112,6 @@ export const Navbar = () => {
                   as="button"
                   className="transition-transform"
                   color="secondary"
-                  data-testid="dropdown-trigger-user"
                   name={getInitials(session.user?.name)}
                   size="sm"
                   src={session.user?.image || undefined}
@@ -137,7 +121,7 @@ export const Navbar = () => {
                 <DropdownItem
                   key="profile"
                   className="h-14 gap-2"
-                  data-testid="dropdown-item-user-info"
+                  role="menuitem"
                 >
                   <p className="font-semibold">Signed in as</p>
                   <p className="font-semibold">{session.user?.email}</p>
@@ -145,16 +129,16 @@ export const Navbar = () => {
                 <DropdownItem
                   key="settings"
                   as={NextLink}
-                  data-testid="dropdown-item-settings"
                   href="/settings"
+                  role="menuitem"
                 >
                   Settings
                 </DropdownItem>
                 <DropdownItem
                   key="logout"
                   color="danger"
-                  data-testid="dropdown-item-logout"
                   onClick={() => signOut()}
+                  role="menuitem"
                 >
                   Log Out
                 </DropdownItem>
@@ -165,7 +149,6 @@ export const Navbar = () => {
               aria-label="Sign in to your account"
               as={NextLink}
               color="primary"
-              data-testid="btn-signin"
               href="/auth/signin"
               size="sm"
               variant="flat"
@@ -185,14 +168,15 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
+        <div
+          className="mx-4 mt-2 flex flex-col gap-2"
+          role="navigation"
+          aria-label="Mobile navigation"
+        >
           {siteConfig.navMenuItems
             .filter((item) => item.href !== '/logout')
             .map((item, index) => (
-              <NavbarMenuItem
-                key={`${item.href}-${index}`}
-                data-testid={`nav-menu-item-${item.label.toLowerCase()}`}
-              >
+              <NavbarMenuItem key={`${item.href}-${index}`}>
                 <Link
                   aria-label={`Navigate to ${item.label}`}
                   color={
@@ -209,11 +193,11 @@ export const Navbar = () => {
                 </Link>
               </NavbarMenuItem>
             ))}
-          <NavbarMenuItem data-testid="nav-menu-item-auth-action">
+          <NavbarMenuItem>
             {isLoading ? (
               <span
                 className="text-default-500"
-                data-testid="text-auth-loading-menu"
+                aria-label="Loading authentication status"
               >
                 Loading...
               </span>
@@ -222,7 +206,6 @@ export const Navbar = () => {
                 aria-label="Sign out"
                 className="w-full"
                 color="warning"
-                data-testid="btn-signout-menu"
                 variant="flat"
                 onClick={() => signOut()}
               >
@@ -234,7 +217,6 @@ export const Navbar = () => {
                 as={NextLink}
                 className="w-full"
                 color="primary"
-                data-testid="btn-signin-menu"
                 href="/auth/signin"
                 variant="flat"
               >

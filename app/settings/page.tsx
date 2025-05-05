@@ -150,7 +150,8 @@ export default function SettingsPage() {
     return (
       <div
         className="flex justify-center items-center min-h-[calc(100vh-10rem)]"
-        data-testid="loading-session"
+        role="status"
+        aria-label="Loading session"
       >
         <Spinner color="primary" label="Loading session..." />
       </div>
@@ -161,19 +162,16 @@ export default function SettingsPage() {
     return (
       <section
         className="flex flex-col items-center gap-4 py-8 md:py-10 text-center"
-        data-testid="section-access-denied"
+        aria-labelledby="access-denied-title"
       >
-        <h1 className={title()} data-testid="title-access-denied">
+        <h1 className={title()} id="access-denied-title">
           Access Denied
         </h1>
-        <p className={subtitle()} data-testid="subtitle-access-denied">
-          You must be signed in to view this page.
-        </p>
+        <p className={subtitle()}>You must be signed in to view this page.</p>
         <Button
           aria-label="Sign in to view settings"
           as={Link}
           color="primary"
-          data-testid="btn-signin-redirect"
           href="/auth/signin"
         >
           Sign In
@@ -186,26 +184,20 @@ export default function SettingsPage() {
   return (
     <section
       className="flex flex-col gap-8 py-8 md:py-10 max-w-xl mx-auto"
-      data-testid="section-settings"
+      aria-labelledby="settings-title"
     >
       <div className="text-center">
-        <h1 className={title()} data-testid="title-settings">
+        <h1 className={title()} id="settings-title">
           User Settings
         </h1>
-        <p className={subtitle()} data-testid="subtitle-settings">
-          Manage your profile information.
-        </p>
+        <p className={subtitle()}>Manage your profile information.</p>
       </div>
 
       {isLoadingUser && (
-        <Spinner data-testid="loading-profile" label="Loading profile..." />
+        <Spinner aria-label="Loading profile data" label="Loading profile..." />
       )}
       {fetchError && (
-        <p
-          className="text-danger text-center"
-          data-testid="error-loading-profile"
-          role="alert"
-        >
+        <p className="text-danger text-center" role="alert">
           Error loading profile: {fetchError.message}
         </p>
       )}
@@ -214,14 +206,14 @@ export default function SettingsPage() {
         <form
           aria-label="Update profile form"
           className="space-y-6 p-6 border rounded-lg bg-content1"
-          data-testid="form-update-profile"
           onSubmit={handleUpdateProfile}
+          name="profile-form"
         >
           {updateSuccess && (
             <p
               className="text-success p-3 bg-success-100 rounded-md"
-              data-testid="success-update-profile"
               role="status"
+              aria-live="polite"
             >
               {updateSuccess}
             </p>
@@ -229,28 +221,30 @@ export default function SettingsPage() {
           {updateError && (
             <p
               className="text-danger p-3 bg-danger-100 rounded-md"
-              data-testid="error-update-profile"
               role="alert"
+              aria-live="assertive"
             >
               {updateError}
             </p>
           )}
 
           <Input
-            isReadOnly // Email is usually not changeable
+            isReadOnly
             aria-label="Your email address (read-only)"
             className="mb-4"
-            data-testid="input-profile-email"
             label="Email"
             value={userData.email}
+            id="profile-email"
+            name="email"
           />
           <Input
             aria-label="Your name"
-            data-testid="input-profile-name"
             disabled={isUpdating}
             label="Name"
             placeholder="Your name"
             value={name}
+            id="profile-name"
+            name="name"
             onValueChange={setName}
           />
           <Button
@@ -258,41 +252,32 @@ export default function SettingsPage() {
               isUpdating ? 'Submitting profile update' : 'Submit profile update'
             }
             color="primary"
-            data-testid="btn-update-profile"
             disabled={isUpdating}
             isLoading={isUpdating}
             type="submit"
+            id="profile-update-button"
           >
             {isUpdating ? 'Updating...' : 'Update Profile'}
           </Button>
         </form>
       )}
 
-      {/* Placeholder for Password Change */}
-      {/* <div className="p-6 border rounded-lg bg-content1 mt-8">
-        <h2 className="text-lg font-semibold mb-4">Change Password</h2>
-        <p className="text-default-500">Password change functionality coming soon.</p>
-      </div> */}
-
       {/* Password Change Form */}
       {!isLoadingUser && !fetchError && userData && (
         <form
           aria-label="Change password form"
           className="space-y-6 p-6 border rounded-lg bg-content1 mt-8"
-          data-testid="form-change-password"
           onSubmit={handlePasswordChange}
+          name="password-form"
         >
-          <h2
-            className="text-lg font-semibold"
-            data-testid="title-change-password"
-          >
+          <h2 className="text-lg font-semibold" id="password-change-title">
             Change Password
           </h2>
           {passwordChangeSuccess && (
             <p
               className="text-success p-3 bg-success-100 rounded-md"
-              data-testid="success-change-password"
               role="status"
+              aria-live="polite"
             >
               {passwordChangeSuccess}
             </p>
@@ -300,8 +285,8 @@ export default function SettingsPage() {
           {passwordChangeError && (
             <p
               className="text-danger p-3 bg-danger-100 rounded-md"
-              data-testid="error-change-password"
               role="alert"
+              aria-live="assertive"
             >
               {passwordChangeError}
             </p>
@@ -311,31 +296,32 @@ export default function SettingsPage() {
             isRequired
             aria-label="Your current password"
             autoComplete="current-password"
-            data-testid="input-current-password"
             disabled={isChangingPassword}
             label="Current Password"
             placeholder="Enter your current password"
             type="password"
             value={currentPassword}
+            id="current-password"
+            name="current-password"
             onValueChange={setCurrentPassword}
           />
           <Input
             isRequired
             aria-label="Your new password"
             autoComplete="new-password"
-            data-testid="input-new-password"
             disabled={isChangingPassword}
             label="New Password"
             placeholder="Enter your new password"
             type="password"
             value={newPassword}
+            id="new-password"
+            name="new-password"
             onValueChange={setNewPassword}
           />
           <Input
             isRequired
             aria-label="Confirm your new password"
             autoComplete="new-password"
-            data-testid="input-confirm-password"
             disabled={isChangingPassword}
             errorMessage={
               newPassword !== confirmPassword && confirmPassword !== ''
@@ -349,6 +335,8 @@ export default function SettingsPage() {
             placeholder="Confirm your new password"
             type="password"
             value={confirmPassword}
+            id="confirm-password"
+            name="confirm-password"
             onValueChange={setConfirmPassword}
           />
           <Button
@@ -358,7 +346,6 @@ export default function SettingsPage() {
                 : 'Submit password change'
             }
             color="secondary"
-            data-testid="btn-change-password"
             disabled={
               isChangingPassword ||
               !currentPassword ||
@@ -368,6 +355,7 @@ export default function SettingsPage() {
             }
             isLoading={isChangingPassword}
             type="submit"
+            id="change-password-button"
           >
             {isChangingPassword ? 'Changing Password...' : 'Change Password'}
           </Button>

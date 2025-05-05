@@ -47,16 +47,18 @@ export default function SignInPage() {
       <form
         aria-label="Sign in form"
         className="w-full max-w-sm p-8 space-y-6 bg-content1 rounded-lg shadow-md"
-        data-testid="form-signin"
         onSubmit={handleSubmit}
+        name="signin-form"
       >
-        <h1 className="text-2xl font-bold text-center">Sign In</h1>
+        <h1 className="text-2xl font-bold text-center" id="signin-title">
+          Sign In
+        </h1>
 
         {error && (
           <div
             className="p-3 bg-danger-100 text-danger-700 rounded-md"
-            data-testid="error-signin"
-            role="alert" // Added role for accessibility
+            role="alert"
+            aria-live="assertive"
           >
             {error}
           </div>
@@ -66,30 +68,29 @@ export default function SignInPage() {
           isRequired
           aria-label="Email address for sign in"
           autoComplete="email"
-          data-testid="input-signin-email"
           disabled={isLoading}
           label="Email"
           placeholder="you@example.com"
           type="email"
           value={email}
+          name="email"
           onValueChange={setEmail}
         />
         <Input
           isRequired
           aria-label="Password for sign in"
           autoComplete="current-password"
-          data-testid="input-signin-password"
           disabled={isLoading}
           label="Password"
           placeholder="Your password"
           type="password"
           value={password}
+          name="password"
           onValueChange={setPassword}
         />
         <Button
           className="w-full"
           color="primary"
-          data-testid="btn-signin-submit"
           disabled={isLoading}
           isLoading={isLoading}
           type="submit"
@@ -100,21 +101,14 @@ export default function SignInPage() {
           {isLoading ? 'Signing In...' : 'Sign In'}
         </Button>
         <div className="text-center text-sm">
-          {/* Link to Sign Up page - to be created later */}
-          {/* <p>
-            Don't have an account?{' '}
-            <Link href="/auth/signup" size="sm">
-              Sign Up
-            </Link>
-          </p> */}
           <p>
             Don&#39;t have an account?{' '}
             <Link
-              aria-label="Navigate to sign up page" // Sorted props
-              data-testid="link-signup" // Sorted props
+              aria-label="Navigate to sign up page"
               href="/auth/signup"
               isDisabled={isLoading}
               size="sm"
+              role="link"
             >
               Sign Up
             </Link>

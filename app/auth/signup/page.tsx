@@ -81,16 +81,18 @@ export default function SignUpPage() {
       <form
         aria-label="Sign up form"
         className="w-full max-w-sm p-8 space-y-6 bg-content1 rounded-lg shadow-md"
-        data-testid="form-signup"
         onSubmit={handleSubmit}
+        name="signup-form"
       >
-        <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+        <h1 className="text-2xl font-bold text-center" id="signup-title">
+          Sign Up
+        </h1>
 
         {error && (
           <div
             className="p-3 bg-danger-100 text-danger-700 rounded-md"
-            data-testid="error-signup"
-            role="alert" // Added role for accessibility
+            role="alert"
+            aria-live="assertive"
           >
             {error}
           </div>
@@ -100,49 +102,52 @@ export default function SignUpPage() {
           isRequired
           aria-label="Your name for sign up"
           autoComplete="name"
-          data-testid="input-signup-name"
           disabled={isLoading}
           label="Name"
           placeholder="Your Name"
           type="text"
           value={name}
+          id="signup-name"
+          name="name"
           onValueChange={setName}
         />
         <Input
           isRequired
           aria-label="Email address for sign up"
           autoComplete="email"
-          data-testid="input-signup-email"
           disabled={isLoading}
           label="Email"
           placeholder="you@example.com"
           type="email"
           value={email}
+          id="signup-email"
+          name="email"
           onValueChange={setEmail}
         />
         <Input
           isRequired
           aria-label="Password for sign up"
           autoComplete="new-password"
-          data-testid="input-signup-password"
           disabled={isLoading}
           label="Password"
           placeholder="Choose a password"
           type="password"
           value={password}
+          id="signup-password"
+          name="password"
           onValueChange={setPassword}
         />
         {/* Optional: Add password confirmation field */}
         <Button
           className="w-full"
           color="primary"
-          data-testid="btn-signup-submit"
           disabled={isLoading || !name || !email || !password}
           isLoading={isLoading}
           type="submit"
           aria-label={
             isLoading ? 'Submitting sign up form' : 'Submit sign up form'
           }
+          id="signup-submit"
         >
           {isLoading ? 'Signing Up...' : 'Sign Up'}
         </Button>
@@ -151,10 +156,10 @@ export default function SignUpPage() {
           <p>
             Already have an account?{' '}
             <Link
-              aria-label="Navigate to sign in page" // Sorted props
-              data-testid="link-signin" // Sorted props
+              aria-label="Navigate to sign in page"
               href="/auth/signin"
               size="sm"
+              role="link"
             >
               Sign In
             </Link>

@@ -7,17 +7,21 @@ import { title, subtitle } from '@/components/primitives';
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-10 py-8 md:py-10" data-testid="page-home">
+    <div
+      className="flex flex-col gap-10 py-8 md:py-10"
+      role="main"
+      aria-labelledby="hero-title-1 hero-title-2"
+    >
       {/* Hero Section */}
       <section
         className="flex flex-col items-center justify-center gap-6"
-        data-testid="section-hero"
+        aria-labelledby="hero-title-1 hero-title-2"
       >
         <div className="inline-block max-w-2xl text-center justify-center">
-          <h1 className={title()} data-testid="hero-title-1">
+          <h1 className={title()} id="hero-title-1">
             Welcome to the&nbsp;
           </h1>
-          <h1 className={title({ color: 'violet' })} data-testid="hero-title-2">
+          <h1 className={title({ color: 'violet' })} id="hero-title-2">
             Playwright Demo App
           </h1>
           <p className={subtitle({ class: 'mt-4' })}>
@@ -28,10 +32,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div
-          className="flex flex-wrap justify-center gap-4"
-          data-testid="hero-links"
-        >
+        <div className="flex flex-wrap justify-center gap-4">
           <Link
             aria-label="Navigate to public news page"
             as={NextLink}
@@ -40,7 +41,6 @@ export default function Home() {
               radius: 'md',
               variant: 'solid',
             })}
-            data-testid="link-public-news"
             href="/news/public"
           >
             View Public News
@@ -53,7 +53,6 @@ export default function Home() {
               radius: 'md',
               variant: 'solid',
             })}
-            data-testid="link-private-news"
             href="/news/private"
           >
             View Private News
@@ -66,7 +65,6 @@ export default function Home() {
               radius: 'md',
               variant: 'bordered',
             })}
-            data-testid="link-signin"
             href="/auth/signin"
           >
             Sign In
@@ -75,38 +73,45 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="flex flex-col gap-8" data-testid="section-features">
+      <section className="flex flex-col gap-8">
         <h2
           className={title({ size: 'sm', class: 'text-center' })}
-          data-testid="features-title"
+          id="features-title"
         >
           Key Features
         </h2>
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          data-testid="features-grid"
+          role="list"
+          aria-labelledby="features-title"
         >
-          <Card data-testid="feature-card-auth">
+          <Card role="listitem" aria-labelledby="auth-feature-title">
             <CardBody className="text-center">
-              <h3 className="text-xl font-bold mb-2">Authentication Testing</h3>
+              <h3 className="text-xl font-bold mb-2" id="auth-feature-title">
+                Authentication Testing
+              </h3>
               <p className="text-default-500">
                 Test user authentication flows with protected routes and
                 role-based access control.
               </p>
             </CardBody>
           </Card>
-          <Card data-testid="feature-card-api">
+          <Card role="listitem" aria-labelledby="api-feature-title">
             <CardBody className="text-center">
-              <h3 className="text-xl font-bold mb-2">API Integration</h3>
+              <h3 className="text-xl font-bold mb-2" id="api-feature-title">
+                API Integration
+              </h3>
               <p className="text-default-500">
                 Explore API interactions with both public and protected
                 endpoints.
               </p>
             </CardBody>
           </Card>
-          <Card data-testid="feature-card-dynamic">
+          <Card role="listitem" aria-labelledby="dynamic-feature-title">
             <CardBody className="text-center">
-              <h3 className="text-xl font-bold mb-2">Dynamic Content</h3>
+              <h3 className="text-xl font-bold mb-2" id="dynamic-feature-title">
+                Dynamic Content
+              </h3>
               <p className="text-default-500">
                 Test handling of dynamic content updates and state management.
               </p>

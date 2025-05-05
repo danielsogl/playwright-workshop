@@ -139,7 +139,8 @@ export default function PrivateNewsPage() {
     return (
       <div
         className="flex justify-center items-center min-h-[calc(100vh-10rem)]"
-        data-testid="loading-session-private"
+        role="status"
+        aria-label="Loading session"
       >
         <Spinner color="primary" label="Loading session..." size="lg" />
       </div>
@@ -150,53 +151,19 @@ export default function PrivateNewsPage() {
     return (
       <section
         className="flex flex-col items-center gap-4 py-8 md:py-10 text-center"
-        data-testid="section-access-denied-private"
+        aria-labelledby="access-denied-title"
       >
-        <h1
-          className={title({ color: 'pink' })}
-          data-testid="title-access-denied-private"
-        >
+        <h1 className={title({ color: 'pink' })} id="access-denied-title">
           Access Denied
         </h1>
-        <p className={subtitle()} data-testid="subtitle-access-denied-private">
-          You must be signed in to view this page.
-        </p>
+        <p className={subtitle()}>You must be signed in to view this page.</p>
         <Button
           aria-label="Sign in to view private feeds"
           as={Link}
           color="primary"
-          data-testid="btn-signin-redirect-private"
           href="/auth/signin"
           variant="shadow"
-        >
-          Sign In
-        </Button>
-      </section>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <section
-        className="flex flex-col items-center gap-4 py-8 md:py-10 text-center"
-        data-testid="section-access-denied-private"
-      >
-        <h1
-          className={title({ color: 'pink' })}
-          data-testid="title-access-denied-private"
-        >
-          Access Denied
-        </h1>
-        <p className={subtitle()} data-testid="subtitle-access-denied-private">
-          You must be signed in to view this page.
-        </p>
-        <Button
-          aria-label="Sign in to view private feeds"
-          as={Link}
-          color="primary"
-          data-testid="btn-signin-redirect-private"
-          href="/auth/signin"
-          variant="shadow"
+          id="btn-signin-private"
         >
           Sign In
         </Button>
@@ -205,13 +172,17 @@ export default function PrivateNewsPage() {
   }
 
   return (
-    <Card className="bg-default-50" data-testid="page-private-news">
+    <Card
+      className="bg-default-50"
+      role="main"
+      aria-label="Private RSS feeds manager"
+    >
       <CardBody className="flex flex-col gap-4 p-6">
         <div className="text-center">
-          <h1 className={title()} data-testid="title-private-news">
+          <h1 className={title()} id="private-news-title">
             Your Private News Feeds
           </h1>
-          <p className={subtitle()} data-testid="subtitle-private-news">
+          <p className={subtitle()}>
             Manage and view your RSS feed subscriptions.
           </p>
         </div>
@@ -229,7 +200,10 @@ export default function PrivateNewsPage() {
           setNewFeedUrl={setNewFeedUrl}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-12 gap-4"
+          id="feeds-container"
+        >
           <FeedList
             deletingFeedId={deletingFeedId}
             error={feedsError}

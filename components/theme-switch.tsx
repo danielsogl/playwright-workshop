@@ -43,7 +43,8 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 
   return (
     <Component
-      data-testid="theme-switch"
+      role="switch"
+      aria-checked={isSelected}
       {...getBaseProps({
         className: clsx(
           'px-px transition-opacity hover:opacity-80 cursor-pointer',

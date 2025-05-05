@@ -35,38 +35,33 @@ export const FeedList: React.FC<FeedListProps> = ({
   return (
     <Card
       className="lg:col-span-4 bg-content1"
-      data-testid="card-feed-list"
       role="list"
+      aria-label="Your RSS feeds"
     >
       <CardBody className="p-4">
-        <h2 className="text-xl font-bold mb-4">Your Feeds</h2>
+        <h2 className="text-xl font-bold mb-4" id="feed-list-heading">
+          Your Feeds
+        </h2>
         {isLoading ? (
-          <div
-            className="flex justify-center p-4"
-            data-testid="loading-feed-list"
-          >
+          <div className="flex justify-center p-4" aria-label="Loading feeds">
             <Spinner label="Loading your feeds..." size="sm" />
           </div>
         ) : error ? (
-          <p
-            className="text-danger text-center p-4"
-            data-testid="error-feed-list"
-            role="alert"
-          >
+          <p className="text-danger text-center p-4" role="alert">
             Error loading feeds. Please try again.
           </p>
         ) : !feeds?.length ? (
           <p
             className="text-center text-default-500 p-4"
-            data-testid="empty-feed-list"
+            aria-label="No feeds available"
           >
             No feeds added yet. Add your first feed above!
           </p>
         ) : (
           <div
             className="flex flex-col gap-2"
-            data-testid="feed-list"
             role="list"
+            aria-labelledby="feed-list-heading"
           >
             {feeds.map((feed) => (
               <div
@@ -77,7 +72,6 @@ export const FeedList: React.FC<FeedListProps> = ({
                     : 'border-transparent'
                 }`}
                 role="listitem"
-                data-testid={`feed-list-item-container`}
               >
                 <Card>
                   <CardBody className="p-3">
@@ -85,7 +79,6 @@ export const FeedList: React.FC<FeedListProps> = ({
                       <button
                         aria-label={`Select feed: ${feed.name}`}
                         className="flex-1 text-left"
-                        data-testid={`feed-item-select`}
                         onClick={() => onSelectFeed(feed)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -93,10 +86,15 @@ export const FeedList: React.FC<FeedListProps> = ({
                             onSelectFeed(feed);
                           }
                         }}
+                        role="button"
+                        id={`select-feed-${feed.id}`}
                       >
                         <p className="font-semibold">{feed.name}</p>
                         {feed.category && (
-                          <p className="text-small text-default-500">
+                          <p
+                            className="text-small text-default-500"
+                            aria-label={`Category: ${feed.category}`}
+                          >
                             {feed.category}
                           </p>
                         )}
@@ -105,11 +103,11 @@ export const FeedList: React.FC<FeedListProps> = ({
                         <Button
                           isIconOnly
                           aria-label={`Refresh feed: ${feed.name}`}
-                          data-testid={`feed-item-refresh`}
                           isLoading={refreshingFeed === feed.id}
                           size="sm"
                           variant="light"
                           onPress={() => onRefreshFeed(feed)}
+                          id={`refresh-feed-${feed.id}`}
                         >
                           🔄
                         </Button>
@@ -117,11 +115,11 @@ export const FeedList: React.FC<FeedListProps> = ({
                           isIconOnly
                           aria-label={`Delete feed: ${feed.name}`}
                           color="danger"
-                          data-testid={`feed-item-delete`}
                           isLoading={deletingFeedId === feed.id}
                           size="sm"
                           variant="light"
                           onPress={() => onDeleteFeed(feed.id)}
+                          id={`delete-feed-${feed.id}`}
                         >
                           <TrashIcon className="h-4 w-4" />
                         </Button>
