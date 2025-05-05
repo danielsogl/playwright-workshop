@@ -97,7 +97,7 @@ export const FeedContent: React.FC<FeedContentProps> = ({
                 <Card
                   key={item.link || index}
                   className="bg-content2"
-                  role="article"
+                  role="listitem"
                   aria-labelledby={`feed-item-title-${selectedFeed.id}-${index}`}
                   aria-label={`Feed article: ${item.title}`}
                 >

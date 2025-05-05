@@ -5,29 +5,62 @@ Du testest die Filter- und Suchfunktionen auf der öffentlichen News-Feed-Seite 
 
 **Aufgaben:**
 
-1.  Erstelle einen neuen Testfall in deiner `navigation.spec.ts` oder einer neuen Datei (z.B. `news-feed.spec.ts`).
-2.  **Navigiere zur Public News Seite:**
-    -   Öffne die Seite `/news/public`.
-    -   Warte darauf, dass die News-Items geladen sind (z.B. warte auf die Sichtbarkeit eines Elements mit `page.getByRole('list')` oder `page.getByRole('region', { name: /news/i })`, je nach semantischer Auszeichnung).
-3.  **Teste die Suchfunktion:**
-    -   Finde das Suchfeld (z.B. mit `page.getByRole('textbox', { name: /search/i })` oder `page.getByPlaceholder('Search news...')`).
-    -   Gib einen Suchbegriff ein, der voraussichtlich einige, aber nicht alle Artikel trifft (z.B. "Tech", "AI", "Next.js" - je nach Inhalt der Feeds).
-    -   Warte kurz oder prüfe, ob sich die Anzahl der angezeigten Artikel (z.B. `page.getByRole('article')` oder `page.getByRole('listitem')`) reduziert hat.
-    -   Prüfe (stichprobenartig), ob die angezeigten Artikel den Suchbegriff im Titel oder in der Beschreibung enthalten (z.B. mit `expect(locator).toContainText(...)`).
-    -   Leere das Suchfeld (`locator.fill('')`).
-    -   Prüfe, ob wieder mehr (oder alle ursprünglichen) Artikel angezeigt werden.
-4.  **Teste die Kategorie-Filterung:**
-    -   Finde das Kategorie-Dropdown (z.B. mit `page.getByRole('combobox', { name: /category/i })`).
-    -   Wähle eine spezifische Kategorie aus (z.B. 'Technology' oder eine andere verfügbare Kategorie - siehe `config/rss-sources.ts`). Verwende `locator.selectOption({ label: '...' })` oder `locator.selectOption('Technology')`.
-    -   Prüfe, ob nur Artikel der ausgewählten Kategorie angezeigt werden. Du kannst dies tun, indem du den Kategorie-Text (z.B. mit `locator.getByText('Technology')`) in den angezeigten Artikeln überprüfst.
-    -   Wähle wieder "All Categories" aus (`locator.selectOption({ label: 'All Categories' })`).
-    -   Prüfe, ob wieder Artikel aus verschiedenen Kategorien angezeigt werden.
-5.  **Aktiviere die Trace-Aufzeichnung in `playwright.config.ts` (z.B. `trace: 'on'`) und führe den Test erneut aus.**
+1.  Erstelle einen neuen Testfall in einer Datei `e2e/nav.spec.ts` oder ähnlich.
+2.  **Erstelle eine Test-Suite mit beforeEach:**
+    -   Verwende `test.describe('News Feed Filter & Suche', () => {...});`
+    -   Füge einen `test.beforeEach`-Hook hinzu, der zur Seite `/news/public` navigiert.
+3.  **Teste die initiale Anzeige:**
+    -   Erstelle einen Test `'zeigt News-Items an'` 
+    -   Wähle die News-Liste mit `page.getByRole('list', { name: 'News articles' })`
+    -   Prüfe, ob die Liste sichtbar ist und genau 65 Listenelemente enthält
+4.  **Teste die Suchfunktion:**
+    -   Erstelle einen Test `'filtert News per Suchfeld'`
+    -   Finde das Suchfeld mit `page.getByRole('textbox', { name: 'Search news' })`
+    -   Gib den Suchbegriff "Foo" ein und prüfe, dass keine Artikel angezeigt werden
+    -   Gib den Suchbegriff "Revelo" ein und prüfe, dass genau 1 Artikel angezeigt wird
+    -   Leere das Suchfeld und prüfe, dass wieder alle 65 Artikel angezeigt werden
+5.  **Teste die Kategorie-Filterung:**
+    -   Erstelle einen Test `'filtert News per Kategorie'`
+    -   Finde das Kategorie-Dropdown mit `page.getByLabel('Filter news by category')`
+    -   Wähle die Kategorie "Technology" und prüfe, dass genau 40 Artikel angezeigt werden
+    -   Prüfe, dass der erste angezeigte Artikel den Text "Technology" enthält
+    -   Wähle wieder "All Categories" aus und prüfe, dass wieder alle 65 Artikel angezeigt werden
+6.  **Aktiviere die Trace-Aufzeichnung in `playwright.config.ts` (z.B. `trace: 'on'`) und führe den Test aus.**
     -   Stelle sicher, dass `trace: 'on'` oder `trace: 'retain-on-failure'` in der `use`-Sektion deiner `playwright.config.ts` gesetzt ist.
-6.  **Öffne den HTML-Report (`npx playwright show-report`) und analysiere den Trace für den Testlauf.**
+7.  **Öffne den HTML-Report (`npx playwright show-report`) und analysiere den Trace für den Testlauf.**
 
 **Zeit:** 25 Minuten
 
 ---
 
-> **Tipp:** Verwende `page.goto()`, `page.getByRole()`, `page.getByLabel()`, `page.getByPlaceholder()`, `locator.fill()`, `locator.selectOption()`, `expect(locator).toContainText()` und `expect(locator).toHaveCount()`. Nutze keine TestIds oder CSS-Selektoren, sondern semantische, benutzerorientierte Selektoren. Manchmal ist ein kurzes `page.waitForTimeout()` nach dem Filtern hilfreich, wenn die UI nicht sofort aktualisiert wird, obwohl Playwright normalerweise darauf wartet.
+> **Tipp:** Nutze die folgenden Playwright-Funktionen:
+> - `page.goto()` für die Navigation
+> - `page.getByRole()` und `page.getByLabel()` für semantische Selektoren
+> - `locator.fill()` für das Ausfüllen von Textfeldern
+> - `locator.selectOption()` für die Auswahl in Dropdowns
+> - `expect(locator).toBeVisible()` zum Prüfen der Sichtbarkeit
+> - `expect(locator).toHaveCount()` zum Prüfen der Anzahl von Elementen
+> - `expect(locator).toContainText()` zum Prüfen des Textinhalts
+
+```typescript
+// Beispielstruktur deines Tests
+import { test, expect } from '@playwright/test';
+
+test.describe('News Feed Filter & Suche', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/news/public');
+  });
+
+  test('zeigt News-Items an', async ({ page }) => {
+    // Code hier
+  });
+
+  test('filtert News per Suchfeld', async ({ page }) => {
+    // Code hier
+  });
+
+  test('filtert News per Kategorie', async ({ page }) => {
+    // Code hier
+  });
+});
+```
