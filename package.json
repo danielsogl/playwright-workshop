@@ -53,6 +53,7 @@
     "@types/react-dom": "18.3.6",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "10.4.21",
+    "dotenv": "^16.5.0",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.4",
     "eslint-config-prettier": "^10.0.2",
