@@ -99,19 +99,19 @@ export default function PublicNewsPage() {
           <Card
             key={index}
             className="overflow-hidden"
-            data-testid={`news-item-${index}`}
+            data-testid={`news-item`}
           >
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <span
                   className="text-sm text-gray-500"
-                  data-testid={`news-item-source-${index}`}
+                  data-testid={`news-item-source`}
                 >
                   {item.source}
                 </span>
                 <span
                   className="text-sm text-gray-500"
-                  data-testid={`news-item-category-${index}`}
+                  data-testid={`news-item-category`}
                 >
                   {item.category}
                 </span>
@@ -121,7 +121,7 @@ export default function PublicNewsPage() {
                 <a
                   aria-label={`Read article: ${item.title}`}
                   className="hover:text-blue-600 transition-colors"
-                  data-testid={`news-item-link-${index}`}
+                  data-testid={`news-item-link`}
                   href={item.link}
                   rel="noopener noreferrer"
                   target="_blank"
@@ -132,7 +132,7 @@ export default function PublicNewsPage() {
 
               <p
                 className="text-gray-600 mb-4 line-clamp-3"
-                data-testid={`news-item-desc-${index}`}
+                data-testid={`news-item-desc`}
               >
                 {item.description?.replace(/<[^>]*>/g, "") ??
                   "No description available"}
