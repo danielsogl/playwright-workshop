@@ -6,15 +6,15 @@ Du refaktorierst die bestehenden Tests für die Public News Seite der Feed App (
 **Aufgaben:**
 
 1.  **Page Object Klasse erstellen:**
-    -   Lege eine Datei für das Page Object an, z.B. `e2e/pages/PublicNewsPage.ts`.
+    -   Lege eine Datei für das Page Object an: `e2e/pages/PublicNewsPage.ts`.
     -   Definiere eine Klasse `PublicNewsPage` mit Konstruktor, der die Playwright `Page`-Instanz entgegennimmt (`readonly page: Page`).
 
 2.  **Selektoren kapseln:**
-    -   Definiere Locators für die wichtigsten Elemente der Public News Seite als Eigenschaften der Klasse. Nutze semantische, benutzerorientierte Selektoren, z.B.:
+    -   Definiere Locators für die wichtigsten Elemente der Public News Seite als Eigenschaften der Klasse:
         ```typescript
-        readonly searchInput = this.page.getByRole('textbox', { name: /search/i });
-        readonly categorySelect = this.page.getByRole('combobox', { name: /category/i });
-        readonly newsGrid = this.page.getByRole('list', { name: /news/i });
+        readonly searchInput = this.page.getByRole('textbox', { name: 'Search news' });
+        readonly categorySelect = this.page.getByLabel('Filter news by category');
+        readonly newsGrid = this.page.getByRole('list', { name: 'News articles' });
         readonly newsItems = this.newsGrid.getByRole('listitem');
         readonly loadingIndicator = this.page.getByRole('status', { name: /loading/i });
         readonly errorIndicator = this.page.getByRole('alert');
@@ -25,7 +25,7 @@ Du refaktorierst die bestehenden Tests für die Public News Seite der Feed App (
         -   `goto()`: Navigiert zur Public News Seite (`/news/public`).
         -   `searchNews(query: string)`: Gibt den Suchbegriff in das Suchfeld ein.
         -   `filterByCategory(categoryLabel: string)`: Wählt eine Kategorie im Dropdown aus.
-        -   `waitForNewsToLoad()`: Wartet darauf, dass der News-Grid sichtbar ist oder der Ladeindikator verschwindet.
+        -   `waitForNewsToLoad()`: Wartet darauf, dass der News-Grid sichtbar ist und der Ladeindikator verschwindet.
 
 4.  **Hilfsmethoden für Assertions:**
     -   Implementiere Methoden, die Daten von der Seite zurückgeben:
@@ -35,14 +35,15 @@ Du refaktorierst die bestehenden Tests für die Public News Seite der Feed App (
         -   `getNewsItemCategory(index: number): Promise<string | null>`: Gibt die Kategorie eines spezifischen News-Items zurück.
 
 5.  **Tests refaktorieren:**
-    -   Öffne die Testdatei für den News Feed (z.B. `e2e/news/news-feed.spec.ts`).
+    -   Erstelle eine neue Testdatei `e2e/public-news.spec.ts`.
     -   Importiere die `PublicNewsPage`-Klasse.
-    -   Erstelle in jedem Test (oder im `beforeEach`) eine Instanz von `PublicNewsPage`.
+    -   Deklariere eine Variable für die PublicNewsPage-Instanz im Testbereich.
+    -   Erstelle in `beforeEach` eine Instanz von `PublicNewsPage` und navigiere zur Seite.
     -   Ersetze direkte `page`-Aufrufe durch Methoden des Page Objects.
-    -   Verwende die Hilfsmethoden des Page Objects für Assertions.
+    -   Verwende für Assertions `.resolves.toBe()` für asynchrone Methoden des Page Objects.
 
 6.  **Tests ausführen:**
-    -   Stelle sicher, dass die refaktorierten Tests erfolgreich durchlaufen.
+    -   Stelle sicher, dass die refaktorierten Tests erfolgreich durchlaufen
 
 **Zeit:** 30 Minuten
 
