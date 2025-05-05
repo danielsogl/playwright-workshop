@@ -36,7 +36,7 @@ export const FeedList: React.FC<FeedListProps> = ({
     <Card
       className="lg:col-span-4 bg-content1"
       data-testid="card-feed-list"
-      role="listitem"
+      role="list"
     >
       <CardBody className="p-4">
         <h2 className="text-xl font-bold mb-4">Your Feeds</h2>
@@ -72,6 +72,7 @@ export const FeedList: React.FC<FeedListProps> = ({
                     ? 'border-primary'
                     : 'border-transparent'
                 }`}
+                role="listitem"
                 data-testid={`feed-list-item-container-${feed.id}`}
               >
                 <Card>
