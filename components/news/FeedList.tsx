@@ -63,7 +63,11 @@ export const FeedList: React.FC<FeedListProps> = ({
             No feeds added yet. Add your first feed above!
           </p>
         ) : (
-          <div className="flex flex-col gap-2" data-testid="feed-list">
+          <div
+            className="flex flex-col gap-2"
+            data-testid="feed-list"
+            role="list"
+          >
             {feeds.map((feed) => (
               <div
                 key={feed.id}
@@ -73,7 +77,7 @@ export const FeedList: React.FC<FeedListProps> = ({
                     : 'border-transparent'
                 }`}
                 role="listitem"
-                data-testid={`feed-list-item-container-${feed.id}`}
+                data-testid={`feed-list-item-container`}
               >
                 <Card>
                   <CardBody className="p-3">
@@ -81,7 +85,7 @@ export const FeedList: React.FC<FeedListProps> = ({
                       <button
                         aria-label={`Select feed: ${feed.name}`}
                         className="flex-1 text-left"
-                        data-testid={`feed-item-select-${feed.id}`}
+                        data-testid={`feed-item-select`}
                         onClick={() => onSelectFeed(feed)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -101,7 +105,7 @@ export const FeedList: React.FC<FeedListProps> = ({
                         <Button
                           isIconOnly
                           aria-label={`Refresh feed: ${feed.name}`}
-                          data-testid={`feed-item-refresh-${feed.id}`}
+                          data-testid={`feed-item-refresh`}
                           isLoading={refreshingFeed === feed.id}
                           size="sm"
                           variant="light"
@@ -113,7 +117,7 @@ export const FeedList: React.FC<FeedListProps> = ({
                           isIconOnly
                           aria-label={`Delete feed: ${feed.name}`}
                           color="danger"
-                          data-testid={`feed-item-delete-${feed.id}`}
+                          data-testid={`feed-item-delete`}
                           isLoading={deletingFeedId === feed.id}
                           size="sm"
                           variant="light"

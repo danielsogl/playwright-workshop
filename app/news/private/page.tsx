@@ -229,7 +229,7 @@ export default function PrivateNewsPage() {
           setNewFeedUrl={setNewFeedUrl}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4" role="list">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <FeedList
             deletingFeedId={deletingFeedId}
             error={feedsError}
