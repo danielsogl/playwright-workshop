@@ -1,5 +1,4 @@
-import { Locator } from '@playwright/test';
-import { test as base } from './base.fixture';
+import { test as base, Locator } from '@playwright/test';
 
 interface LoginPageFixtures {
   emailField: Locator;
@@ -27,7 +26,7 @@ export const test = base.extend<LoginPageFixtures>({
   loginButton: async ({ page }, use) => {
     await use(page.getByRole('button', { name: 'Submit sign in form' }));
   },
-  testUsers: async (_, use) => {
+  testUsers: async ({}, use) => {
     await use({
       user1: {
         email: process.env.TEST_USER || '',
