@@ -40,20 +40,10 @@ export default defineConfig<UserOptions>({
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: 'chromium user 1 tests',
+      name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
-        defaultUser: 'user1',
-      },
-      dependencies: ['setup'],
-    },
-    {
-      name: 'chromium user 2 tests',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/user.json',
-        defaultUser: 'user2',
       },
       dependencies: ['setup'],
     },
