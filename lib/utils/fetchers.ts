@@ -8,6 +8,7 @@
  * @throws {Error} If the fetch request fails or the response status is not ok.
  */
 export const fetcher = async <T = unknown>(url: string): Promise<T> => {
+  await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 second delay
   const res = await fetch(url);
 
   if (!res.ok) {
