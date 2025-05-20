@@ -48,6 +48,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
     "@eslint/eslintrc": "^3.3.1",
     "@playwright/test": "^1.52.0",
     "@react-types/shared": "3.29.0",
