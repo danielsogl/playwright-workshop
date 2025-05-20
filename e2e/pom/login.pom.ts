@@ -13,7 +13,7 @@ export class LoginPage {
   constructor(page: Page) {
     this.page = page;
 
-    this.emailField = page.getByLabel('Username');
+    this.emailField = page.getByLabel('Email');
     this.passwordField = page.getByLabel('Password');
     this.loginButton = page.getByRole('button', {
       name: 'Submit sign in form',
@@ -36,5 +36,8 @@ export class LoginPage {
     await this.loginButton.click();
 
     await this.page.waitForURL('/');
+    await expect(
+      this.page.getByRole('button', { name: 'User profile actions menu' }),
+    ).toBeVisible();
   }
 }
