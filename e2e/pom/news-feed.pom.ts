@@ -36,7 +36,7 @@ export class NewsFeedPage {
 
   async filterByCategory(category: NewsCategory) {
     await this.filterOptions.selectOption({ value: category });
-    expect(this.filterOptions).toHaveValue(category);
+    await expect(this.filterOptions).toHaveValue(category);
   }
 
   newsItemByTitle(title: string) {
