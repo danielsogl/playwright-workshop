@@ -1,35 +1,18 @@
-import { expect, test as setup } from '../fixtures/fixture';
+import { test as setup } from '../fixtures/fixture';
 
 import path from 'path';
+import { LoginPage } from '../pom/login.pom';
 
 const authFile = path.join(__dirname, '../../playwright/.auth/user.json');
 
-setup(
-  'Login Test User',
-  async ({
-    page,
-    emailField,
-    passwordField,
-    loginButton,
-    testUsers,
-    defaultUser,
-    goToPage,
-  }) => {
-    await goToPage('/auth/signin');
+setup('Login Test User', async ({ page, testUsers, defaultUser }) => {
+  const loginPage = new LoginPage(page);
 
-    const user = defaultUser === 'user1' ? testUsers.user1 : testUsers.user2;
+  await loginPage.goToPage();
 
-    await emailField.fill(user.email);
-    await passwordField.fill(user.password);
+  const user = defaultUser === 'user1' ? testUsers.user1 : testUsers.user2;
 
-    await loginButton.click();
+  await loginPage.login(user.email, user.password);
 
-    await page.waitForURL('/');
-
-    await expect(
-      page.getByRole('button', { name: 'User profile actions menu' }),
-    ).toBeVisible();
-
-    await page.context().storageState({ path: authFile });
-  },
-);
+  await page.context().storageState({ path: authFile });
+});

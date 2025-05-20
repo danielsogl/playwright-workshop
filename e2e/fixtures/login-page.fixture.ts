@@ -17,15 +17,15 @@ interface LoginPageFixtures {
 }
 
 export const test = base.extend<LoginPageFixtures>({
-  emailField: async ({ page }, use) => {
-    await use(page.getByLabel('Email'));
-  },
-  passwordField: async ({ page }, use) => {
-    await use(page.getByLabel('Password'));
-  },
-  loginButton: async ({ page }, use) => {
-    await use(page.getByRole('button', { name: 'Submit sign in form' }));
-  },
+  // emailField: async ({ page }, use) => {
+  //   await use(page.getByLabel('Email'));
+  // },
+  // passwordField: async ({ page }, use) => {
+  //   await use(page.getByLabel('Password'));
+  // },
+  // loginButton: async ({ page }, use) => {
+  //   await use(page.getByRole('button', { name: 'Submit sign in form' }));
+  // },
   testUsers: async ({}, use) => {
     await use({
       user1: {
