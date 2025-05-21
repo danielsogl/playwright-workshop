@@ -64,6 +64,22 @@ export default defineConfig<UserOptions>({
       },
       dependencies: ['setup'],
     },
+    {
+      name: 'iPhone 15',
+      use: {
+        ...devices['iPhone 15'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
+    {
+      name: 'Galaxy S9+',
+      use: {
+        ...devices['Galaxy S9+'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
 
     {
       name: 'regression',

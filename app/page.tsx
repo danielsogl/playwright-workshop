@@ -21,7 +21,7 @@ export default function Home() {
           <h1 className={title()} id="hero-title-1">
             Welcome to the&nbsp;
           </h1>
-          <h1 className={title({ color: 'violet' })} id="hero-title-2">
+          <h1 className={title({ color: 'green' })} id="hero-title-2">
             Playwright Demo App
           </h1>
           <p className={subtitle({ class: 'mt-4' })}>
