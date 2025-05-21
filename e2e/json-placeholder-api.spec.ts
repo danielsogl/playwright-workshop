@@ -10,7 +10,7 @@ export interface User {
   website: string;
 }
 
-test.describe('JSON Placeholder API', () => {
+test.describe('JSON Placeholder API', { tag: ['@api'] }, () => {
   test('Hole mir die Liste aller Users', async ({ request }) => {
     const response = await request.get(
       'https://jsonplaceholder.typicode.com/users',
@@ -71,7 +71,7 @@ test.describe('JSON Placeholder API', () => {
     const schema = {
       type: 'object',
       properties: {
-        id: { type: '' },
+        id: { type: 'integer' },
       },
       required: ['id'],
       additionalProperties: true,
@@ -82,8 +82,6 @@ test.describe('JSON Placeholder API', () => {
     const ajv = new Ajv();
     const validate = ajv.compile(schema);
     const valid = validate(data);
-
-    console.log(validate.errors);
 
     expect(valid).toBe(true);
   });

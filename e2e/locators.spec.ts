@@ -1,6 +1,6 @@
 import test, { expect } from '@playwright/test';
 
-test.describe('Locators', () => {
+test.describe('Locators', { tag: ['@regression'] }, () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('https://playwright.dev/');
   });

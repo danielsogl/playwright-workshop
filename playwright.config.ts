@@ -65,6 +65,21 @@ export default defineConfig<UserOptions>({
       dependencies: ['setup'],
     },
 
+    {
+      name: 'regression',
+      grep: /@regression/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
+
+    {
+      name: 'api',
+      grep: /@api/,
+    },
+
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
