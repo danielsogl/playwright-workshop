@@ -10,6 +10,9 @@ export class NewsFeedPage {
   private searchInput: Locator;
   private filterOptions: Locator;
 
+  private errorText: Locator;
+  loadingSpinner: Locator;
+
   private newsList: Locator;
   private newsItems: Locator;
 
@@ -24,11 +27,18 @@ export class NewsFeedPage {
 
     this.newsList = page.getByRole('list', { name: 'News articles' });
     this.newsItems = this.newsList.getByRole('listitem');
+
+    this.errorText = page.getByRole('alert').first();
+    this.loadingSpinner = page
+      .getByRole('status', {
+        name: 'Loading news feed',
+      })
+      .first();
   }
 
   async goToPage() {
     await this.page.goto('/news/public');
-    await expect(this.newsFeedHeader).toBeVisible();
+    await expect(this.page).toHaveURL('/news/public');
   }
 
   async filterByText(text: string) {
@@ -46,6 +56,10 @@ export class NewsFeedPage {
 
   newsItemByIndex(index: number) {
     return new NewsItem(this.newsItems.nth(index));
+  }
+
+  async getErrorText() {
+    return this.errorText.textContent();
   }
 
   countNewsItems() {
