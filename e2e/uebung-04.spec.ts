@@ -7,11 +7,13 @@ test.describe('News Feed POM', () => {
   });
 
   test('should filter news by Title', async ({ newsFeedPage }) => {
-    const title =
-      'Adaptation Ventures is a new angel investor group focused on disability and accessibility tech';
+    const title = "Cheers stars pay tribute to 'Norm' actor George Wendt";
 
     await newsFeedPage.filterByText(title);
-    await expect(newsFeedPage.newsItemByTitle(title)).toBeVisible();
+    const newsItem = newsFeedPage.newsItemByIndex(0);
+    const newsTitle = await newsItem.getHeader();
+
+    expect(newsTitle).toBe(title);
   });
 
   test('should filter news by Category', async ({ newsFeedPage }) => {

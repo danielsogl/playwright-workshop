@@ -1,4 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
+import { NewsItem } from './news-item-pom';
 
 export type NewsCategory = 'Technology' | 'Business' | 'World News';
 
@@ -40,12 +41,11 @@ export class NewsFeedPage {
   }
 
   newsItemByTitle(title: string) {
-    // Filter anhand des Titels der News und nicht ahand jeglichen Textes in der News
-    return this.newsItems.getByRole('heading', { name: title });
+    return new NewsItem(this.newsItems.getByRole('heading', { name: title }));
   }
 
   newsItemByIndex(index: number) {
-    return this.newsItems.nth(index);
+    return new NewsItem(this.newsItems.nth(index));
   }
 
   countNewsItems() {
