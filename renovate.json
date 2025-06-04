@@ -42,14 +42,14 @@
     {
       "description": "Group HeroUI component library updates",
       "groupName": "HeroUI components",
-      "matchPackagePatterns": ["^@heroui/"],
-      "schedule": ["before 6am on monday"]
+      "schedule": ["before 6am on monday"],
+      "matchPackageNames": ["/^@heroui//"]
     },
     {
       "description": "Group React Aria updates",
       "groupName": "React Aria",
-      "matchPackagePatterns": ["^@react-aria/", "^@react-types/"],
-      "schedule": ["before 6am on monday"]
+      "schedule": ["before 6am on monday"],
+      "matchPackageNames": ["/^@react-aria//", "/^@react-types//"]
     },
     {
       "description": "Group Playwright testing dependencies",
