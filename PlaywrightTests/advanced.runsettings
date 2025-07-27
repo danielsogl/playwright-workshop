@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <Playwright>
+    <!-- Browser Configuration -->
+    <BrowserName>chromium</BrowserName>
+    
+    <!-- Global Timeouts -->
+    <ExpectTimeout>10000</ExpectTimeout>
+    <Timeout>60000</Timeout>
+    
+    <!-- Browser Launch Options -->
+    <LaunchOptions>
+      <Headless>false</Headless>
+      <SlowMo>100</SlowMo>
+      <Args>
+        <Arg>--disable-web-security</Arg>
+        <Arg>--disable-features=VizDisplayCompositor</Arg>
+      </Args>
+      <Env>
+        <Variable>
+          <Name>DEBUG</Name>
+          <Value>pw:api</Value>
+        </Variable>
+      </Env>
+    </LaunchOptions>
+    
+    <!-- Browser Context Options -->
+    <ContextOptions>
+      <ViewportSize>
+        <Width>1920</Width>
+        <Height>1080</Height>
+      </ViewportSize>
+      <UserAgent>Custom-Playwright-Agent/1.0</UserAgent>
+      <IgnoreHTTPSErrors>true</IgnoreHTTPSErrors>
+      <JavaScriptEnabled>true</JavaScriptEnabled>
+      <AcceptDownloads>true</AcceptDownloads>
+      <ExtraHTTPHeaders>
+        <Header>
+          <Name>X-Test-Header</Name>
+          <Value>Playwright-Test</Value>
+        </Header>
+      </ExtraHTTPHeaders>
+    </ContextOptions>
+  </Playwright>
+  
+  <!-- MSTest Configuration -->
+  <RunConfiguration>
+    <MaxCpuCount>4</MaxCpuCount>
+    <ResultsDirectory>./TestResults</ResultsDirectory>
+    <TestSessionTimeout>600000</TestSessionTimeout>
+  </RunConfiguration>
+  
+  <!-- Test Execution Settings -->
+  <MSTest>
+    <Parallelize>
+      <Workers>4</Workers>
+      <Scope>MethodLevel</Scope>
+    </Parallelize>
+  </MSTest>
+</RunSettings>
