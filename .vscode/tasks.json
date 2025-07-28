@@ -36,6 +36,70 @@
                 "${workspaceFolder}/PlaywrightTests/PlaywrightTests.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "playwright-debug",
+            "command": "pwsh",
+            "type": "process",
+            "args": [
+                "-c",
+                "dotnet test ${workspaceFolder}/PlaywrightTests/PlaywrightTests.csproj -- Playwright.LaunchOptions.Headless=false"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "playwright-install-browsers",
+            "command": "pwsh",
+            "type": "process",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder}/PlaywrightTests && dotnet build && pwsh bin/Debug/net9.0/playwright.ps1 install"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "playwright-codegen",
+            "command": "pwsh",
+            "type": "process",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder}/PlaywrightTests && pwsh bin/Debug/net9.0/playwright.ps1 codegen"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "playwright-selector",
+            "command": "pwsh",
+            "type": "process",
+            "args": [
+                "-c",
+                "cd ${workspaceFolder}/PlaywrightTests && pwsh bin/Debug/net9.0/playwright.ps1 show-trace"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         }
     ]
 }

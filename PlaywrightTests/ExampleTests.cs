@@ -12,9 +12,29 @@ public class ExampleTests : PageTest
     [TestCategory("smoke")]
     public async Task BasicNavigationTest()
     {
-        // Demo: Basic page navigation and title verification
-        await Page.GotoAsync("https://playwright.dev");
-        await Expect(Page).ToHaveTitleAsync("Fast and reliable end-to-end testing for modern web apps | Playwright");
+        // Start tracing
+        await Context.Tracing.StartAsync(new()
+        {
+            Title = $"{TestContext.TestName}",
+            Screenshots = true,
+            Snapshots = true,
+            Sources = true
+        });
+        
+        try
+        {
+            // Demo: Basic page navigation and title verification
+            await Page.GotoAsync("https://playwright.dev");
+            await Expect(Page).ToHaveTitleAsync("Fast and reliable end-to-end testing for modern web apps | Playwright");
+        }
+        finally
+        {
+            // Stop tracing and save
+            await Context.Tracing.StopAsync(new()
+            {
+                Path = $"traces/{TestContext.TestName}.zip"
+            });
+        }
     }
     
     [TestMethod]

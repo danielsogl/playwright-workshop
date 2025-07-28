@@ -3,30 +3,25 @@
   <Playwright>
     <!-- Browser configuration -->
     <BrowserName>chromium</BrowserName>
+    <BrowserName>firefox</BrowserName>
+    <BrowserName>webkit</BrowserName>
     
     <!-- Timeout settings -->
     <ExpectTimeout>5000</ExpectTimeout>
-    <Timeout>30000</Timeout>
     
     <!-- Launch options -->
     <LaunchOptions>
       <Headless>true</Headless>
       <SlowMo>0</SlowMo>
     </LaunchOptions>
-    
-    <!-- Context options -->
-    <ContextOptions>
-      <ViewportSize>
-        <Width>1280</Width>
-        <Height>720</Height>
-      </ViewportSize>
-      <IgnoreHTTPSErrors>false</IgnoreHTTPSErrors>
-    </ContextOptions>
   </Playwright>
   
   <!-- Test execution settings -->
   <RunConfiguration>
     <MaxCpuCount>0</MaxCpuCount>
     <ResultsDirectory>./TestResults</ResultsDirectory>
+    <EnvironmentVariables>
+      <PLAYWRIGHT_TRACE>on</PLAYWRIGHT_TRACE>
+    </EnvironmentVariables>
   </RunConfiguration>
 </RunSettings>
