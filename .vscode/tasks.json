@@ -1,0 +1,190 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Playwright: Run Tests",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test"],
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Show Trace Report",
+            "type": "shell",
+            "windows": {
+                "command": "powershell.exe",
+                "args": ["-File", "bin/Debug/net9.0/playwright.ps1", "show-trace"]
+            },
+            "osx": {
+                "command": "pwsh",
+                "args": ["bin/Debug/net9.0/playwright.ps1", "show-trace"]
+            },
+            "linux": {
+                "command": "pwsh",
+                "args": ["bin/Debug/net9.0/playwright.ps1", "show-trace"]
+            },
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Open Codegen/Recorder",
+            "type": "shell",
+            "windows": {
+                "command": "powershell.exe",
+                "args": ["-File", "bin/Debug/net9.0/playwright.ps1", "codegen"]
+            },
+            "osx": {
+                "command": "pwsh",
+                "args": ["bin/Debug/net9.0/playwright.ps1", "codegen"]
+            },
+            "linux": {
+                "command": "pwsh",
+                "args": ["bin/Debug/net9.0/playwright.ps1", "codegen"]
+            },
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Install All Browsers",
+            "type": "shell",
+            "windows": {
+                "command": "powershell.exe",
+                "args": ["-File", "bin/Debug/net9.0/playwright.ps1", "install", "chromium", "firefox", "webkit", "msedge"]
+            },
+            "osx": {
+                "command": "pwsh",
+                "args": ["bin/Debug/net9.0/playwright.ps1", "install", "chromium", "firefox", "webkit", "msedge"]
+            },
+            "linux": {
+                "command": "pwsh",
+                "args": ["bin/Debug/net9.0/playwright.ps1", "install", "chromium", "firefox", "webkit", "msedge"]
+            },
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Install Windows Dependencies",
+            "type": "shell",
+            "windows": {
+                "command": "powershell.exe",
+                "args": ["-File", "bin/Debug/net9.0/playwright.ps1", "install", "winldd"]
+            },
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Run Tests (Chromium)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test", "--settings", ".runsettings"],
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Run Tests (Firefox)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test", "--settings", "firefox.runsettings"],
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Run Tests (WebKit)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test", "--settings", "webkit.runsettings"],
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Playwright: Run Tests (MS Edge)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test", "--settings", "msedge.runsettings"],
+            "group": "test",
+            "options": {
+                "cwd": "${workspaceFolder}/PlaywrightTests"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

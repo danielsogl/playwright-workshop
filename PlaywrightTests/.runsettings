@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <Playwright>
+    <!-- Browser Configuration -->
+    <BrowserName>firefox</BrowserName>
+    <!-- Supported browsers: chromium, firefox, webkit -->
+    
+    <!-- Locale Configuration -->
+    <Locale>en-US</Locale>
+    <!-- Examples: en-US, de-DE, fr-FR, es-ES, ja-JP, zh-CN -->
+    
+    <!-- Launch Options -->
+    <LaunchOptions>
+      <ViewportSize>
+        <Width>1280</Width>
+        <Height>720</Height>
+      </ViewportSize>
+    </LaunchOptions>
+  </Playwright>
+  
+  <TestRunParameters>
+    <!-- Base URL for tests -->
+    <Parameter name="BASE_URL" value="https://playwright.dev" />
+    <!-- Viewport Size -->
+    <Parameter name="VIEWPORT_WIDTH" value="1280" />
+    <Parameter name="VIEWPORT_HEIGHT" value="720" />
+    <!-- Locale -->
+    <Parameter name="LOCALE" value="en-US" />
+  </TestRunParameters>
+</RunSettings>

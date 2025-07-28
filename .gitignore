@@ -43,3 +43,12 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# .NET Playwright Tests
+PlaywrightTests/bin/
+PlaywrightTests/obj/
+PlaywrightTests/test-results/
+PlaywrightTests/playwright-report/
+PlaywrightTests/blob-report/
+PlaywrightTests/playwright/.cache/
+PlaywrightTests/playwright/.auth/
