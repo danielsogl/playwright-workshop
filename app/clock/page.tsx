@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@heroui/button';
-import { Card, CardBody, CardHeader } from '@heroui/react';
+import { Card, CardBody } from '@heroui/react';
+import { Chip } from '@heroui/chip';
+import { Clock, Timer, Activity, RefreshCw } from 'lucide-react';
 
 export default function ClockPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [countdown, setCountdown] = useState<number | null>(null);
   const [sessionStart] = useState(new Date());
 
-  // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -18,15 +19,13 @@ export default function ClockPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Session timeout after 30 minutes (for testing)
   useEffect(() => {
     const sessionTimer = setTimeout(
       () => {
-        // Simulate session timeout
         console.log('Session timeout reached');
       },
       30 * 60 * 1000,
-    ); // 30 minutes
+    );
 
     return () => clearTimeout(sessionTimer);
   }, []);
@@ -76,29 +75,38 @@ export default function ClockPage() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const timeoutMinutes = 30 -
+    Math.floor(
+      (currentTime.getTime() - sessionStart.getTime()) / (1000 * 60),
+    );
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Clock & Timer Testing Page</h1>
+    <div className="flex flex-col gap-8 py-8 md:py-10">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-2">Clock & Timer</h1>
+        <p className="text-default-500">Testing Page for time-based interactions</p>
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Current Time Display */}
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-semibold">Aktuelle Zeit</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="text-center" aria-live="polite" role="timer">
+        <Card className="border border-default-200 bg-gradient-to-br from-primary-50/50 to-secondary-50/50 dark:from-primary-900/10 dark:to-secondary-900/10">
+          <CardBody className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Clock className="w-5 h-5 text-primary" aria-hidden="true" />
+              <h2 className="text-lg font-semibold">Aktuelle Zeit</h2>
+            </div>
+            <div className="text-center py-4" aria-live="polite" role="timer">
               <div
                 suppressHydrationWarning
                 data-testid="current-time"
-                className="text-4xl font-mono font-bold mb-2 tabular-nums"
+                className="text-5xl font-mono font-bold mb-3 tabular-nums bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
               >
                 {formatTime(currentTime)}
               </div>
               <div
                 suppressHydrationWarning
                 data-testid="current-date"
-                className="text-lg text-default-500"
+                className="text-default-500"
               >
                 {formatDate(currentTime)}
               </div>
@@ -107,62 +115,61 @@ export default function ClockPage() {
         </Card>
 
         {/* Session Info */}
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-semibold">Session Info</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="space-y-2">
-              <div>
-                <span className="font-medium">Session Start: </span>
+        <Card className="border border-default-200">
+          <CardBody className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Activity className="w-5 h-5 text-secondary" aria-hidden="true" />
+              <h2 className="text-lg font-semibold">Session Info</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
+                <span className="text-sm text-default-500">Session Start</span>
                 <span
                   suppressHydrationWarning
                   data-testid="session-start"
-                  className="tabular-nums"
+                  className="tabular-nums font-mono font-medium"
                 >
                   {formatTime(sessionStart)}
                 </span>
               </div>
-              <div>
-                <span className="font-medium">Session Dauer: </span>
+              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
+                <span className="text-sm text-default-500">Session Dauer</span>
                 <span
                   suppressHydrationWarning
                   data-testid="session-duration"
-                  className="tabular-nums"
+                  className="tabular-nums font-mono font-medium"
                 >
                   {getSessionDuration()}
                 </span>
               </div>
-              <div>
-                <span className="font-medium">Timeout in: </span>
-                <span
+              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
+                <span className="text-sm text-default-500">Timeout in</span>
+                <Chip
                   suppressHydrationWarning
                   data-testid="session-timeout"
-                  className="tabular-nums"
+                  color={timeoutMinutes < 10 ? 'warning' : 'success'}
+                  variant="flat"
+                  size="sm"
                 >
-                  {30 -
-                    Math.floor(
-                      (currentTime.getTime() - sessionStart.getTime()) /
-                        (1000 * 60),
-                    )}{' '}
-                  Minuten
-                </span>
+                  {timeoutMinutes} Min
+                </Chip>
               </div>
             </div>
           </CardBody>
         </Card>
 
         {/* Countdown Timer */}
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-semibold">Countdown Timer</h2>
-          </CardHeader>
-          <CardBody>
+        <Card className="border border-default-200">
+          <CardBody className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Timer className="w-5 h-5 text-warning" aria-hidden="true" />
+              <h2 className="text-lg font-semibold">Countdown Timer</h2>
+            </div>
             {countdown !== null ? (
-              <div className="text-center">
+              <div className="text-center py-6">
                 <div
                   data-testid="countdown-display"
-                  className="text-3xl font-mono font-bold mb-4 tabular-nums"
+                  className="text-5xl font-mono font-bold mb-6 tabular-nums text-warning"
                   aria-live="assertive"
                   role="timer"
                 >
@@ -170,6 +177,8 @@ export default function ClockPage() {
                 </div>
                 <Button
                   color="danger"
+                  variant="flat"
+                  size="lg"
                   aria-label="Stop countdown timer"
                   onPress={() => setCountdown(null)}
                 >
@@ -177,30 +186,36 @@ export default function ClockPage() {
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3 justify-center py-4">
                 <Button
                   data-testid="start-1min-timer"
                   color="primary"
+                  variant="flat"
+                  size="lg"
                   aria-label="Start 1 minute timer"
                   onPress={() => startCountdown(1)}
                 >
-                  1 Minute
+                  1 Min
                 </Button>
                 <Button
                   data-testid="start-5min-timer"
                   color="success"
+                  variant="flat"
+                  size="lg"
                   aria-label="Start 5 minute timer"
                   onPress={() => startCountdown(5)}
                 >
-                  5 Minuten
+                  5 Min
                 </Button>
                 <Button
                   data-testid="start-10min-timer"
                   color="secondary"
+                  variant="flat"
+                  size="lg"
                   aria-label="Start 10 minute timer"
                   onPress={() => startCountdown(10)}
                 >
-                  10 Minuten
+                  10 Min
                 </Button>
               </div>
             )}
@@ -208,24 +223,29 @@ export default function ClockPage() {
         </Card>
 
         {/* Last Updated */}
-        <Card>
-          <CardHeader>
-            <h2 className="text-xl font-semibold">Auto-Update Info</h2>
-          </CardHeader>
-          <CardBody>
-            <div>
-              <span className="font-medium">Zuletzt aktualisiert: </span>
-              <span
-                suppressHydrationWarning
-                data-testid="last-updated"
-                className="tabular-nums"
-              >
-                {formatTime(currentTime)}
-              </span>
+        <Card className="border border-default-200">
+          <CardBody className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <RefreshCw className="w-5 h-5 text-success" aria-hidden="true" />
+              <h2 className="text-lg font-semibold">Auto-Update Info</h2>
             </div>
-            <div className="mt-2">
-              <span className="font-medium">Auto-Refresh: </span>
-              <span className="text-success">Aktiv</span>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
+                <span className="text-sm text-default-500">Zuletzt aktualisiert</span>
+                <span
+                  suppressHydrationWarning
+                  data-testid="last-updated"
+                  className="tabular-nums font-mono font-medium"
+                >
+                  {formatTime(currentTime)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
+                <span className="text-sm text-default-500">Auto-Refresh</span>
+                <Chip color="success" variant="dot" size="sm">
+                  Aktiv
+                </Chip>
+              </div>
             </div>
           </CardBody>
         </Card>
@@ -233,8 +253,8 @@ export default function ClockPage() {
 
       {/* Special Date Messages */}
       {currentTime.getMonth() === 11 && currentTime.getDate() === 25 && (
-        <Card className="mt-6 bg-danger-50">
-          <CardBody>
+        <Card className="border border-danger-200 bg-danger-50/50">
+          <CardBody className="p-4">
             <div
               data-testid="christmas-message"
               className="text-center text-xl font-bold text-danger"
@@ -246,8 +266,8 @@ export default function ClockPage() {
       )}
 
       {currentTime.getMonth() === 11 && currentTime.getDate() === 31 && (
-        <Card className="mt-6 bg-primary-50">
-          <CardBody>
+        <Card className="border border-primary-200 bg-primary-50/50">
+          <CardBody className="p-4">
             <div
               data-testid="newyear-message"
               className="text-center text-xl font-bold text-primary"

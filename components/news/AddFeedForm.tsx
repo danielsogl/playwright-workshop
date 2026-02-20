@@ -4,6 +4,7 @@ import React from 'react';
 import { Card, CardBody } from '@heroui/react';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
+import { Plus } from 'lucide-react';
 
 interface AddFeedFormProps {
   newFeedName: string;
@@ -30,11 +31,10 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
 }) => {
   return (
     <Card
-      className="bg-content1 shadow-medium"
-      role="form"
+      className="border border-default-200"
       aria-label="Add new RSS feed"
     >
-      <CardBody>
+      <CardBody className="p-6">
         <form
           aria-label="Add new RSS feed form"
           className="flex flex-col md:flex-row gap-4 items-end"
@@ -48,11 +48,6 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
             label="Feed Name"
             labelPlacement="outside"
             placeholder="e.g., TechCrunch"
-            startContent={
-              <div className="pointer-events-none flex items-center">
-                <span className="text-default-400 text-small">📰</span>
-              </div>
-            }
             value={newFeedName}
             variant="bordered"
             id="feed-name"
@@ -66,11 +61,6 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
             label="Feed URL"
             labelPlacement="outside"
             placeholder="https://example.com/feed.xml"
-            startContent={
-              <div className="pointer-events-none flex items-center">
-                <span className="text-default-400 text-small">🔗</span>
-              </div>
-            }
             type="url"
             value={newFeedUrl}
             variant="bordered"
@@ -85,11 +75,6 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
             label="Category (optional)"
             labelPlacement="outside"
             placeholder="e.g., Tech"
-            startContent={
-              <div className="pointer-events-none flex items-center">
-                <span className="text-default-400 text-small">📁</span>
-              </div>
-            }
             value={newFeedCategory}
             variant="bordered"
             id="feed-category"
@@ -98,19 +83,20 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           />
           <Button
             aria-label={addingFeed ? 'Adding new feed' : 'Add new feed'}
-            className="min-w-[120px]"
+            className="min-w-[120px] font-semibold"
             color="primary"
             isLoading={addingFeed}
             type="submit"
             id="add-feed-button"
+            startContent={!addingFeed ? <Plus className="w-4 h-4" aria-hidden="true" /> : undefined}
           >
             Add Feed
           </Button>
         </form>
         {feedError && (
-          <p className="text-danger mt-2 text-small" role="alert">
+          <div className="mt-3 p-3 bg-danger-50 text-danger border border-danger-200 rounded-lg text-sm" role="alert">
             {feedError}
-          </p>
+          </div>
         )}
       </CardBody>
     </Card>

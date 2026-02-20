@@ -9,6 +9,9 @@ import { Spinner } from '@heroui/spinner';
 import { useSession } from 'next-auth/react';
 import { Button } from '@heroui/button';
 import { Link } from '@heroui/link';
+import { CardHeader } from '@heroui/card';
+import { Divider } from '@heroui/divider';
+import { Shield, Rss } from 'lucide-react';
 
 import { subtitle, title } from '@/components/primitives';
 import { fetcher } from '@/lib/utils/fetchers';
@@ -124,7 +127,6 @@ export default function PrivateNewsPage() {
       }
       mutate('/api/news/private');
     } catch (error) {
-      // Consider logging the delete error
       console.error('Failed to delete feed:', error);
     } finally {
       setDeletingFeedId(null);
@@ -142,90 +144,103 @@ export default function PrivateNewsPage() {
         role="status"
         aria-label="Loading session"
       >
-        <Spinner color="primary" label="Loading session\u2026" size="lg" />
+        <Spinner color="primary" label="Loading session…" size="lg" />
       </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <section
-        className="flex flex-col items-center gap-4 py-8 md:py-10 text-center"
-        aria-labelledby="access-denied-title"
-      >
-        <h1 className={title({ color: 'pink' })} id="access-denied-title">
-          Access Denied
-        </h1>
-        <p className={subtitle()}>You must be signed in to view this page.</p>
-        <Button
-          aria-label="Sign in to view private feeds"
-          as={Link}
-          color="primary"
-          href="/auth/signin"
-          variant="shadow"
-          id="btn-signin-private"
-        >
-          Sign In
-        </Button>
-      </section>
+      <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
+        <Card className="w-full max-w-md shadow-lg border border-default-200">
+          <CardHeader className="flex flex-col items-center gap-2 pt-8 pb-0">
+            <div className="w-14 h-14 rounded-2xl bg-danger/10 flex items-center justify-center mb-2">
+              <Shield className="w-7 h-7 text-danger" aria-hidden="true" />
+            </div>
+            <h1 className="text-2xl font-bold" id="access-denied-title">
+              Access Denied
+            </h1>
+            <p className="text-default-500 text-sm">
+              You must be signed in to view this page.
+            </p>
+          </CardHeader>
+          <Divider className="mt-4" />
+          <CardBody className="px-8 py-6 flex justify-center">
+            <Button
+              aria-label="Sign in to view private feeds"
+              as={Link}
+              color="primary"
+              href="/auth/signin"
+              variant="shadow"
+              size="lg"
+              className="font-semibold"
+              id="btn-signin-private"
+            >
+              Sign In
+            </Button>
+          </CardBody>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card
-      className="bg-default-50"
+    <div
+      className="flex flex-col gap-10 py-8 md:py-10"
       role="main"
       aria-label="Private RSS feeds manager"
     >
-      <CardBody className="flex flex-col gap-4 p-6">
-        <div className="text-center">
+      {/* Header */}
+      <section className="flex flex-col items-center justify-center gap-4">
+        <div className="inline-block max-w-2xl text-center">
           <h1 className={title()} id="private-news-title">
             Your Private News Feeds
           </h1>
-          <p className={subtitle()}>
+          <p className={subtitle({ class: 'mt-4' })}>
             Manage and view your RSS feed subscriptions.
           </p>
         </div>
+      </section>
 
-        {/* Use the extracted AddFeedForm component */}
-        <AddFeedForm
-          addingFeed={addingFeed}
-          feedError={feedError}
-          handleAddFeed={handleAddFeed}
-          newFeedCategory={newFeedCategory}
-          newFeedName={newFeedName}
-          newFeedUrl={newFeedUrl}
-          setNewFeedCategory={setNewFeedCategory}
-          setNewFeedName={setNewFeedName}
-          setNewFeedUrl={setNewFeedUrl}
+      {/* Add Feed Form */}
+      <AddFeedForm
+        addingFeed={addingFeed}
+        feedError={feedError}
+        handleAddFeed={handleAddFeed}
+        newFeedCategory={newFeedCategory}
+        newFeedName={newFeedName}
+        newFeedUrl={newFeedUrl}
+        setNewFeedCategory={setNewFeedCategory}
+        setNewFeedName={setNewFeedName}
+        setNewFeedUrl={setNewFeedUrl}
+      />
+
+      {/* Feed List & Content */}
+      <div
+        className="grid grid-cols-1 lg:grid-cols-12 gap-6"
+        id="feeds-container"
+      >
+        <FeedList
+          deletingFeedId={deletingFeedId}
+          error={feedsError}
+          feeds={userFeeds}
+          isLoading={feedsLoading}
+          refreshingFeed={refreshingFeed}
+          selectedFeed={selectedFeed}
+          onDeleteFeed={handleDeleteFeed}
+          onRefreshFeed={refreshFeed}
+          onSelectFeed={handleSelectFeed}
         />
 
-        <div
-          className="grid grid-cols-1 lg:grid-cols-12 gap-4"
-          id="feeds-container"
-        >
-          <FeedList
-            deletingFeedId={deletingFeedId}
-            error={feedsError}
-            feeds={userFeeds}
-            isLoading={feedsLoading}
-            refreshingFeed={refreshingFeed}
-            selectedFeed={selectedFeed}
-            onDeleteFeed={handleDeleteFeed}
-            onRefreshFeed={refreshFeed}
-            onSelectFeed={handleSelectFeed}
-          />
-
-          <FeedContent
-            error={feedItemsError}
-            feedItemsData={feedItemsData}
-            isLoading={isLoadingFeedItems}
-            refreshingFeedId={refreshingFeed}
-            selectedFeed={selectedFeed}
-            onRefreshFeed={refreshFeed}
-          />
-        </div>
-      </CardBody>
-    </Card>
+        <FeedContent
+          error={feedItemsError}
+          feedItemsData={feedItemsData}
+          isLoading={isLoadingFeedItems}
+          refreshingFeedId={refreshingFeed}
+          selectedFeed={selectedFeed}
+          onRefreshFeed={refreshFeed}
+        />
+      </div>
+    </div>
   );
 }

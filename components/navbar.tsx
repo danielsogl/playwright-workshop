@@ -101,7 +101,7 @@ export const Navbar = () => {
               aria-label="Loading authentication status"
               variant="flat"
             >
-              Loading\u2026
+              Loading…
             </Button>
           ) : session ? (
             <Dropdown placement="bottom-end">
@@ -199,7 +199,7 @@ export const Navbar = () => {
                 className="text-default-500"
                 aria-label="Loading authentication status"
               >
-                Loading\u2026
+                Loading…
               </span>
             ) : session ? (
               <Button

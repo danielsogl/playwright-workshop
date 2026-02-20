@@ -3,14 +3,17 @@
 import type { RSSItem } from '@/types/rss';
 import type { ChangeEvent } from 'react';
 
-import { Card, Input } from '@heroui/react';
+import { Card, CardBody, Input } from '@heroui/react';
+import { Chip } from '@heroui/chip';
 import { Spinner } from '@heroui/spinner';
 import { useState } from 'react';
 import useSWR from 'swr';
+import { Rss, Search } from 'lucide-react';
 
 import { filterFeedItems } from '@/lib/rss';
 import { RSS_CATEGORIES } from '@/config/rss-sources';
 import { fetcher } from '@/lib/utils/fetchers';
+import { title, subtitle } from '@/components/primitives';
 
 interface NewsApiResponse {
   items: RSSItem[];
@@ -34,18 +37,18 @@ export default function PublicNewsPage() {
   if (isLoading) {
     return (
       <div
-        className="flex justify-center items-center min-h-screen"
+        className="flex justify-center items-center min-h-[calc(100vh-10rem)]"
         role="status"
         aria-label="Loading news feed"
       >
-        <Spinner label="Loading news feed\u2026" size="lg" />
+        <Spinner label="Loading news feed…" size="lg" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
         <div className="text-danger" role="alert">
           Failed to load RSS feeds
         </div>
@@ -54,46 +57,71 @@ export default function PublicNewsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 id="news-feed-title" className="text-3xl font-bold mb-8">
-        News Feed
-      </h1>
+    <div className="flex flex-col gap-10 py-8 md:py-10">
+      {/* Header */}
+      <section className="flex flex-col items-center justify-center gap-4">
+        <div className="inline-block max-w-2xl text-center">
+          <h1 className={title()} id="news-feed-title">
+            News Feed
+          </h1>
+          <p className={subtitle({ class: 'mt-4' })}>
+            Browse the latest news from public RSS feeds
+          </p>
+        </div>
+      </section>
 
-      <div
-        className="flex gap-4 mb-8"
-        role="search"
-        aria-label="News filter options"
-      >
-        <Input
-          aria-label="Search news articles"
-          className="flex-1"
-          placeholder="Search news\u2026"
-          type="text"
-          value={searchQuery}
-          id="search-news"
-          name="search-news"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setSearchQuery(e.target.value)
-          }
-        />
+      {/* Search & Filter */}
+      <Card className="border border-default-200">
+        <CardBody className="p-4">
+          <div
+            className="flex flex-col sm:flex-row gap-4"
+            role="search"
+            aria-label="News filter options"
+          >
+            <Input
+              aria-label="Search news articles"
+              className="flex-1"
+              placeholder="Search news…"
+              type="text"
+              value={searchQuery}
+              id="search-news"
+              name="search-news"
+              variant="bordered"
+              startContent={
+                <Search className="w-4 h-4 text-default-400" aria-hidden="true" />
+              }
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setSearchQuery(e.target.value)
+              }
+            />
+            <select
+              aria-label="Filter news by category"
+              className="w-full sm:w-48 rounded-xl border-2 border-default-200 bg-default-100 text-foreground px-3 py-2.5 hover:border-default-400 transition-colors focus:border-primary focus:outline-none"
+              value={selectedCategory}
+              id="filter-category"
+              name="filter-category"
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {RSS_CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+        </CardBody>
+      </Card>
 
-        <select
-          aria-label="Filter news by category"
-          className="w-48 rounded-lg border border-default-200 bg-default-50 text-foreground px-3 py-2"
-          value={selectedCategory}
-          id="filter-category"
-          name="filter-category"
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {RSS_CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+      {/* Results count */}
+      <div className="flex items-center gap-2">
+        <Rss className="w-4 h-4 text-default-400" aria-hidden="true" />
+        <span className="text-sm text-default-500">
+          {filteredItems.length} articles found
+        </span>
       </div>
 
+      {/* News Grid */}
       <div
         className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
         role="list"
@@ -102,22 +130,24 @@ export default function PublicNewsPage() {
         {filteredItems.map((item, index) => (
           <Card
             key={index}
-            className="overflow-hidden"
+            className="border border-default-200 hover:border-default-300 transition-colors overflow-hidden"
             role="listitem"
             aria-labelledby={`news-title-${index}`}
           >
-            <div className="p-4">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-sm text-default-400">
+            <CardBody className="p-5 gap-3">
+              <div className="flex justify-between items-start gap-2">
+                <Chip variant="flat" size="sm" color="primary">
                   {item.source}
-                </span>
-                <span className="text-sm text-default-400">
-                  {item.category}
-                </span>
+                </Chip>
+                {item.category && (
+                  <Chip variant="flat" size="sm" color="secondary">
+                    {item.category}
+                  </Chip>
+                )}
               </div>
 
               <h2
-                className="text-xl font-semibold mb-2"
+                className="text-lg font-semibold leading-snug"
                 id={`news-title-${index}`}
               >
                 <a
@@ -130,17 +160,21 @@ export default function PublicNewsPage() {
                 </a>
               </h2>
 
-              <p className="text-default-500 mb-4 line-clamp-3">
+              <p className="text-default-500 text-sm line-clamp-3">
                 {item.description?.replace(/<[^>]*>/g, '') ??
                   'No description available'}
               </p>
 
-              <div className="text-sm text-default-400">
+              <div className="text-xs text-default-400 mt-auto pt-2">
                 {item.pubDate
-                  ? new Date(item.pubDate).toLocaleDateString()
+                  ? new Date(item.pubDate).toLocaleDateString('de-DE', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
                   : 'Date unavailable'}
               </div>
-            </div>
+            </CardBody>
           </Card>
         ))}
       </div>

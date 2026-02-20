@@ -7,6 +7,8 @@ import { Card, CardBody } from '@heroui/react';
 import { Spinner } from '@heroui/spinner';
 import { Button } from '@heroui/button';
 import { Link } from '@heroui/link';
+import { Chip } from '@heroui/chip';
+import { Rss, RefreshCw } from 'lucide-react';
 
 import { cleanHtml, formatDate, truncateText } from '@/lib/utils/format';
 
@@ -33,31 +35,29 @@ export const FeedContent: React.FC<FeedContentProps> = ({
 }) => {
   return (
     <Card
-      className="lg:col-span-8 bg-content1"
+      className="lg:col-span-8 border border-default-200"
       role="region"
       aria-label="Feed content"
     >
-      <CardBody className="p-4">
+      <CardBody className="p-5">
         {!selectedFeed ? (
-          <div
-            className="text-center p-8 text-default-500"
-            aria-label="Empty feed state"
-          >
-            <p>Select a feed to view its content</p>
+          <div className="text-center py-12">
+            <Rss className="w-12 h-12 mx-auto mb-3 text-default-300" aria-hidden="true" />
+            <p className="text-default-500">Select a feed to view its content</p>
           </div>
         ) : isLoading ? (
           <div
-            className="flex justify-center p-8"
+            className="flex justify-center py-12"
             aria-label="Loading feed content"
           >
             <Spinner
-              label={`Loading content for ${selectedFeed.name}...`}
+              label={`Loading content for ${selectedFeed.name}…`}
               size="lg"
             />
           </div>
         ) : error ? (
-          <div className="text-center p-8">
-            <p className="text-danger mb-2" role="alert">
+          <div className="text-center py-12">
+            <p className="text-danger mb-4" role="alert">
               Error loading feed content. The feed might be unavailable or
               invalid.
             </p>
@@ -77,12 +77,20 @@ export const FeedContent: React.FC<FeedContentProps> = ({
             aria-label={`Content for ${selectedFeed.name}`}
           >
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">{selectedFeed.name}</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-bold">{selectedFeed.name}</h2>
+                {feedItemsData?.items && (
+                  <Chip variant="flat" size="sm">
+                    {feedItemsData.items.length} articles
+                  </Chip>
+                )}
+              </div>
               <Button
                 aria-label={`Refresh feed content for ${selectedFeed.name}`}
                 color="primary"
                 isLoading={refreshingFeedId === selectedFeed.id}
                 variant="flat"
+                startContent={<RefreshCw className="w-4 h-4" aria-hidden="true" />}
                 onPress={() => onRefreshFeed(selectedFeed)}
               >
                 Refresh
@@ -96,10 +104,9 @@ export const FeedContent: React.FC<FeedContentProps> = ({
               {feedItemsData?.items.map((item, index) => (
                 <Card
                   key={item.link || index}
-                  className="bg-content2"
+                  className="border border-default-200 hover:border-default-300 transition-colors"
                   role="listitem"
                   aria-labelledby={`feed-item-title-${selectedFeed.id}-${index}`}
-                  aria-label={`Feed article: ${item.title}`}
                 >
                   <CardBody className="p-4">
                     <h3
@@ -107,30 +114,20 @@ export const FeedContent: React.FC<FeedContentProps> = ({
                       id={`feed-item-title-${selectedFeed.id}-${index}`}
                     >
                       <Link
-                        aria-label={`Read article: ${item.title}`}
                         className="hover:text-primary"
                         href={item.link || '#'}
                         target="_blank"
-                        role="link"
                       >
                         {item.title}
                       </Link>
                     </h3>
                     {item.pubDate && (
-                      <p
-                        className="text-small text-default-500 mb-2"
-                        role="doc-publication-date"
-                        aria-label={`Published: ${formatDate(item.pubDate)}`}
-                      >
+                      <p className="text-small text-default-400 mb-2">
                         {formatDate(item.pubDate)}
                       </p>
                     )}
                     {item.snippet && (
-                      <p
-                        className="text-default-700"
-                        role="doc-description"
-                        aria-label={`Description: ${truncateText(cleanHtml(item.snippet), 100)}...`}
-                      >
+                      <p className="text-default-600 text-sm">
                         {truncateText(cleanHtml(item.snippet), 200)}
                       </p>
                     )}
@@ -138,12 +135,12 @@ export const FeedContent: React.FC<FeedContentProps> = ({
                 </Card>
               ))}
               {feedItemsData?.items.length === 0 && (
-                <p
-                  className="text-center text-default-500"
-                  aria-label="No feed items found"
-                >
-                  No items found in this feed.
-                </p>
+                <div className="text-center py-8">
+                  <Rss className="w-10 h-10 mx-auto mb-3 text-default-300" aria-hidden="true" />
+                  <p className="text-default-500 text-sm">
+                    No items found in this feed.
+                  </p>
+                </div>
               )}
             </div>
           </div>
