@@ -13,6 +13,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    - Erstelle eine Datei `e2e/auth.setup.ts` für den Login-Prozess
 
 2. **UI-Login implementieren:**
+
    ```typescript
    import { test as setup, expect } from '@playwright/test';
    import path from 'path';
@@ -24,8 +25,12 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
      await page.goto('/auth/signin');
 
      // Fülle das Login-Formular aus
-     await page.getByLabel('Email').fill(process.env.TEST_USER_EMAIL || 'test@example.com');
-     await page.getByLabel('Password').fill(process.env.TEST_USER_PASSWORD || 'password123');
+     await page
+       .getByLabel('Email')
+       .fill(process.env.TEST_USER_EMAIL || 'test@example.com');
+     await page
+       .getByLabel('Password')
+       .fill(process.env.TEST_USER_PASSWORD || 'password123');
 
      // Klicke auf den Login-Button
      await page.getByRole('button', { name: 'Sign in' }).click();
@@ -45,6 +50,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
 
 3. **Optimiere den Login mit API-Calls:**
    - Ersetze den UI-Login durch direkten API-Zugriff für schnellere Tests:
+
    ```typescript
    setup('authenticate via API', async ({ request }) => {
      // CSRF Token abrufen
@@ -52,14 +58,17 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
      const { csrfToken } = await csrfResponse.json();
 
      // Login Request
-     const loginResponse = await request.post('/api/auth/callback/credentials', {
-       form: {
-         email: process.env.TEST_USER_EMAIL || 'test@example.com',
-         password: process.env.TEST_USER_PASSWORD || 'password123',
-         csrfToken: csrfToken
+     const loginResponse = await request.post(
+       '/api/auth/callback/credentials',
+       {
+         form: {
+           email: process.env.TEST_USER_EMAIL || 'test@example.com',
+           password: process.env.TEST_USER_PASSWORD || 'password123',
+           csrfToken: csrfToken,
+         },
+         maxRedirects: 3,
        },
-       maxRedirects: 3
-     });
+     );
 
      // Überprüfe erfolgreichen Login
      expect(loginResponse.ok()).toBeTruthy();
@@ -70,6 +79,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    ```
 
 4. **Playwright-Konfiguration anpassen:**
+
    ```typescript
    // playwright.config.ts
    export default defineConfig({
@@ -94,6 +104,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    ```
 
 5. **Test mit Authentifizierung schreiben:**
+
    ```typescript
    // e2e/private-news.spec.ts
    import { test, expect } from '@playwright/test';
@@ -102,8 +113,12 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
      await page.goto('/news/private');
 
      // Sollte direkt zugreifen können ohne Login
-     await expect(page.getByRole('heading', { name: 'Private News Feed' })).toBeVisible();
-     await expect(page.getByRole('list', { name: 'News articles' })).toBeVisible();
+     await expect(
+       page.getByRole('heading', { name: 'Private News Feed' }),
+     ).toBeVisible();
+     await expect(
+       page.getByRole('list', { name: 'News articles' }),
+     ).toBeVisible();
    });
    ```
 
@@ -113,6 +128,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    TEST_USER_EMAIL=test@example.com
    TEST_USER_PASSWORD=password123
    ```
+
    - Lade sie in der Playwright-Config:
    ```typescript
    import dotenv from 'dotenv';
@@ -122,6 +138,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
 **Bonus: Multi-Role Testing**
 
 7. **(Optional) Mehrere Benutzerrollen testen:**
+
    ```typescript
    // Erstelle separate Auth-Files für verschiedene Rollen
    setup('admin login', async ({ request }) => {
@@ -138,6 +155,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
 **Zeit:** 35 Minuten
 
 **Vorteile dieser Implementierung:**
+
 - UI-Login als Fallback und für End-to-End-Verifizierung
 - API-Login für schnelle Test-Ausführung
 - Wiederverwendbare Auth-States für alle Tests

@@ -58,10 +58,8 @@ export default function FixturesDemoPage() {
       // Update existing user
       setUsers((prev) =>
         prev.map((user) =>
-          user.id === editingUser.id
-            ? { ...user, ...formData }
-            : user
-        )
+          user.id === editingUser.id ? { ...user, ...formData } : user,
+        ),
       );
       setEditingUser(null);
     } else {
@@ -107,8 +105,8 @@ export default function FixturesDemoPage() {
         <section className="text-center">
           <h1 className={title()}>User Management Demo</h1>
           <p className="text-default-500 mt-4">
-            This demo page is designed for testing Playwright fixtures.
-            Practice creating, updating, and deleting users.
+            This demo page is designed for testing Playwright fixtures. Practice
+            creating, updating, and deleting users.
           </p>
         </section>
 
@@ -117,7 +115,11 @@ export default function FixturesDemoPage() {
           <Card>
             <CardHeader className="flex gap-3">
               <div className="flex items-center gap-2">
-                {editingUser ? <Edit className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                {editingUser ? (
+                  <Edit className="w-5 h-5" />
+                ) : (
+                  <Plus className="w-5 h-5" />
+                )}
                 <h2 className="text-lg font-semibold">
                   {editingUser ? 'Edit User' : 'Add New User'}
                 </h2>
@@ -131,7 +133,9 @@ export default function FixturesDemoPage() {
                   label="Name"
                   placeholder="Enter user name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   isRequired
                 />
                 <Input
@@ -140,17 +144,23 @@ export default function FixturesDemoPage() {
                   label="Email"
                   placeholder="Enter email address"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   isRequired
                 />
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="role-select" className="text-sm">Role</label>
+                  <label htmlFor="role-select" className="text-sm">
+                    Role
+                  </label>
                   <select
                     id="role-select"
                     data-testid="user-role-select"
                     className="px-3 py-2 rounded-md border border-default-200 bg-default-50"
                     value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, role: e.target.value })
+                    }
                   >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
@@ -208,13 +218,23 @@ export default function FixturesDemoPage() {
               ) : (
                 <div className="flex flex-col gap-3">
                   {users.map((user) => (
-                    <Card key={user.id} className="p-3" data-testid={`user-item-${user.id}`}>
+                    <Card
+                      key={user.id}
+                      className="p-3"
+                      data-testid={`user-item-${user.id}`}
+                    >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <h3 className="font-semibold" data-testid={`user-name-${user.id}`}>
+                          <h3
+                            className="font-semibold"
+                            data-testid={`user-name-${user.id}`}
+                          >
                             {user.name}
                           </h3>
-                          <p className="text-sm text-default-600" data-testid={`user-email-${user.id}`}>
+                          <p
+                            className="text-sm text-default-600"
+                            data-testid={`user-email-${user.id}`}
+                          >
                             {user.email}
                           </p>
                           <div className="flex gap-2 mt-1">
@@ -223,8 +243,8 @@ export default function FixturesDemoPage() {
                                 user.role === 'admin'
                                   ? 'bg-danger-100 text-danger-800'
                                   : user.role === 'moderator'
-                                  ? 'bg-warning-100 text-warning-800'
-                                  : 'bg-default-100 text-default-800'
+                                    ? 'bg-warning-100 text-warning-800'
+                                    : 'bg-default-100 text-default-800'
                               }`}
                               data-testid={`user-role-${user.id}`}
                             >
@@ -271,16 +291,40 @@ export default function FixturesDemoPage() {
           </CardHeader>
           <CardBody>
             <div className="prose text-sm">
-              <p>This page is specifically designed for Playwright fixture testing. Key testing scenarios:</p>
+              <p>
+                This page is specifically designed for Playwright fixture
+                testing. Key testing scenarios:
+              </p>
               <ul>
-                <li><strong>User Creation:</strong> Test adding new users with different roles</li>
-                <li><strong>User Editing:</strong> Test updating existing user information</li>
-                <li><strong>User Deletion:</strong> Test removing users from the list</li>
-                <li><strong>State Management:</strong> Test that the user count updates correctly</li>
-                <li><strong>Form Validation:</strong> Test required field validation</li>
-                <li><strong>Loading States:</strong> Test UI during async operations</li>
+                <li>
+                  <strong>User Creation:</strong> Test adding new users with
+                  different roles
+                </li>
+                <li>
+                  <strong>User Editing:</strong> Test updating existing user
+                  information
+                </li>
+                <li>
+                  <strong>User Deletion:</strong> Test removing users from the
+                  list
+                </li>
+                <li>
+                  <strong>State Management:</strong> Test that the user count
+                  updates correctly
+                </li>
+                <li>
+                  <strong>Form Validation:</strong> Test required field
+                  validation
+                </li>
+                <li>
+                  <strong>Loading States:</strong> Test UI during async
+                  operations
+                </li>
               </ul>
-              <p>Use fixtures to set up initial test data and clean up after tests.</p>
+              <p>
+                Use fixtures to set up initial test data and clean up after
+                tests.
+              </p>
             </div>
           </CardBody>
         </Card>

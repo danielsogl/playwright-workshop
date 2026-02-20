@@ -10,7 +10,8 @@ const feedJsonPath = path.join(process.cwd(), 'app/api/feed.json');
 const parser = new Parser();
 
 export async function GET() {
-  const offlineMode = String(process.env.RSS_OFFLINE_MODE).toLowerCase() === 'true';
+  const offlineMode =
+    String(process.env.RSS_OFFLINE_MODE).toLowerCase() === 'true';
 
   if (offlineMode) {
     try {
@@ -36,7 +37,8 @@ export async function GET() {
               return (feed.items || []).map((item) => ({
                 title: item.title || '',
                 link: item.link,
-                description: item.contentSnippet || item.content || item.description || '',
+                description:
+                  item.contentSnippet || item.content || item.description || '',
                 pubDate: item.pubDate,
                 category: source.category,
                 source: source.name,
@@ -48,7 +50,7 @@ export async function GET() {
               console.error(`Failed to fetch/parse feed: ${source.url}`, err);
               return [];
             }
-          })
+          }),
         )
       ).flat();
 

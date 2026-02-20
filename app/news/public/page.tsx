@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import type { RSSItem } from "@/types/rss";
-import type { ChangeEvent } from "react";
+import type { RSSItem } from '@/types/rss';
+import type { ChangeEvent } from 'react';
 
-import { Card, Input } from "@heroui/react";
-import { useState } from "react";
-import useSWR from "swr";
+import { Card, Input } from '@heroui/react';
+import { useState } from 'react';
+import useSWR from 'swr';
 
-import { filterFeedItems } from "@/lib/rss";
-import { RSS_CATEGORIES } from "@/config/rss-sources";
-import { fetcher } from "@/lib/utils/fetchers";
+import { filterFeedItems } from '@/lib/rss';
+import { RSS_CATEGORIES } from '@/config/rss-sources';
+import { fetcher } from '@/lib/utils/fetchers';
 
 interface NewsApiResponse {
   items: RSSItem[];
 }
 
 export default function PublicNewsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const { data, error, isLoading } = useSWR<NewsApiResponse>(
-    "/api/news/public",
-    fetcher
+    '/api/news/public',
+    fetcher,
   );
 
   const filteredItems = filterFeedItems(
     data?.items || [],
     searchQuery,
-    selectedCategory
+    selectedCategory,
   );
 
   if (isLoading) {
@@ -61,9 +61,15 @@ export default function PublicNewsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8" role="main">
-      <h1 id="news-feed-title" className="text-3xl font-bold mb-8">News Feed</h1>
+      <h1 id="news-feed-title" className="text-3xl font-bold mb-8">
+        News Feed
+      </h1>
 
-      <div className="flex gap-4 mb-8" role="search" aria-label="News filter options">
+      <div
+        className="flex gap-4 mb-8"
+        role="search"
+        aria-label="News filter options"
+      >
         <Input
           aria-label="Search news articles"
           className="flex-1"
@@ -125,7 +131,10 @@ export default function PublicNewsPage() {
                 </span>
               </div>
 
-              <h2 className="text-xl font-semibold mb-2" id={`news-title-${index}`}>
+              <h2
+                className="text-xl font-semibold mb-2"
+                id={`news-title-${index}`}
+              >
                 <a
                   aria-label={`Read article: ${item.title}`}
                   className="hover:text-blue-600 transition-colors"
@@ -141,20 +150,20 @@ export default function PublicNewsPage() {
               <p
                 className="text-gray-600 mb-4 line-clamp-3"
                 role="doc-description"
-                aria-label={`Description: ${item.description?.replace(/<[^>]*>/g, "").substring(0, 100)}...`}
+                aria-label={`Description: ${item.description?.replace(/<[^>]*>/g, '').substring(0, 100)}...`}
               >
-                {item.description?.replace(/<[^>]*>/g, "") ??
-                  "No description available"}
+                {item.description?.replace(/<[^>]*>/g, '') ??
+                  'No description available'}
               </p>
 
-              <div 
-                className="text-sm text-gray-500" 
+              <div
+                className="text-sm text-gray-500"
                 role="doc-publication-date"
-                aria-label={`Published: ${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Date unavailable"}`}
+                aria-label={`Published: ${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : 'Date unavailable'}`}
               >
                 {item.pubDate
                   ? new Date(item.pubDate).toLocaleDateString()
-                  : "Date unavailable"}
+                  : 'Date unavailable'}
               </div>
             </div>
           </Card>

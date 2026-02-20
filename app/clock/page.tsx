@@ -1,74 +1,79 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardBody, CardHeader } from '@heroui/react'
+import { useState, useEffect } from 'react';
+import { Card, CardBody, CardHeader } from '@heroui/react';
 
 export default function ClockPage() {
-  const [currentTime, setCurrentTime] = useState(new Date())
-  const [countdown, setCountdown] = useState<number | null>(null)
-  const [sessionStart] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [sessionStart] = useState(new Date());
 
   // Update time every second
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
+      setCurrentTime(new Date());
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   // Session timeout after 30 minutes (for testing)
   useEffect(() => {
-    const sessionTimer = setTimeout(() => {
-      // Simulate session timeout
-      console.log('Session timeout reached')
-    }, 30 * 60 * 1000) // 30 minutes
+    const sessionTimer = setTimeout(
+      () => {
+        // Simulate session timeout
+        console.log('Session timeout reached');
+      },
+      30 * 60 * 1000,
+    ); // 30 minutes
 
-    return () => clearTimeout(sessionTimer)
-  }, [])
+    return () => clearTimeout(sessionTimer);
+  }, []);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('de-DE', {
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
-    })
-  }
+      second: '2-digit',
+    });
+  };
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('de-DE', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
-    })
-  }
+      day: 'numeric',
+    });
+  };
 
   const getSessionDuration = () => {
-    const diff = Math.floor((currentTime.getTime() - sessionStart.getTime()) / 1000)
-    const minutes = Math.floor(diff / 60)
-    const seconds = diff % 60
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
+    const diff = Math.floor(
+      (currentTime.getTime() - sessionStart.getTime()) / 1000,
+    );
+    const minutes = Math.floor(diff / 60);
+    const seconds = diff % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   const startCountdown = (minutes: number) => {
-    const endTime = new Date(Date.now() + minutes * 60 * 1000)
+    const endTime = new Date(Date.now() + minutes * 60 * 1000);
     const timer = setInterval(() => {
-      const remaining = Math.floor((endTime.getTime() - Date.now()) / 1000)
+      const remaining = Math.floor((endTime.getTime() - Date.now()) / 1000);
       if (remaining <= 0) {
-        setCountdown(null)
-        clearInterval(timer)
+        setCountdown(null);
+        clearInterval(timer);
       } else {
-        setCountdown(remaining)
+        setCountdown(remaining);
       }
-    }, 1000)
-  }
+    }, 1000);
+  };
 
   const formatCountdown = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -88,10 +93,7 @@ export default function ClockPage() {
               >
                 {formatTime(currentTime)}
               </div>
-              <div
-                data-testid="current-date"
-                className="text-lg text-gray-600"
-              >
+              <div data-testid="current-date" className="text-lg text-gray-600">
                 {formatDate(currentTime)}
               </div>
             </div>
@@ -107,16 +109,25 @@ export default function ClockPage() {
             <div className="space-y-2">
               <div>
                 <span className="font-medium">Session Start: </span>
-                <span data-testid="session-start">{formatTime(sessionStart)}</span>
+                <span data-testid="session-start">
+                  {formatTime(sessionStart)}
+                </span>
               </div>
               <div>
                 <span className="font-medium">Session Dauer: </span>
-                <span data-testid="session-duration">{getSessionDuration()}</span>
+                <span data-testid="session-duration">
+                  {getSessionDuration()}
+                </span>
               </div>
               <div>
                 <span className="font-medium">Timeout in: </span>
                 <span data-testid="session-timeout">
-                  {30 - Math.floor((currentTime.getTime() - sessionStart.getTime()) / (1000 * 60))} Minuten
+                  {30 -
+                    Math.floor(
+                      (currentTime.getTime() - sessionStart.getTime()) /
+                        (1000 * 60),
+                    )}{' '}
+                  Minuten
                 </span>
               </div>
             </div>
@@ -180,9 +191,7 @@ export default function ClockPage() {
           <CardBody>
             <div>
               <span className="font-medium">Zuletzt aktualisiert: </span>
-              <span data-testid="last-updated">
-                {formatTime(currentTime)}
-              </span>
+              <span data-testid="last-updated">{formatTime(currentTime)}</span>
             </div>
             <div className="mt-2">
               <span className="font-medium">Auto-Refresh: </span>
@@ -196,7 +205,10 @@ export default function ClockPage() {
       {currentTime.getMonth() === 11 && currentTime.getDate() === 25 && (
         <Card className="mt-6 bg-red-50">
           <CardBody>
-            <div data-testid="christmas-message" className="text-center text-xl font-bold text-red-600">
+            <div
+              data-testid="christmas-message"
+              className="text-center text-xl font-bold text-red-600"
+            >
               🎄 Frohe Weihnachten! 🎄
             </div>
           </CardBody>
@@ -206,12 +218,15 @@ export default function ClockPage() {
       {currentTime.getMonth() === 11 && currentTime.getDate() === 31 && (
         <Card className="mt-6 bg-blue-50">
           <CardBody>
-            <div data-testid="newyear-message" className="text-center text-xl font-bold text-blue-600">
+            <div
+              data-testid="newyear-message"
+              className="text-center text-xl font-bold text-blue-600"
+            >
               🎊 Frohes neues Jahr! 🎊
             </div>
           </CardBody>
         </Card>
       )}
     </div>
-  )
+  );
 }

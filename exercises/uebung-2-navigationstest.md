@@ -6,6 +6,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 **Aufgaben:**
 
 1. **Test-Suite mit Setup erstellen:**
+
    ```typescript
    import { test, expect } from '@playwright/test';
 
@@ -15,7 +16,9 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
        await page.goto('/news/public');
 
        // Warte bis die News geladen sind
-       await expect(page.getByRole('list', { name: 'News articles' })).toBeVisible();
+       await expect(
+         page.getByRole('list', { name: 'News articles' }),
+       ).toBeVisible();
      });
 
      // Tests kommen hier...
@@ -23,6 +26,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```
 
 2. **Initiale Anzeige testen:**
+
    ```typescript
    test('zeigt alle News-Artikel initial an', async ({ page }) => {
      // Finde die News-Liste
@@ -38,6 +42,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```
 
 3. **Suchfunktion implementieren:**
+
    ```typescript
    test('kann nach News suchen', async ({ page }) => {
      // Finde das Suchfeld
@@ -70,6 +75,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```
 
 4. **Erweiterte Suche mit Assertions:**
+
    ```typescript
    test('zeigt Suchergebnisse korrekt an', async ({ page }) => {
      const searchInput = page.getByRole('textbox', { name: 'Search news' });
@@ -93,6 +99,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 
 5. **Trace für Debugging aktivieren:**
    - In `playwright.config.ts`:
+
    ```typescript
    use: {
      trace: 'retain-on-failure', // Trace nur bei Fehlern
@@ -101,6 +108,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```
 
 6. **Tests ausführen und Trace analysieren:**
+
    ```bash
    # Tests ausführen
    npx playwright test navigationstest.spec.ts
@@ -110,6 +118,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```
 
 **Was du lernst:**
+
 - Test-Organisation mit `describe` und `beforeEach`
 - Formular-Interaktionen (fill, clear, press)
 - Dynamische Assertions mit count()

@@ -8,6 +8,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 1. **Mobile Projekte in der Konfiguration definieren:**
    - Öffne `playwright.config.ts`
    - Aktiviere die auskommentierten Mobile-Projekte:
+
    ```typescript
    projects: [
      // Desktop Browser
@@ -29,6 +30,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 
 2. **Responsive Navigation testen:**
    - Erstelle `e2e/responsive.spec.ts`:
+
    ```typescript
    import { test, expect, devices } from '@playwright/test';
 
@@ -37,7 +39,9 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await page.goto('/');
 
        // Desktop Navigation sollte sichtbar sein
-       const desktopNav = page.getByRole('navigation').locator('.hidden.lg\\:flex');
+       const desktopNav = page
+         .getByRole('navigation')
+         .locator('.hidden.lg\\:flex');
        await expect(desktopNav).toBeVisible();
 
        // Mobile Menu Button sollte nicht sichtbar sein
@@ -58,19 +62,24 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await expect(mobileMenuButton).toBeVisible();
 
        // Desktop Navigation sollte nicht sichtbar sein
-       const desktopNav = page.getByRole('navigation').locator('.hidden.lg\\:flex');
+       const desktopNav = page
+         .getByRole('navigation')
+         .locator('.hidden.lg\\:flex');
        await expect(desktopNav).not.toBeVisible();
 
        // Öffne das Mobile Menu
        await mobileMenuButton.click();
 
        // Prüfe ob Menu-Items erscheinen
-       await expect(page.getByRole('link', { name: 'Public News' })).toBeVisible();
+       await expect(
+         page.getByRole('link', { name: 'Public News' }),
+       ).toBeVisible();
      });
    });
    ```
 
 3. **News Grid Layout auf verschiedenen Viewports testen:**
+
    ```typescript
    test.describe('News Grid Responsive Layout', () => {
      test('Desktop: zeigt 3 Spalten', async ({ page }) => {
@@ -102,6 +111,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
    ```
 
 4. **Touch-Gesten testen (optional):**
+
    ```typescript
    test('Mobile: Touch-Interaktionen', async ({ page, isMobile }) => {
      if (!isMobile) {
@@ -128,6 +138,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
    - Führe alle Tests aus: `npx playwright test`
 
 **Best Practices:**
+
 - Nutze `isMobile` Context-Variable für bedingte Tests
 - Teste kritische User Journeys auf mobilen Geräten
 - Prüfe Touch-Targets auf ausreichende Größe (min. 44x44px)

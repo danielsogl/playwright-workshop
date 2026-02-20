@@ -9,6 +9,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
    - Erstelle `e2e/first-test.spec.ts`
 
 2. **Navigation und Auto-Waiting verstehen:**
+
    ```typescript
    import { test, expect } from '@playwright/test';
 
@@ -26,11 +27,14 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
      await expect(page).toHaveURL('/news/public');
 
      // Auto-wait: Wartet bis die Überschrift sichtbar ist
-     await expect(page.getByRole('heading', { name: 'News Feed' })).toBeVisible();
+     await expect(
+       page.getByRole('heading', { name: 'News Feed' }),
+     ).toBeVisible();
    });
    ```
 
 3. **Semantic Locators verwenden:**
+
    ```typescript
    test('verwendet verschiedene semantische Locators', async ({ page }) => {
      await page.goto('/');
@@ -58,6 +62,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
    ```
 
 4. **Multiple Elemente und Filtering:**
+
    ```typescript
    test('arbeitet mit Listen von Elementen', async ({ page }) => {
      await page.goto('/news/public');
@@ -81,6 +86,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
    ```
 
 5. **Test ausführen und debuggen:**
+
    ```bash
    # Normal ausführen
    npx playwright test first-test.spec.ts
@@ -93,6 +99,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
    ```
 
 **Best Practices:**
+
 - ✅ Verwende semantische Locators (`getByRole`, `getByLabel`, `getByText`)
 - ✅ Vertraue auf Auto-Waiting - keine manuellen Waits nötig!
 - ✅ Schreibe Tests aus Benutzersicht

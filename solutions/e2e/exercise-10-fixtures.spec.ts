@@ -1,13 +1,15 @@
 import { test as base, expect } from '@playwright/test';
 
 // Simple fixture for test data
-const test = base.extend<{ testUser: { name: string; email: string; role: string } }>({
+const test = base.extend<{
+  testUser: { name: string; email: string; role: string };
+}>({
   testUser: async ({}, use) => {
     // Setup: Create unique test data
     const userData = {
       name: `Test User ${Date.now()}`,
       email: `test-${Date.now()}@example.com`,
-      role: 'user'
+      role: 'user',
     };
 
     console.log('✅ Test user data prepared:', userData.name);
@@ -21,7 +23,10 @@ const test = base.extend<{ testUser: { name: string; email: string; role: string
 });
 
 test.describe('Fixtures Demo - Basic Tests', () => {
-  test('fügt einen Benutzer mit Fixture-Daten hinzu', async ({ page, testUser }) => {
+  test('fügt einen Benutzer mit Fixture-Daten hinzu', async ({
+    page,
+    testUser,
+  }) => {
     await page.goto('/fixtures-demo');
 
     // Use fixture data with semantic locators
@@ -41,7 +46,11 @@ test.describe('Fixtures Demo - Basic Tests', () => {
 interface FixturesDemo {
   testUser: { name: string; email: string; role: string };
   userPage: {
-    addUser: (user: { name: string; email: string; role: string }) => Promise<void>;
+    addUser: (user: {
+      name: string;
+      email: string;
+      role: string;
+    }) => Promise<void>;
     getUserCount: () => Promise<number>;
   };
 }
@@ -51,7 +60,7 @@ const testWithHelpers = base.extend<FixturesDemo>({
     const userData = {
       name: `Test User ${Date.now()}`,
       email: `test-${Date.now()}@example.com`,
-      role: 'moderator'
+      role: 'moderator',
     };
     await use(userData);
   },
@@ -68,7 +77,9 @@ const testWithHelpers = base.extend<FixturesDemo>({
         await page.getByLabel('Name').fill(user.name);
         await page.getByLabel('Email').fill(user.email);
         await page.getByLabel('Role').selectOption(user.role);
-        await page.getByRole('button', { name: /add user|update user/i }).click();
+        await page
+          .getByRole('button', { name: /add user|update user/i })
+          .click();
 
         // Wait until user is added
         await expect(page.getByText(user.name)).toBeVisible();
@@ -85,7 +96,7 @@ const testWithHelpers = base.extend<FixturesDemo>({
         const countText = await countElement.textContent();
         const match = countText?.match(/(\d+)/);
         return match ? parseInt(match[1]) : 2;
-      }
+      },
     };
 
     await use(userPage);
@@ -93,17 +104,24 @@ const testWithHelpers = base.extend<FixturesDemo>({
 });
 
 testWithHelpers.describe('Fixtures Demo - With Helpers', () => {
-  testWithHelpers('verwendet Page Helper Fixture', async ({ testUser, userPage }) => {
-    const initialCount = await userPage.getUserCount();
+  testWithHelpers(
+    'verwendet Page Helper Fixture',
+    async ({ testUser, userPage }) => {
+      const initialCount = await userPage.getUserCount();
 
-    await userPage.addUser(testUser);
+      await userPage.addUser(testUser);
 
-    const finalCount = await userPage.getUserCount();
-    expect(finalCount).toBe(initialCount + 1);
-  });
+      const finalCount = await userPage.getUserCount();
+      expect(finalCount).toBe(initialCount + 1);
+    },
+  );
 
   testWithHelpers('fügt mehrere Benutzer hinzu', async ({ userPage }) => {
-    const user1 = { name: 'Alice Test', email: 'alice@test.com', role: 'admin' };
+    const user1 = {
+      name: 'Alice Test',
+      email: 'alice@test.com',
+      role: 'admin',
+    };
     const user2 = { name: 'Bob Test', email: 'bob@test.com', role: 'user' };
 
     const initialCount = await userPage.getUserCount();

@@ -14,7 +14,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Exercise 9: Clock API Testing', () => {
-
   test('Clock display shows correct time', async ({ page }) => {
     // WICHTIG: Clock installieren VOR page.goto()!
     const testTime = new Date('2024-01-15 14:30:00');
@@ -78,19 +77,23 @@ test.describe('Exercise 9: Clock API Testing', () => {
     await expect(page.getByTestId('countdown-display')).toBeVisible();
 
     // Countdown sollte bei ungefähr 1:00 oder etwas darunter sein
-    const initialCountdown = await page.getByTestId('countdown-display').textContent();
+    const initialCountdown = await page
+      .getByTestId('countdown-display')
+      .textContent();
     expect(initialCountdown).toMatch(/0:(5[0-9]|[0-5][0-9])/); // Zwischen 0:00 und 0:59
 
     // 30 Sekunden vorspulen
     await page.clock.fastForward('00:30');
 
     // Countdown sollte sich um ~30 Sekunden reduziert haben
-    const afterThirtySeconds = await page.getByTestId('countdown-display').textContent();
+    const afterThirtySeconds = await page
+      .getByTestId('countdown-display')
+      .textContent();
     const initialSeconds = parseInt(initialCountdown?.split(':')[1] || '0');
     const newSeconds = parseInt(afterThirtySeconds?.split(':')[1] || '0');
 
     // Sollte um ca. 30 Sekunden weniger sein (mit etwas Toleranz)
-    expect(Math.abs((initialSeconds - newSeconds) - 30)).toBeLessThan(5);
+    expect(Math.abs(initialSeconds - newSeconds - 30)).toBeLessThan(5);
   });
 
   test('Christmas message appears on December 25th', async ({ page }) => {
@@ -102,7 +105,9 @@ test.describe('Exercise 9: Clock API Testing', () => {
 
     // Christmas message should be visible
     await expect(page.getByTestId('christmas-message')).toBeVisible();
-    await expect(page.getByTestId('christmas-message')).toContainText('Frohe Weihnachten');
+    await expect(page.getByTestId('christmas-message')).toContainText(
+      'Frohe Weihnachten',
+    );
   });
 
   test('New Year message appears on December 31st', async ({ page }) => {
@@ -114,7 +119,9 @@ test.describe('Exercise 9: Clock API Testing', () => {
 
     // New Year message should be visible
     await expect(page.getByTestId('newyear-message')).toBeVisible();
-    await expect(page.getByTestId('newyear-message')).toContainText('Frohes neues Jahr');
+    await expect(page.getByTestId('newyear-message')).toContainText(
+      'Frohes neues Jahr',
+    );
   });
 
   test('Pause and resume clock functionality', async ({ page }) => {

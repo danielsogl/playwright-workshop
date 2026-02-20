@@ -80,10 +80,7 @@ export const updateUserPassword = async (
     throw new Error('User not found');
   }
 
-  const isPasswordValid = await compare(
-    currentPassword,
-    user.passwordHash,
-  );
+  const isPasswordValid = await compare(currentPassword, user.passwordHash);
 
   if (!isPasswordValid) {
     throw new Error('Incorrect current password');

@@ -6,6 +6,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
 **Aufgaben:**
 
 1. **Projektverzeichnis vorbereiten:**
+
    ```bash
    cd playwright-workshop
    npm install
@@ -14,6 +15,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
 
 2. **Umgebungsvariablen einrichten:**
    - Erstelle eine `.env.test` Datei:
+
    ```bash
    # Test-Benutzer für Authentifizierung
    TEST_USER_EMAIL=test@example.com
@@ -22,6 +24,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
 
 3. **Playwright-Konfiguration mit webServer anpassen:**
    - Öffne `playwright.config.ts` und aktiviere den webServer:
+
    ```typescript
    webServer: {
      command: 'npm run dev',
@@ -33,6 +36,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
 
 4. **Ersten Smoke-Test erstellen:**
    - Erstelle `e2e/setup.spec.ts`:
+
    ```typescript
    import { test, expect } from '@playwright/test';
 
@@ -48,6 +52,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
    ```
 
 5. **Test ausführen und verifizieren:**
+
    ```bash
    npx playwright test setup.spec.ts
    # Server startet automatisch!
@@ -60,6 +65,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
    ```
 
 **Projekt-Struktur nach Setup:**
+
 ```
 playwright-workshop/
 ├── .env.test              # Umgebungsvariablen

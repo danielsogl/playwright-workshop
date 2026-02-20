@@ -14,9 +14,7 @@
 import { test, expect, devices } from '@playwright/test';
 
 test.describe('Exercise 6: Mobile and Responsive Testing', () => {
-
   test.describe('Responsive Navigation', () => {
-
     test('Desktop: shows normal navigation', async ({ page }) => {
       // Ensure desktop viewport
       await page.setViewportSize({ width: 1280, height: 720 });
@@ -29,13 +27,16 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
         'nav .desktop-nav',
         '[data-testid="desktop-navigation"]',
         'nav ul:not(.mobile-menu)',
-        '.navbar .nav-links'
+        '.navbar .nav-links',
       ];
 
       let desktopNavFound = false;
       for (const selector of desktopNavSelectors) {
         const element = page.locator(selector);
-        if (await element.count() > 0 && await element.isVisible().catch(() => false)) {
+        if (
+          (await element.count()) > 0 &&
+          (await element.isVisible().catch(() => false))
+        ) {
           desktopNavFound = true;
           console.log('Found desktop navigation:', selector);
           break;
@@ -48,13 +49,16 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
         'button[aria-label*="hamburger" i]',
         '[data-testid="mobile-menu-button"]',
         '.hamburger-button',
-        'button:has-text("☰")'
+        'button:has-text("☰")',
       ];
 
       let mobileMenuVisible = false;
       for (const selector of mobileMenuSelectors) {
         const element = page.locator(selector);
-        if (await element.count() > 0 && await element.isVisible().catch(() => false)) {
+        if (
+          (await element.count()) > 0 &&
+          (await element.isVisible().catch(() => false))
+        ) {
           mobileMenuVisible = true;
           break;
         }
@@ -86,13 +90,13 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
         '.hamburger-button',
         'button:has([data-testid="hamburger-icon"])',
         'button:has-text("☰")',
-        'nav button' // Generic nav button
+        'nav button', // Generic nav button
       ];
 
       let mobileMenuButton = null;
       for (const selector of mobileMenuSelectors) {
         const element = page.locator(selector);
-        if (await element.count() > 0) {
+        if ((await element.count()) > 0) {
           mobileMenuButton = element.first();
           break;
         }
@@ -111,27 +115,39 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
           '[data-testid="mobile-menu"]',
           'nav ul.mobile',
           '.mobile-nav',
-          '[role="navigation"][aria-expanded="true"]'
+          '[role="navigation"][aria-expanded="true"]',
         ];
 
         let menuContentFound = false;
         for (const selector of mobileMenuContentSelectors) {
           const element = page.locator(selector);
-          if (await element.count() > 0 && await element.isVisible().catch(() => false)) {
+          if (
+            (await element.count()) > 0 &&
+            (await element.isVisible().catch(() => false))
+          ) {
             menuContentFound = true;
             break;
           }
         }
 
         // If we found specific mobile menu, check for navigation links
-        if (menuContentFound || (await page.locator('nav a').count() > 0)) {
+        if (menuContentFound || (await page.locator('nav a').count()) > 0) {
           // Check for common navigation links
-          const commonLinks = ['Home', 'News', 'About', 'Blog', 'Contact', 'Login'];
+          const commonLinks = [
+            'Home',
+            'News',
+            'About',
+            'Blog',
+            'Contact',
+            'Login',
+          ];
           let foundLinks = 0;
 
           for (const linkText of commonLinks) {
-            const link = page.getByRole('link', { name: new RegExp(linkText, 'i') });
-            if (await link.count() > 0) {
+            const link = page.getByRole('link', {
+              name: new RegExp(linkText, 'i'),
+            });
+            if ((await link.count()) > 0) {
               foundLinks++;
             }
           }
@@ -139,10 +155,14 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
           expect(foundLinks).toBeGreaterThan(0);
         }
       } else {
-        console.log('Mobile menu button not found, checking for responsive navigation');
+        console.log(
+          'Mobile menu button not found, checking for responsive navigation',
+        );
 
         // Some mobile designs might use different responsive patterns
-        const anyNavLinks = page.locator('nav a, .nav-link, [role="navigation"] a');
+        const anyNavLinks = page.locator(
+          'nav a, .nav-link, [role="navigation"] a',
+        );
         const linkCount = await anyNavLinks.count();
         expect(linkCount).toBeGreaterThan(0);
       }
@@ -150,23 +170,24 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
   });
 
   test.describe('News Grid Responsive Layout', () => {
-
     test('Desktop: shows multi-column layout', async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 720 });
       await page.goto('/news/public');
 
       // Wait for news items to load
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       // Check for grid layout indicators
-      const newsContainer = page.locator('.grid, [style*="grid"], .news-grid, [data-testid="news-grid"]').first();
+      const newsContainer = page
+        .locator(
+          '.grid, [style*="grid"], .news-grid, [data-testid="news-grid"]',
+        )
+        .first();
 
-      if (await newsContainer.count() > 0) {
+      if ((await newsContainer.count()) > 0) {
         // Check CSS grid properties
-        const gridColumns = await newsContainer.evaluate(el => {
+        const gridColumns = await newsContainer.evaluate((el) => {
           const style = window.getComputedStyle(el);
           return style.gridTemplateColumns || style.display;
         });
@@ -190,7 +211,10 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
           if (firstBox && secondBox) {
             // On desktop, items should be side by side (same row) rather than stacked
             const rowDifference = Math.abs(firstBox.y - secondBox.y);
-            console.log('Row difference between first two items:', rowDifference);
+            console.log(
+              'Row difference between first two items:',
+              rowDifference,
+            );
 
             // If items are in the same row (row difference < item height), it's multi-column
             expect(rowDifference).toBeLessThan(100);
@@ -204,18 +228,18 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       await page.goto('/news/public');
 
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       const newsItems = page.getByRole('article');
       const itemCount = await newsItems.count();
 
       if (itemCount >= 2) {
         // Check grid container for column layout
-        const container = page.locator('[role="list"]').filter({ hasText: 'News articles' });
-        if (await container.count() > 0) {
-          const gridColumns = await container.evaluate(el => {
+        const container = page
+          .locator('[role="list"]')
+          .filter({ hasText: 'News articles' });
+        if ((await container.count()) > 0) {
+          const gridColumns = await container.evaluate((el) => {
             const style = window.getComputedStyle(el);
             return style.gridTemplateColumns || style.display;
           });
@@ -242,9 +266,7 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
 
       await page.goto('/news/public');
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       const newsItems = page.getByRole('article');
       const itemCount = await newsItems.count();
@@ -268,10 +290,12 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       }
 
       // Check CSS grid if present
-      const container = page.locator('.grid, [style*="grid"], .news-grid').first();
-      if (await container.count() > 0) {
-        const gridColumns = await container.evaluate(el =>
-          window.getComputedStyle(el).gridTemplateColumns
+      const container = page
+        .locator('.grid, [style*="grid"], .news-grid')
+        .first();
+      if ((await container.count()) > 0) {
+        const gridColumns = await container.evaluate(
+          (el) => window.getComputedStyle(el).gridTemplateColumns,
         );
         console.log('Mobile grid layout:', gridColumns);
 
@@ -282,17 +306,17 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
   });
 
   test.describe('Touch Interactions', () => {
-
-    test('Mobile: touch interactions work correctly', async ({ page, isMobile }) => {
+    test('Mobile: touch interactions work correctly', async ({
+      page,
+      isMobile,
+    }) => {
       if (!isMobile) {
         test.skip();
       }
 
       await page.goto('/news/public');
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       // Test touch on news item
       const firstNewsItem = page.getByRole('article').first();
@@ -308,8 +332,10 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       console.log('URL after tap:', currentUrl);
 
       // Should navigate to article or open modal
-      const hasNavigated = !currentUrl.includes('/news/public') || currentUrl.includes('#');
-      const hasModal = await page.locator('[role="dialog"], .modal, .overlay').count() > 0;
+      const hasNavigated =
+        !currentUrl.includes('/news/public') || currentUrl.includes('#');
+      const hasModal =
+        (await page.locator('[role="dialog"], .modal, .overlay').count()) > 0;
 
       expect(hasNavigated || hasModal).toBe(true);
     });
@@ -321,9 +347,7 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
 
       await page.goto('/news/public');
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       // Get initial scroll position
       const initialScrollY = await page.evaluate(() => window.scrollY);
@@ -343,18 +367,19 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       await page.waitForTimeout(2000);
 
       const finalItemCount = await page.getByRole('article').count();
-      console.log(`Items before scroll: ${initialItemCount}, after: ${finalItemCount}`);
+      console.log(
+        `Items before scroll: ${initialItemCount}, after: ${finalItemCount}`,
+      );
 
       // Note: This test depends on whether the app implements infinite scroll
     });
   });
 
   test.describe('Cross-Device Compatibility', () => {
-
     test('iPhone 13: complete user journey', async ({ browser }) => {
       // Use iPhone 13 device settings
       const context = await browser.newContext({
-        ...devices['iPhone 13']
+        ...devices['iPhone 13'],
       });
       const page = await context.newPage();
 
@@ -362,17 +387,17 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       await page.goto('/');
 
       // Navigate to news - be specific to avoid multiple matches
-      const newsLink = page.getByRole('link', { name: /public news|navigate to public news/i }).first();
-      if (await newsLink.count() > 0) {
+      const newsLink = page
+        .getByRole('link', { name: /public news|navigate to public news/i })
+        .first();
+      if ((await newsLink.count()) > 0) {
         await newsLink.tap();
       } else {
         await page.goto('/news/public');
       }
 
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       // Verify news items are visible and appropriately sized
       const newsItems = page.getByRole('article');
@@ -395,18 +420,18 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
 
     test('Pixel 5: navigation and search', async ({ browser }) => {
       const context = await browser.newContext({
-        ...devices['Pixel 5']
+        ...devices['Pixel 5'],
       });
       const page = await context.newPage();
 
       await page.goto('/news/public');
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       // Look for search input by its role and name
-      const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+      const searchInput = page.getByRole('textbox', {
+        name: 'Search news articles',
+      });
 
       // Test search on mobile if input is visible
       if (await searchInput.isVisible()) {
@@ -425,7 +450,6 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
   });
 
   test.describe('Viewport Breakpoint Testing', () => {
-
     const viewports = [
       { width: 1920, height: 1080, name: 'desktop-large' },
       { width: 1280, height: 720, name: 'desktop' },
@@ -433,12 +457,15 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       { width: 768, height: 1024, name: 'tablet-portrait' },
       { width: 414, height: 896, name: 'mobile-large' },
       { width: 375, height: 667, name: 'mobile' },
-      { width: 320, height: 568, name: 'mobile-small' }
+      { width: 320, height: 568, name: 'mobile-small' },
     ];
 
     for (const viewport of viewports) {
       test(`${viewport.name}: layout consistency`, async ({ page }) => {
-        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height,
+        });
         await page.goto('/');
 
         // Check that page renders without horizontal scroll
@@ -446,8 +473,10 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
         expect(bodyWidth).toBeLessThanOrEqual(viewport.width + 20); // Allow 20px buffer
 
         // Check that main content is visible
-        const mainContent = page.locator('main, [role="main"], .main-content').first();
-        if (await mainContent.count() > 0) {
+        const mainContent = page
+          .locator('main, [role="main"], .main-content')
+          .first();
+        if ((await mainContent.count()) > 0) {
           await expect(mainContent).toBeVisible();
         }
 
@@ -456,14 +485,18 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
         const linkCount = await navLinks.count();
         expect(linkCount).toBeGreaterThan(0);
 
-        console.log(`${viewport.name}: Body width ${bodyWidth}px, Nav links: ${linkCount}`);
+        console.log(
+          `${viewport.name}: Body width ${bodyWidth}px, Nav links: ${linkCount}`,
+        );
       });
     }
   });
 
   test.describe('Orientation Changes', () => {
-
-    test('handles orientation change gracefully', async ({ page, isMobile }) => {
+    test('handles orientation change gracefully', async ({
+      page,
+      isMobile,
+    }) => {
       if (!isMobile) {
         test.skip();
       }
@@ -472,9 +505,7 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/news/public');
       // Wait for news items to load
-      await expect(
-        page.getByRole('article').first()
-      ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       const portraitItemCount = await page.getByRole('article').count();
 

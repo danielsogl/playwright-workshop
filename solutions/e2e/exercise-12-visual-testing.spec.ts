@@ -14,7 +14,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Exercise 7: Visual Regression Testing', () => {
-
   // Global test configuration for consistent screenshots
   test.beforeEach(async ({ page }) => {
     // Disable animations for consistent screenshots
@@ -34,7 +33,6 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
   });
 
   test.describe('Homepage Visual Tests', () => {
-
     test('Homepage full page screenshot', async ({ page }) => {
       await page.goto('/');
 
@@ -49,7 +47,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         fullPage: true,
         animations: 'disabled',
         // Threshold for pixel differences (0-1, where 1 means identical)
-        threshold: 0.3
+        threshold: 0.3,
       });
     });
 
@@ -63,13 +61,13 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         '.hero',
         '[data-testid="hero"]',
         'main > section:first-child',
-        '.header-section'
+        '.header-section',
       ];
 
       let heroElement = null;
       for (const selector of heroSelectors) {
         const element = page.locator(selector);
-        if (await element.count() > 0) {
+        if ((await element.count()) > 0) {
           heroElement = element.first();
           break;
         }
@@ -77,13 +75,13 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
 
       if (heroElement) {
         await expect(heroElement).toHaveScreenshot('homepage-hero.png', {
-          animations: 'disabled'
+          animations: 'disabled',
         });
       } else {
         // Fallback: screenshot of the top portion of the page
         await expect(page).toHaveScreenshot('homepage-header-fallback.png', {
           clip: { x: 0, y: 0, width: 1280, height: 400 },
-          animations: 'disabled'
+          animations: 'disabled',
         });
       }
     });
@@ -94,43 +92,42 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
 
       const navigation = page.locator('nav').first();
       await expect(navigation).toHaveScreenshot('navigation-bar.png', {
-        animations: 'disabled'
+        animations: 'disabled',
       });
     });
   });
 
   test.describe('News Feed Visual Tests', () => {
-
     test('News feed layout screenshot', async ({ page }) => {
       await page.goto('/news/public');
 
       // Wait for news items to load
-      await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
       await page.waitForLoadState('networkidle');
 
       // Take screenshot of the news grid/list
-      const newsContainer = page.locator('.grid, .news-grid, [data-testid="news-grid"]').first();
+      const newsContainer = page
+        .locator('.grid, .news-grid, [data-testid="news-grid"]')
+        .first();
 
-      if (await newsContainer.count() > 0) {
+      if ((await newsContainer.count()) > 0) {
         await expect(newsContainer).toHaveScreenshot('news-grid.png', {
-          animations: 'disabled'
+          animations: 'disabled',
         });
       } else {
         // Fallback to main content area
         const mainContent = page.locator('main, [role="main"]').first();
         await expect(mainContent).toHaveScreenshot('news-content.png', {
-          animations: 'disabled'
+          animations: 'disabled',
         });
       }
     });
 
-    test('Individual news card with masked dynamic content', async ({ page }) => {
+    test('Individual news card with masked dynamic content', async ({
+      page,
+    }) => {
       await page.goto('/news/public');
-      await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       const firstNewsCard = page.getByRole('listitem').first();
 
@@ -140,7 +137,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         '.timestamp',
         '[data-testid="publish-date"]',
         '.date',
-        '.relative-time'
+        '.relative-time',
       ];
 
       const maskedElements = [];
@@ -155,7 +152,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
       await expect(firstNewsCard).toHaveScreenshot('news-card.png', {
         mask: maskedElements,
         maskColor: '#FF00FF', // Magenta mask color
-        animations: 'disabled'
+        animations: 'disabled',
       });
     });
 
@@ -165,7 +162,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ items: [] })
+          body: JSON.stringify({ items: [] }),
         });
       });
 
@@ -177,7 +174,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
 
       await expect(page).toHaveScreenshot('news-empty-state.png', {
         fullPage: true,
-        animations: 'disabled'
+        animations: 'disabled',
       });
     });
 
@@ -187,7 +184,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         await route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ error: 'Internal Server Error' })
+          body: JSON.stringify({ error: 'Internal Server Error' }),
         });
       });
 
@@ -199,13 +196,12 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
 
       await expect(page).toHaveScreenshot('news-error-state.png', {
         fullPage: true,
-        animations: 'disabled'
+        animations: 'disabled',
       });
     });
   });
 
   test.describe('Theme Visual Tests', () => {
-
     test('Light mode visual consistency', async ({ page }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
@@ -216,20 +212,25 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         'button[aria-label*="theme" i]',
         '.theme-toggle',
         'button:has-text("🌙")',
-        'button:has-text("🌞")'
+        'button:has-text("🌞")',
       ];
 
       let themeToggle = null;
       for (const selector of themeToggleSelectors) {
         const element = page.locator(selector);
-        if (await element.count() > 0) {
+        if ((await element.count()) > 0) {
           themeToggle = element.first();
           break;
         }
       }
 
       // Check if we're in dark mode and switch to light if needed
-      const isDarkMode = await page.locator('html[class*="dark"], body[class*="dark"], [data-theme="dark"]').count() > 0;
+      const isDarkMode =
+        (await page
+          .locator(
+            'html[class*="dark"], body[class*="dark"], [data-theme="dark"]',
+          )
+          .count()) > 0;
 
       if (isDarkMode && themeToggle) {
         await themeToggle.click();
@@ -238,7 +239,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
 
       await expect(page).toHaveScreenshot('light-mode.png', {
         fullPage: true,
-        animations: 'disabled'
+        animations: 'disabled',
       });
     });
 
@@ -247,7 +248,9 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
       await page.waitForLoadState('networkidle');
 
       // Find theme toggle switch
-      const themeToggle = page.getByRole('switch', { name: /switch to (light|dark) mode/i });
+      const themeToggle = page.getByRole('switch', {
+        name: /switch to (light|dark) mode/i,
+      });
 
       // Toggle to dark mode
       await expect(themeToggle).toBeVisible();
@@ -257,7 +260,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
       // Take screenshot in dark mode
       await expect(page).toHaveScreenshot('dark-mode.png', {
         fullPage: true,
-        animations: 'disabled'
+        animations: 'disabled',
       });
     });
 
@@ -265,12 +268,13 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      const themeToggle = page.locator('[data-testid="theme-toggle"]')
+      const themeToggle = page
+        .locator('[data-testid="theme-toggle"]')
         .or(page.locator('button[aria-label*="theme" i]'))
         .or(page.locator('.theme-toggle'))
         .first();
 
-      if (await themeToggle.count() > 0) {
+      if ((await themeToggle.count()) > 0) {
         // Screenshot before toggle
         await expect(themeToggle).toHaveScreenshot('theme-toggle-before.png');
 
@@ -285,74 +289,79 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
   });
 
   test.describe('Responsive Visual Tests', () => {
-
     const viewports = [
       { width: 1920, height: 1080, name: 'desktop-xl' },
       { width: 1280, height: 720, name: 'desktop' },
       { width: 768, height: 1024, name: 'tablet' },
-      { width: 375, height: 667, name: 'mobile' }
+      { width: 375, height: 667, name: 'mobile' },
     ];
 
     for (const viewport of viewports) {
       test(`Homepage ${viewport.name} viewport`, async ({ page }) => {
-        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height,
+        });
         await page.goto('/');
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(1000);
 
         await expect(page).toHaveScreenshot(`homepage-${viewport.name}.png`, {
           fullPage: true,
-          animations: 'disabled'
+          animations: 'disabled',
         });
       });
 
       test(`News page ${viewport.name} viewport`, async ({ page }) => {
-        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.setViewportSize({
+          width: viewport.width,
+          height: viewport.height,
+        });
         await page.goto('/news/public');
-        await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+        await expect(page.getByRole('article').first()).toBeVisible();
         await page.waitForLoadState('networkidle');
 
         await expect(page).toHaveScreenshot(`news-page-${viewport.name}.png`, {
           fullPage: true,
-          animations: 'disabled'
+          animations: 'disabled',
         });
       });
     }
   });
 
   test.describe('Cross-Browser Visual Tests', () => {
-
     test('Cross-browser consistency', async ({ page, browserName }) => {
       await page.goto('/news/public');
-      await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+      await expect(page.getByRole('article').first()).toBeVisible();
       await page.waitForLoadState('networkidle');
 
       await expect(page).toHaveScreenshot(`news-page-${browserName}.png`, {
         fullPage: true,
         animations: 'disabled',
         // Browser-specific threshold as rendering might differ slightly
-        threshold: browserName === 'webkit' ? 0.4 : 0.3
+        threshold: browserName === 'webkit' ? 0.4 : 0.3,
       });
     });
 
-    test('Navigation consistency across browsers', async ({ page, browserName }) => {
+    test('Navigation consistency across browsers', async ({
+      page,
+      browserName,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
       const navigation = page.locator('nav').first();
-      await expect(navigation).toHaveScreenshot(`navigation-${browserName}.png`, {
-        animations: 'disabled',
-        threshold: 0.3
-      });
+      await expect(navigation).toHaveScreenshot(
+        `navigation-${browserName}.png`,
+        {
+          animations: 'disabled',
+          threshold: 0.3,
+        },
+      );
     });
   });
 
   test.describe('Interactive State Visual Tests', () => {
-
     test('Button hover states', async ({ page }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
@@ -363,13 +372,13 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         '.btn-primary',
         '[data-testid="cta-button"]',
         'button:has-text("Sign in")',
-        'button:has-text("Login")'
+        'button:has-text("Login")',
       ];
 
       let button = null;
       for (const selector of buttonSelectors) {
         const element = page.locator(selector);
-        if (await element.count() > 0) {
+        if ((await element.count()) > 0) {
           button = element.first();
           break;
         }
@@ -398,13 +407,13 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
           'input[type="email"]',
           'input[type="text"]',
           'input[type="password"]',
-          'textarea'
+          'textarea',
         ];
 
         let input = null;
         for (const selector of inputSelectors) {
           const element = page.locator(selector);
-          if (await element.count() > 0) {
+          if ((await element.count()) > 0) {
             input = element.first();
             break;
           }
@@ -425,11 +434,10 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
   });
 
   test.describe('Loading State Visual Tests', () => {
-
     test('Loading state visual appearance', async ({ page }) => {
       // Mock delayed response to capture loading state
       await page.route('**/api/news/public', async (route) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -439,10 +447,10 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
                 title: 'Test News',
                 description: 'Test description',
                 link: 'https://example.com',
-                pubDate: new Date().toISOString()
-              }
-            ]
-          })
+                pubDate: new Date().toISOString(),
+              },
+            ],
+          }),
         });
       });
 
@@ -452,13 +460,14 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
       // Try to capture loading state
       try {
         await expect(
-      page.getByTestId('loading')
-        .or(page.locator('.loading'))
-        .or(page.locator('.spinner'))
-        .first()
-    ).toBeVisible();
+          page
+            .getByTestId('loading')
+            .or(page.locator('.loading'))
+            .or(page.locator('.spinner'))
+            .first(),
+        ).toBeVisible();
         await expect(page).toHaveScreenshot('loading-state.png', {
-          animations: 'disabled'
+          animations: 'disabled',
         });
       } catch {
         console.log('Loading state not captured - might be too fast');
@@ -471,16 +480,16 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
   });
 
   test.describe('Component-Specific Visual Tests', () => {
-
     test('Search component visual states', async ({ page }) => {
       await page.goto('/news/public');
       await page.waitForLoadState('networkidle');
 
-      const searchInput = page.locator('input[placeholder*="search" i]')
+      const searchInput = page
+        .locator('input[placeholder*="search" i]')
         .or(page.locator('[role="searchbox"]'))
         .first();
 
-      if (await searchInput.count() > 0) {
+      if ((await searchInput.count()) > 0) {
         // Empty search state
         await expect(searchInput).toHaveScreenshot('search-empty.png');
 
@@ -493,8 +502,12 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(500);
 
-        const searchContainer = searchInput.locator('..').or(page.locator('.search-container'));
-        await expect(searchContainer).toHaveScreenshot('search-results-context.png');
+        const searchContainer = searchInput
+          .locator('..')
+          .or(page.locator('.search-container'));
+        await expect(searchContainer).toHaveScreenshot(
+          'search-results-context.png',
+        );
       }
     });
   });

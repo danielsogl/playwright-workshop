@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
 
     const newUser = await addUser({ name, email, password });
 
-     
     const { passwordHash: _, ...userWithoutPassword } = newUser;
 
     return jsonSuccess(

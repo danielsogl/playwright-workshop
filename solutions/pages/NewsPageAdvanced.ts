@@ -8,7 +8,9 @@ export class NewsPageAdvanced {
 
   constructor(page: Page) {
     this.page = page;
-    this.searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    this.searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
     this.newsItems = page.getByRole('article');
   }
 
@@ -50,11 +52,11 @@ export class NewsPageAdvanced {
   async getAllNewsItems(): Promise<NewsItemComponent[]> {
     const count = await this.newsItems.count();
     const items: NewsItemComponent[] = [];
-    
+
     for (let i = 0; i < count; i++) {
       items.push(new NewsItemComponent(this.newsItems.nth(i)));
     }
-    
+
     return items;
   }
 
@@ -88,7 +90,9 @@ export class NewsPageAdvanced {
   }
 
   async previousPage(): Promise<this> {
-    const prevButton = this.page.getByRole('link', { name: /previous|zurück/i });
+    const prevButton = this.page.getByRole('link', {
+      name: /previous|zurück/i,
+    });
     if (await prevButton.isVisible()) {
       await prevButton.click();
       await this.page.waitForLoadState('networkidle');
@@ -97,7 +101,9 @@ export class NewsPageAdvanced {
   }
 
   async goToPage(pageNumber: number): Promise<this> {
-    const pageButton = this.page.getByRole('link', { name: String(pageNumber) });
+    const pageButton = this.page.getByRole('link', {
+      name: String(pageNumber),
+    });
     if (await pageButton.isVisible()) {
       await pageButton.click();
       await this.page.waitForLoadState('networkidle');
@@ -114,7 +120,9 @@ export class NewsPageAdvanced {
 
   async resetAllFilters(): Promise<this> {
     await this.clearSearch();
-    const resetButton = this.page.getByRole('button', { name: /reset|clear all/i });
+    const resetButton = this.page.getByRole('button', {
+      name: /reset|clear all/i,
+    });
     if (await resetButton.isVisible()) {
       await resetButton.click();
       await this.page.waitForLoadState('networkidle');
@@ -129,12 +137,12 @@ export class NewsPageAdvanced {
 
   async getTitles(): Promise<string[]> {
     const items = await this.getAllNewsItems();
-    return Promise.all(items.map(item => item.getTitle()));
+    return Promise.all(items.map((item) => item.getTitle()));
   }
 
   async getItemsData() {
     const items = await this.getAllNewsItems();
-    return Promise.all(items.map(item => item.getData()));
+    return Promise.all(items.map((item) => item.getData()));
   }
 
   // Status checks
@@ -156,7 +164,7 @@ export class NewsPageAdvanced {
   // Wait helpers
   private async waitForNewsItems(): Promise<this> {
     await this.newsItems.first().waitFor({
-      state: 'visible'
+      state: 'visible',
     });
     return this;
   }

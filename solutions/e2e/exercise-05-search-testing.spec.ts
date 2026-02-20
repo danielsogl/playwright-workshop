@@ -6,9 +6,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     await page.goto('/news/public');
 
     // Warte bis News-Liste geladen ist - verwende spezifischeren Selektor
-    await expect(
-      page.getByRole('listitem').first()
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('listitem').first()).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('zeigt initiale News-Artikel an', async ({ page }) => {
@@ -28,7 +28,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
 
     // Artikel sollte Titel haben
     const title = firstItem.getByRole('heading', { level: 2 }).first();
-    if (await title.count() > 0) {
+    if ((await title.count()) > 0) {
       await expect(title).toBeVisible();
       const titleText = await title.textContent();
       expect(titleText).toBeTruthy();
@@ -37,7 +37,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
 
   test('kann nach News suchen', async ({ page }) => {
     // Finde Suchfeld über textbox role mit spezifischem Namen
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Initiale Anzahl der Artikel
     const initialItems = page.getByRole('listitem');
@@ -67,7 +69,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
   });
 
   test('zeigt Nachricht bei keinen Suchergebnissen', async ({ page }) => {
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Suche nach nicht existentem Begriff
     await searchInput.fill('XYZ123NonExistentSearchTerm');
@@ -81,8 +85,12 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
 
     if (count === 0) {
       // Suche nach "Keine Ergebnisse" Nachricht
-      const noResultsMessage = page.getByText(/no results|keine ergebnisse|no news|nothing found|no items/i);
-      const hasMessage = await noResultsMessage.isVisible({ timeout: 2000 }).catch(() => false);
+      const noResultsMessage = page.getByText(
+        /no results|keine ergebnisse|no news|nothing found|no items/i,
+      );
+      const hasMessage = await noResultsMessage
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
 
       // Entweder keine Items oder eine Nachricht sollte sichtbar sein
       expect(count === 0 || hasMessage).toBeTruthy();
@@ -90,7 +98,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
   });
 
   test('kann Suche zurücksetzen', async ({ page }) => {
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Initiale Anzahl
     const initialItems = page.getByRole('listitem');
@@ -115,7 +125,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
   });
 
   test('behält Sucheingabe bei Navigation', async ({ page }) => {
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Suche eingeben
     const searchTerm = 'Playwright';
@@ -130,13 +142,13 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     // Da alle Links extern sind (https://), testen wir Navigation zu einer anderen Seite
     // und zurück zur News-Seite - use more flexible navigation approach
     const aboutLink = page.getByRole('link', { name: /about/i });
-    if (await aboutLink.count() > 0) {
+    if ((await aboutLink.count()) > 0) {
       await aboutLink.click();
       await expect(page).toHaveURL('/about');
 
       // Gehe zurück zur News-Seite
       const newsLink = page.getByRole('link', { name: /news/i });
-      if (await newsLink.count() > 0) {
+      if ((await newsLink.count()) > 0) {
         await newsLink.click();
         await expect(page).toHaveURL('/news/public');
       } else {
@@ -151,11 +163,13 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
 
     // Warte bis Suchfeld wieder da ist
     await expect(
-      page.getByRole('textbox', { name: 'Search news articles' })
+      page.getByRole('textbox', { name: 'Search news articles' }),
     ).toBeVisible();
 
     // Prüfe ob Suche zurückgesetzt wurde (erwartetes Verhalten bei Navigation)
-    const searchAfterNav = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchAfterNav = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
     const valueAfterNav = await searchAfterNav.inputValue();
 
     // Nach Navigation sollte das Suchfeld leer sein (normales Verhalten)
@@ -163,7 +177,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
   });
 
   test('kann mit verschiedenen Suchbegriffen filtern', async ({ page }) => {
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     const searchTerms = ['Tech', 'News', 'Update', '2024'];
 
@@ -187,7 +203,9 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
 
   test('Suchfeld ist accessible mit Tastatur', async ({ page }) => {
     // Direkt zum Suchfeld fokussieren
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Stelle sicher, dass das Suchfeld da ist
     await expect(searchInput).toBeVisible();
@@ -221,29 +239,30 @@ test('News Search mit Trace für Debugging', async ({ page }) => {
   await page.context().tracing.start({
     screenshots: true,
     snapshots: true,
-    sources: true
+    sources: true,
   });
 
   try {
     await page.goto('/news/public');
 
     // Warte auf News
-    await expect(
-      page.getByRole('listitem').first()
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('listitem').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Suche durchführen
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     await searchInput.fill('Debug Test');
     await searchInput.press('Enter');
 
     await page.waitForLoadState('networkidle');
-
   } finally {
     // Speichere Trace
     await page.context().tracing.stop({
-      path: 'trace-news-search.zip'
+      path: 'trace-news-search.zip',
     });
   }
 });

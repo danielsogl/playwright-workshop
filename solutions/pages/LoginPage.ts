@@ -11,19 +11,29 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    
+
     // Form Elements - use exact selectors
-    this.emailInput = page.getByRole('textbox', { name: 'Email address for sign in' });
+    this.emailInput = page.getByRole('textbox', {
+      name: 'Email address for sign in',
+    });
 
-    this.passwordInput = page.getByRole('textbox', { name: 'Password for sign in' });
+    this.passwordInput = page.getByRole('textbox', {
+      name: 'Password for sign in',
+    });
 
-    this.submitButton = page.getByRole('button', { name: 'Submit sign in form' });
-    
+    this.submitButton = page.getByRole('button', {
+      name: 'Submit sign in form',
+    });
+
     this.errorMessage = page.getByText(/invalid|incorrect|error|failed/i);
-    
-    this.forgotPasswordLink = page.getByRole('link', { name: /forgot password/i });
-    
-    this.signUpLink = page.getByRole('link', { name: 'Navigate to sign up page' });
+
+    this.forgotPasswordLink = page.getByRole('link', {
+      name: /forgot password/i,
+    });
+
+    this.signUpLink = page.getByRole('link', {
+      name: 'Navigate to sign up page',
+    });
   }
 
   async goto() {
@@ -58,7 +68,9 @@ export class LoginPage {
 
   // Status Checks
   async hasErrorMessage(): Promise<boolean> {
-    return await this.errorMessage.isVisible({ timeout: 3000 }).catch(() => false);
+    return await this.errorMessage
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
   }
 
   async getErrorMessage(): Promise<string | null> {
@@ -74,9 +86,12 @@ export class LoginPage {
 
   // Helper Methods
   async waitForRedirect(timeout: number = 5000) {
-    await this.page.waitForURL((url) => !url.pathname.includes('/auth/signin'), {
-      timeout
-    });
+    await this.page.waitForURL(
+      (url) => !url.pathname.includes('/auth/signin'),
+      {
+        timeout,
+      },
+    );
   }
 
   async navigateToForgotPassword() {

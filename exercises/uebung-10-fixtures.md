@@ -6,6 +6,7 @@ Du lernst die Grundlagen von Playwright Fixtures kennen – ein System für wied
 ## Was sind Fixtures?
 
 Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
+
 - Test-Daten vorbereiten
 - Setup und Cleanup automatisieren
 - Zwischen Tests geteilt werden können
@@ -18,6 +19,7 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
    ```bash
    npm run dev
    ```
+
    - Öffne `http://localhost:3000/fixtures-demo`
    - Die Seite startet mit 2 Standard-Benutzern
    - Teste das Hinzufügen von Benutzern
@@ -25,17 +27,20 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
 ### 2. **Einfache Test-Data Fixture**
 
 1. **Erstelle `e2e/fixtures-basic.spec.ts`:**
+
    ```typescript
    import { test as base, expect } from '@playwright/test';
 
    // Definiere eine einfache Fixture für Test-Daten
-   const test = base.extend<{ testUser: { name: string; email: string; role: string } }>({
+   const test = base.extend<{
+     testUser: { name: string; email: string; role: string };
+   }>({
      testUser: async ({}, use) => {
        // Setup: Erstelle eindeutige Test-Daten
        const userData = {
          name: `Test User ${Date.now()}`,
          email: `test-${Date.now()}@example.com`,
-         role: 'user'
+         role: 'user',
        };
 
        console.log('✅ Test user data prepared:', userData.name);
@@ -48,7 +53,10 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
      },
    });
 
-   test('fügt einen Benutzer mit Fixture-Daten hinzu', async ({ page, testUser }) => {
+   test('fügt einen Benutzer mit Fixture-Daten hinzu', async ({
+     page,
+     testUser,
+   }) => {
      await page.goto('/fixtures-demo');
 
      // Verwende die Fixture-Daten mit semantischen Locators
@@ -67,12 +75,17 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
 ### 3. **Page Helper Fixture**
 
 1. **Erweitere den Test mit einer Page-Helper Fixture:**
+
    ```typescript
    // Erweitere das Interface
    interface FixturesDemo {
      testUser: { name: string; email: string; role: string };
      userPage: {
-       addUser: (user: { name: string; email: string; role: string }) => Promise<void>;
+       addUser: (user: {
+         name: string;
+         email: string;
+         role: string;
+       }) => Promise<void>;
        getUserCount: () => Promise<number>;
      };
    }
@@ -82,7 +95,7 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
        const userData = {
          name: `Test User ${Date.now()}`,
          email: `test-${Date.now()}@example.com`,
-         role: 'moderator'
+         role: 'moderator',
        };
        await use(userData);
      },
@@ -105,7 +118,7 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
          getUserCount: async () => {
            const countText = await page.getByText(/\d+ users/).textContent();
            return parseInt(countText?.match(/(\d+)/)?.[1] || '0');
-         }
+         },
        };
 
        await use(userPage);
@@ -122,7 +135,11 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
    });
 
    test('fügt mehrere Benutzer hinzu', async ({ userPage }) => {
-     const user1 = { name: 'Alice Test', email: 'alice@test.com', role: 'admin' };
+     const user1 = {
+       name: 'Alice Test',
+       email: 'alice@test.com',
+       role: 'admin',
+     };
      const user2 = { name: 'Bob Test', email: 'bob@test.com', role: 'user' };
 
      const initialCount = await userPage.getUserCount();
@@ -138,6 +155,7 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
 ### 4. **Tests ausführen**
 
 1. **Führe die Tests aus:**
+
    ```bash
    npx playwright test fixtures-basic.spec.ts --reporter=line
    ```
@@ -149,22 +167,26 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
 ## Key Takeaways
 
 ### ✅ Fixtures sind gut für:
+
 - **Test-Daten**: Eindeutige Daten für jeden Test
 - **Page Helpers**: Wiederverwendbare Seitenoperationen
 - **Setup/Cleanup**: Automatische Vor- und Nachbereitung
 
 ### 💡 Einfache Regeln:
+
 1. **Eine Fixture, eine Verantwortung**
 2. **Klare Namen**: `testUser` statt `data1`
 3. **TypeScript nutzen** für bessere Entwicklererfahrung
 4. **Semantische Locators**: `getByLabel()`, `getByRole()` statt `getByTestId()`
 
 ### 🎯 Locator Best Practices:
+
 - **✅ User-facing**: `page.getByLabel('Name')`, `page.getByRole('button')`
 - **❌ Implementation**: `page.getByTestId('user-name-input')`
 - **Warum?** Tests werden aus Benutzersicht geschrieben und sind robuster
 
 ### 🔄 Fixture Lebensdauer:
+
 - **test-scoped**: Neue Instanz für jeden Test (Standard)
 - **worker-scoped**: Eine Instanz pro Worker (für teure Setups)
 

@@ -63,19 +63,23 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
   test('Formular-Interaktionen (optional)', async ({ page }) => {
     // Zum Login navigieren (falls vorhanden)
     const loginLink = page.getByRole('link', { name: /login/i });
-    const loginExists = await loginLink.count() > 0;
+    const loginExists = (await loginLink.count()) > 0;
 
     if (loginExists) {
       await loginLink.click();
       console.log('Login-Seite wurde geöffnet');
 
       // Username eingeben
-      const usernameField = page.getByLabel(/username/i).or(page.getByPlaceholder(/username/i));
+      const usernameField = page
+        .getByLabel(/username/i)
+        .or(page.getByPlaceholder(/username/i));
       await usernameField.fill('testuser');
       console.log('Username wurde eingegeben');
 
       // Password eingeben
-      const passwordField = page.getByLabel(/password/i).or(page.getByPlaceholder(/password/i));
+      const passwordField = page
+        .getByLabel(/password/i)
+        .or(page.getByPlaceholder(/password/i));
       await passwordField.fill('testpass123');
       console.log('Password wurde eingegeben');
 

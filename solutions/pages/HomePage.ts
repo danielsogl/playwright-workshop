@@ -13,10 +13,12 @@ export class HomePage {
 
   constructor(page: Page) {
     this.page = page;
-    
+
     // Navigation Elements - use flexible selectors
     this.navigation = page.getByRole('navigation').first();
-    this.newsLink = page.getByRole('link', { name: /public news|view public news/i });
+    this.newsLink = page.getByRole('link', {
+      name: /public news|view public news/i,
+    });
     this.aboutLink = page.getByRole('link', { name: /about/i });
     this.blogLink = page.getByRole('link', { name: /blog/i });
     this.pricingLink = page.getByRole('link', { name: /pricing/i });
@@ -32,7 +34,7 @@ export class HomePage {
 
   // Navigation Methods
   async navigateToNews() {
-    if (await this.newsLink.count() > 0) {
+    if ((await this.newsLink.count()) > 0) {
       await this.newsLink.click();
       await this.page.waitForURL('/news/public');
     } else {
@@ -41,7 +43,7 @@ export class HomePage {
   }
 
   async navigateToAbout() {
-    if (await this.aboutLink.count() > 0) {
+    if ((await this.aboutLink.count()) > 0) {
       await this.aboutLink.click();
       await this.page.waitForURL('/about');
     } else {
@@ -50,7 +52,7 @@ export class HomePage {
   }
 
   async navigateToBlog() {
-    if (await this.blogLink.count() > 0) {
+    if ((await this.blogLink.count()) > 0) {
       await this.blogLink.click();
       await this.page.waitForURL('/blog');
     } else {
@@ -59,7 +61,7 @@ export class HomePage {
   }
 
   async navigateToPricing() {
-    if (await this.pricingLink.count() > 0) {
+    if ((await this.pricingLink.count()) > 0) {
       await this.pricingLink.click();
       await this.page.waitForURL('/pricing');
     } else {
@@ -85,14 +87,17 @@ export class HomePage {
 
   async getCurrentTheme(): Promise<string> {
     const htmlElement = this.page.locator('html');
-    const classAttribute = await htmlElement.getAttribute('class') || '';
-    const dataTheme = await htmlElement.getAttribute('data-theme') || '';
-    return classAttribute.includes('dark') || dataTheme.includes('dark') ? 'dark' : 'light';
+    const classAttribute = (await htmlElement.getAttribute('class')) || '';
+    const dataTheme = (await htmlElement.getAttribute('data-theme')) || '';
+    return classAttribute.includes('dark') || dataTheme.includes('dark')
+      ? 'dark'
+      : 'light';
   }
 
   // Status Checks
   async isUserLoggedIn(): Promise<boolean> {
-    const signOutButton = this.page.getByRole('button', { name: /sign out|logout/i })
+    const signOutButton = this.page
+      .getByRole('button', { name: /sign out|logout/i })
       .or(this.page.getByRole('link', { name: /sign out|logout/i }));
     return await signOutButton.isVisible({ timeout: 3000 }).catch(() => false);
   }

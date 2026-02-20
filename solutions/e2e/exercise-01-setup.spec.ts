@@ -18,10 +18,10 @@ test.describe('Exercise 0: Project Setup', () => {
   test('Wichtige Seiten sind erreichbar', async ({ page }) => {
     const pages = [
       { url: '/', title: /Playwright Demo/ },
-      { url: '/about', title: /Playwright Demo/ },  // All pages have the same title
+      { url: '/about', title: /Playwright Demo/ }, // All pages have the same title
       { url: '/blog', title: /Playwright Demo/ },
       { url: '/news/public', title: /Playwright Demo/ },
-      { url: '/pricing', title: /Playwright Demo/ }
+      { url: '/pricing', title: /Playwright Demo/ },
     ];
 
     for (const { url, title } of pages) {
@@ -38,6 +38,9 @@ test.describe('Exercise 0: Project Setup', () => {
     expect(process.env.TEST_USER_PASSWORD).toBeDefined();
 
     // Optional: Prüfe die Werte (nur für Demo-Zwecke)
-    console.log('Test-User Email configured:', process.env.TEST_USER_EMAIL ? 'Yes' : 'No');
+    console.log(
+      'Test-User Email configured:',
+      process.env.TEST_USER_EMAIL ? 'Yes' : 'No',
+    );
   });
 });

@@ -42,10 +42,14 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Suchfeld Interaktion mit Assertions', async ({ page }) => {
     // Navigate to news page first for search box
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('listitem').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Suchfeld finden und prüfen
-    const searchBox = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchBox = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
     await expect(searchBox).toBeVisible();
     await expect(searchBox).toBeEditable();
     await expect(searchBox).toBeEmpty();
@@ -77,7 +81,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
       page.getByRole('button', { name: /theme|dark|light/i }),
       page.locator('[data-testid="theme-toggle"]'),
       page.locator('button[aria-label*="theme" i]'),
-      page.locator('.theme-toggle')
+      page.locator('.theme-toggle'),
     ];
 
     let themeToggle = null;
@@ -89,7 +93,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
       }
     }
 
-    if (themeToggle && await themeToggle.isVisible()) {
+    if (themeToggle && (await themeToggle.isVisible())) {
       await expect(themeToggle).toBeVisible();
 
       // Initial State prüfen (kann light oder dark sein)
@@ -106,21 +110,25 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
       // Prüfen ob sich die Klasse geändert hat oder andere Indikatoren
       const newClass = await bodyElement.getAttribute('class');
       const htmlClass = await page.locator('html').getAttribute('class');
-      const hasThemeChange = newClass !== initialClass || (htmlClass && htmlClass.includes('dark'));
+      const hasThemeChange =
+        newClass !== initialClass || (htmlClass && htmlClass.includes('dark'));
 
       // If theme change detection is not working reliably, just log it
       console.log('Initial theme class:', initialClass);
       console.log('New theme class:', newClass, 'HTML class:', htmlClass);
 
       // More flexible theme change detection
-      const themeChanged = newClass !== initialClass ||
-                          (htmlClass !== null && htmlClass.includes('dark')) ||
-                          newClass?.includes('dark') ||
-                          newClass?.includes('theme');
+      const themeChanged =
+        newClass !== initialClass ||
+        (htmlClass !== null && htmlClass.includes('dark')) ||
+        newClass?.includes('dark') ||
+        newClass?.includes('theme');
 
       // If we can't detect theme change reliably, just pass the test with a warning
       if (!themeChanged) {
-        console.log('Theme change not detected - this might be due to app implementation');
+        console.log(
+          'Theme change not detected - this might be due to app implementation',
+        );
       }
     } else {
       console.log('Theme toggle not found or not visible, skipping theme test');
@@ -144,10 +152,14 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
 
     // Navigate to news page for search box
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('listitem').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // 3. toBeEnabled() / toBeDisabled()
-    const searchBox = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchBox = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
     await expect(searchBox).toBeEnabled();
 
     // 4. toContainText() - Teiltext prüfen
@@ -174,10 +186,14 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Wait-Strategien mit Assertions', async ({ page }) => {
     // Navigate to news page first
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('listitem').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // waitFor mit verschiedenen States
-    const searchBox = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchBox = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Warten bis Element sichtbar ist
     await searchBox.waitFor({ state: 'visible' });
@@ -200,10 +216,14 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Assertion Chains und Kombinationen', async ({ page }) => {
     // Navigate to news page first
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('listitem').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Mehrere Assertions nacheinander
-    const searchBox = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchBox = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Assertion Chain
     await expect(searchBox).toBeVisible();

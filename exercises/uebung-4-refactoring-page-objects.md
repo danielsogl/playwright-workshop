@@ -4,6 +4,7 @@
 Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbessert die Wartbarkeit und Wiederverwendbarkeit deines Test-Codes.
 
 **Warum Page Objects?**
+
 - Trennung von Test-Logik und UI-Details
 - Zentrale Stelle für Selektoren
 - Wiederverwendbare Aktionen
@@ -12,6 +13,7 @@ Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbes
 **Aufgaben:**
 
 1. **Einfaches Page Object erstellen:**
+
    ```typescript
    // e2e/pages/NewsPage.ts
    import { Page, Locator } from '@playwright/test';
@@ -68,6 +70,7 @@ Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbes
    ```
 
 2. **Tests mit Page Object refaktorieren:**
+
    ```typescript
    // e2e/news-with-pom.spec.ts
    import { test, expect } from '@playwright/test';
@@ -119,6 +122,7 @@ Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbes
    ```
 
 3. **Page Object erweitern (optional):**
+
    ```typescript
    export class NewsPage {
      // ... vorherige Definitionen ...
@@ -163,6 +167,7 @@ Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbes
    ```
 
 **Vergleich Vorher/Nachher:**
+
 ```typescript
 // Ohne POM:
 await page.getByRole('textbox', { name: 'Search news' }).fill('Tech');

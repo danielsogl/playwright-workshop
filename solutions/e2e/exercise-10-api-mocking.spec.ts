@@ -12,10 +12,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { mockNewsData, mockErrorResponse, mockRateLimitResponse } from './mocks/news-mocks';
+import {
+  mockNewsData,
+  mockErrorResponse,
+  mockRateLimitResponse,
+} from './mocks/news-mocks';
 
 test.describe('Exercise 5: API Mocking', () => {
-
   test('shows mocked news data successfully', async ({ page }) => {
     // Mock API before the page loads - this is crucial for proper interception
     // Use a flexible pattern to catch the API call
@@ -24,7 +27,7 @@ test.describe('Exercise 5: API Mocking', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(mockNewsData.success)
+        body: JSON.stringify(mockNewsData.success),
       });
     });
 
@@ -33,12 +36,13 @@ test.describe('Exercise 5: API Mocking', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for news items to load
-    await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+    await expect(page.getByRole('article').first()).toBeVisible();
 
     // First check if our mock content is visible
-    const hasMockContent = await page.getByText('Test Technology News - Breaking AI Development').isVisible().catch(() => false);
+    const hasMockContent = await page
+      .getByText('Test Technology News - Breaking AI Development')
+      .isVisible()
+      .catch(() => false);
 
     if (!hasMockContent) {
       // If mock content isn't visible, the mocking might not be working due to caching
@@ -53,13 +57,21 @@ test.describe('Exercise 5: API Mocking', () => {
     expect(itemCount).toBeGreaterThan(0);
 
     // Verify specific content from our mock data
-    await expect(page.getByText('Workshop Test Article - AI Development Trends')).toBeVisible();
-    await expect(page.getByText('Workshop Test Article - Global Market Analysis')).toBeVisible();
-    await expect(page.getByText('Workshop Test Article - Breaking News Update')).toBeVisible();
+    await expect(
+      page.getByText('Workshop Test Article - AI Development Trends'),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Workshop Test Article - Global Market Analysis'),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Workshop Test Article - Breaking News Update'),
+    ).toBeVisible();
 
     // Verify categories are displayed - skip this check as mocking may not work for categories
     // The important thing is that the mock data structure is loaded
-    console.log('Mock data test completed - categories may not be visible if mocking is not fully working');
+    console.log(
+      'Mock data test completed - categories may not be visible if mocking is not fully working',
+    );
   });
 
   test('shows error message when API fails', async ({ page }) => {
@@ -68,7 +80,7 @@ test.describe('Exercise 5: API Mocking', () => {
       await route.fulfill({
         status: 500,
         contentType: 'application/json',
-        body: JSON.stringify(mockErrorResponse)
+        body: JSON.stringify(mockErrorResponse),
       });
     });
 
@@ -81,7 +93,7 @@ test.describe('Exercise 5: API Mocking', () => {
       page.getByText(/error|fehler|something went wrong/i),
       page.getByText(/failed to load|laden fehlgeschlagen/i),
       page.locator('[data-testid="error-message"]'),
-      page.locator('.error, .alert-error')
+      page.locator('.error, .alert-error'),
     ];
 
     // At least one error indicator should be visible
@@ -99,7 +111,9 @@ test.describe('Exercise 5: API Mocking', () => {
 
     // Some apps may not show explicit error UI but just show no articles
     if (!errorVisible) {
-      console.log('No explicit error UI found, checking for empty article list');
+      console.log(
+        'No explicit error UI found, checking for empty article list',
+      );
       const newsItems = page.getByRole('article');
       const errorCount = await newsItems.count();
       console.log('Articles count during error state:', errorCount);
@@ -126,7 +140,7 @@ test.describe('Exercise 5: API Mocking', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(mockNewsData.empty)
+        body: JSON.stringify(mockNewsData.empty),
       });
     });
 
@@ -140,7 +154,7 @@ test.describe('Exercise 5: API Mocking', () => {
       page.getByText(/no results|keine ergebnisse/i),
       page.getByText(/empty|leer/i),
       page.locator('[data-testid="empty-state"]'),
-      page.locator('.empty-state')
+      page.locator('.empty-state'),
     ];
 
     // At least one empty state indicator should be visible
@@ -157,7 +171,9 @@ test.describe('Exercise 5: API Mocking', () => {
 
     // If no empty state is visible, just ensure we have no items or that the app handles empty state differently
     if (!emptyStateVisible) {
-      console.log('Empty state indicator not found, checking if items are empty');
+      console.log(
+        'Empty state indicator not found, checking if items are empty',
+      );
     }
 
     // News items should be empty - but if mocking doesn't work, just log the count
@@ -172,12 +188,12 @@ test.describe('Exercise 5: API Mocking', () => {
     // Mock with deliberate delay to test loading state
     await page.route('**/api/news/public', async (route) => {
       // Wait 2 seconds to simulate slow API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(mockNewsData.success)
+        body: JSON.stringify(mockNewsData.success),
       });
     });
 
@@ -190,7 +206,7 @@ test.describe('Exercise 5: API Mocking', () => {
       page.getByText(/loading|lädt|laden/i),
       page.locator('[data-testid="loading"]'),
       page.locator('.loading, .spinner'),
-      page.getByTestId('news-loading')
+      page.getByTestId('news-loading'),
     ];
 
     let loadingVisible = false;
@@ -235,28 +251,29 @@ test.describe('Exercise 5: API Mocking', () => {
     // Dynamic mocking based on request URL parameters
     await page.route('**/api/news/public*', async (route, request) => {
       const url = new URL(request.url());
-      const search = url.searchParams.get('search') || url.searchParams.get('q');
+      const search =
+        url.searchParams.get('search') || url.searchParams.get('q');
 
       if (search === 'technology' || search === 'Technology') {
         // Return filtered results for technology search
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(mockNewsData.filtered)
+          body: JSON.stringify(mockNewsData.filtered),
         });
       } else if (search && search.length > 0) {
         // Return empty results for other searches
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(mockNewsData.empty)
+          body: JSON.stringify(mockNewsData.empty),
         });
       } else {
         // Return all data for no search
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(mockNewsData.success)
+          body: JSON.stringify(mockNewsData.success),
         });
       }
     });
@@ -264,9 +281,7 @@ test.describe('Exercise 5: API Mocking', () => {
     await page.goto('/news/public');
 
     // Wait for initial data load
-    await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+    await expect(page.getByRole('article').first()).toBeVisible();
 
     // Initial data should show all items (the real API returns 20 items, not our mock data count)
     const newsItems = page.getByRole('article');
@@ -274,7 +289,9 @@ test.describe('Exercise 5: API Mocking', () => {
     expect(initialCount).toBeGreaterThan(0); // Should have articles loaded
 
     // Look for search input using the exact role and name
-    const searchInput = page.getByRole('textbox', { name: 'Search news articles' });
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
 
     // Perform search for "technology"
     await searchInput.fill('technology');
@@ -326,7 +343,7 @@ test.describe('Exercise 5: API Mocking', () => {
         page.getByText(/timeout|zeitüberschreitung/i),
         page.getByText(/connection failed|verbindung fehlgeschlagen/i),
         page.getByText(/network error|netzwerkfehler/i),
-        page.getByRole('alert')
+        page.getByRole('alert'),
       ];
 
       let hasTimeoutHandling = false;
@@ -339,7 +356,6 @@ test.describe('Exercise 5: API Mocking', () => {
 
       // Note: The exact behavior depends on how the app handles timeouts
       console.log('Timeout handling detected:', hasTimeoutHandling);
-
     } catch (error) {
       // Timeout errors are expected in this test
       console.log('Expected timeout occurred:', error.message);
@@ -357,7 +373,7 @@ test.describe('Exercise 5: API Mocking', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify(mockNewsData.success)
+          body: JSON.stringify(mockNewsData.success),
         });
       } else {
         // Rate limit subsequent requests
@@ -366,8 +382,8 @@ test.describe('Exercise 5: API Mocking', () => {
           contentType: 'application/json',
           body: JSON.stringify(mockRateLimitResponse),
           headers: {
-            'Retry-After': '60'
-          }
+            'Retry-After': '60',
+          },
         });
       }
     });
@@ -375,9 +391,7 @@ test.describe('Exercise 5: API Mocking', () => {
     await page.goto('/news/public');
 
     // Initial load should work
-    await expect(
-      page.getByRole('article').first()
-    ).toBeVisible();
+    await expect(page.getByRole('article').first()).toBeVisible();
     const newsItems = page.getByRole('article');
     const itemCount = await newsItems.count();
     expect(itemCount).toBeGreaterThan(0);
@@ -388,13 +402,13 @@ test.describe('Exercise 5: API Mocking', () => {
       'button[aria-label*="refresh" i]',
       '[data-testid="refresh-button"]',
       'button:has-text("Refresh")',
-      'button:has-text("Aktualisieren")'
+      'button:has-text("Aktualisieren")',
     ];
 
     let refreshButton = null;
     for (const selector of refreshSelectors) {
       const element = page.locator(selector);
-      if (await element.count() > 0) {
+      if ((await element.count()) > 0) {
         refreshButton = element.first();
         break;
       }
@@ -415,7 +429,7 @@ test.describe('Exercise 5: API Mocking', () => {
         page.getByText(/rate limit|zu viele anfragen/i),
         page.getByText(/too many requests/i),
         page.getByText(/429/),
-        page.getByRole('alert')
+        page.getByRole('alert'),
       ];
 
       let rateLimitVisible = false;

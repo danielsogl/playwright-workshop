@@ -7,6 +7,7 @@
 **Aufgaben:**
 
 1. **Clock installieren und Zeit setzen:**
+
    ```typescript
    // e2e/clock-api.spec.ts
    test('Clock API - Zeit setzen', async ({ page }) => {
@@ -22,6 +23,7 @@
    ```
 
 2. **Zeit vorspulen mit fastForward:**
+
    ```typescript
    test('Zeit vorspulen', async ({ page }) => {
      await page.clock.install({ time: new Date('2024-01-15 10:00:00') });
@@ -39,6 +41,7 @@
    ```
 
 3. **Zeit pausieren und fortsetzen:**
+
    ```typescript
    test('Clock pausieren und fortsetzen', async ({ page }) => {
      await page.clock.install({ time: new Date('2024-01-15 15:00:00') });
@@ -65,11 +68,13 @@
    ```
 
 **Clock API Methoden:**
+
 - `page.clock.install({ time: new Date() })` - VOR page.goto()!
 - `page.clock.fastForward('HH:MM:SS')` - Zeit vorspulen
 - `page.clock.pauseAt(date)` - Zeit pausieren
 
 **Best Practices:**
+
 - ✅ Clock VOR Navigation installieren
 - ✅ `waitForLoadState('networkidle')` verwenden
 - ✅ Realistische Zeitsprünge (nicht zu schnell)

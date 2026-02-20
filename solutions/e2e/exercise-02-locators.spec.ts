@@ -63,15 +63,23 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
 
     if (articleCount > 0) {
       const firstNewsItem = page.getByRole('article').first();
-      console.log('Erstes News-Item gefunden:', await firstNewsItem.isVisible());
+      console.log(
+        'Erstes News-Item gefunden:',
+        await firstNewsItem.isVisible(),
+      );
 
       const lastNewsItem = page.getByRole('article').last();
-      console.log('Letztes News-Item gefunden:', await lastNewsItem.isVisible());
+      console.log(
+        'Letztes News-Item gefunden:',
+        await lastNewsItem.isVisible(),
+      );
 
       // Mit Filter arbeiten - suche nach beliebigem Text da "Playwright" möglicherweise nicht vorhanden
       const firstArticleText = await firstNewsItem.textContent();
       const searchTerm = firstArticleText?.split(' ')[0] || 'News';
-      const filteredItems = page.getByRole('article').filter({ hasText: searchTerm });
+      const filteredItems = page
+        .getByRole('article')
+        .filter({ hasText: searchTerm });
       const filteredCount = await filteredItems.count();
       console.log(`Artikel mit "${searchTerm}": ${filteredCount}`);
     }

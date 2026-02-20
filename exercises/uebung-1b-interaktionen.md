@@ -4,6 +4,7 @@
 Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fokus liegt auf realistischen Aktionen wie Klicks, Eingaben, Hover-Effekte und Tastatur-Navigation.
 
 **Warum Interaktions-Tests?**
+
 - Simulieren echte Nutzer-Aktionen
 - Prüfen der UI-Responsivität
 - Testen von dynamischen Elementen
@@ -12,6 +13,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
 **Aufgaben:**
 
 1. **Theme Toggle Interaktion:**
+
    ```typescript
    // e2e/interactions.spec.ts
    import { test, expect } from '@playwright/test';
@@ -21,28 +23,31 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
        await page.goto('/');
 
        // Finde den Theme Toggle Button
-       const themeToggle = page.getByRole('button', { name: /theme|dark|light/i }).first();
+       const themeToggle = page
+         .getByRole('button', { name: /theme|dark|light/i })
+         .first();
 
        // Prüfe initialen Zustand
        const htmlElement = page.locator('html');
-       const initialTheme = await htmlElement.getAttribute('class') || '';
+       const initialTheme = (await htmlElement.getAttribute('class')) || '';
 
        // Klicke auf Theme Toggle
        await themeToggle.click();
 
        // Prüfe ob Theme gewechselt hat
-       const newTheme = await htmlElement.getAttribute('class') || '';
+       const newTheme = (await htmlElement.getAttribute('class')) || '';
        expect(newTheme).not.toBe(initialTheme);
 
        // Toggle zurück
        await themeToggle.click();
-       const finalTheme = await htmlElement.getAttribute('class') || '';
+       const finalTheme = (await htmlElement.getAttribute('class')) || '';
        expect(finalTheme).toBe(initialTheme);
      });
    });
    ```
 
 2. **Suche mit Tastatur-Navigation:**
+
    ```typescript
    test('Suche mit Tastatur bedienen', async ({ page }) => {
      await page.goto('/news/public');
@@ -72,6 +77,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```
 
 3. **News Card Hover-Effekte:**
+
    ```typescript
    test('News Card Hover zeigt zusätzliche Optionen', async ({ page }) => {
      await page.goto('/news/public');
@@ -104,6 +110,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```
 
 4. **Formular-Interaktionen (Login):**
+
    ```typescript
    test('Login Formular Validierung', async ({ page }) => {
      await page.goto('/auth/signin');
@@ -132,10 +139,12 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
 
      // Prüfe auf Fehlermeldung
      const errorMessage = page.getByText(/invalid|incorrect|falsch/i);
-     await expect(errorMessage).toBeVisible({ timeout: 5000 }).catch(() => {
-       // Falls keine Fehlermeldung, prüfe URL
-       expect(page.url()).toContain('/auth/signin');
-     });
+     await expect(errorMessage)
+       .toBeVisible({ timeout: 5000 })
+       .catch(() => {
+         // Falls keine Fehlermeldung, prüfe URL
+         expect(page.url()).toContain('/auth/signin');
+       });
 
      // Teste mit korrekten Daten
      await emailInput.clear();
@@ -150,6 +159,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```
 
 5. **Drag & Drop (falls vorhanden) oder Scroll-Verhalten:**
+
    ```typescript
    test('Infinite Scroll oder Pagination', async ({ page }) => {
      await page.goto('/news/public');
@@ -161,7 +171,9 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      await page.waitForTimeout(500);
 
      // Prüfe ob mehr Items geladen wurden oder Pagination sichtbar ist
-     const loadMoreButton = page.getByRole('button', { name: /load more|mehr laden/i });
+     const loadMoreButton = page.getByRole('button', {
+       name: /load more|mehr laden/i,
+     });
      const paginationNext = page.getByRole('link', { name: /next|weiter/i });
 
      if (await loadMoreButton.isVisible()) {
@@ -187,6 +199,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```
 
 6. **Multi-Select und Bulk-Aktionen:**
+
    ```typescript
    test('Mehrere Items auswählen', async ({ page }) => {
      await page.goto('/news/public');
@@ -211,7 +224,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
 
      // Alternative: Mehrfachauswahl mit Shift
      const items = page.getByRole('listitem');
-     if (await items.count() > 3) {
+     if ((await items.count()) > 3) {
        await items.first().click();
        await items.nth(2).click({ modifiers: ['Shift'] });
      }
@@ -219,6 +232,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```
 
 **Best Practices:**
+
 - ✅ Nutze realistische Benutzer-Flows
 - ✅ Teste Tastatur-Navigation für Accessibility
 - ✅ Prüfe Hover-States und Fokus-Indikatoren

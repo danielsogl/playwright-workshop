@@ -21,12 +21,18 @@ export class NewsItemComponent {
 
   get author() {
     // Source text - look for the first element that contains only the source name
-    return this.locator.locator(':text-matches("^(TechCrunch|Reuters Financial News|BBC World|Hacker News)$")').first();
+    return this.locator
+      .locator(
+        ':text-matches("^(TechCrunch|Reuters Financial News|BBC World|Hacker News)$")',
+      )
+      .first();
   }
 
   get date() {
     // Date text appears as "10/4/2025" in the browser
-    return this.locator.locator('text=/^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$/').first();
+    return this.locator
+      .locator('text=/^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$/')
+      .first();
   }
 
   get image() {
@@ -35,7 +41,9 @@ export class NewsItemComponent {
 
   get category() {
     // Category appears as exact text like "Technology", "Business", "World News"
-    return this.locator.locator('text=/^(Technology|Business|World News)$/').first();
+    return this.locator
+      .locator('text=/^(Technology|Business|World News)$/')
+      .first();
   }
 
   // Actions with fluent interface
@@ -77,7 +85,7 @@ export class NewsItemComponent {
 
   async getDescription(): Promise<string> {
     try {
-      return await this.description.textContent() || '';
+      return (await this.description.textContent()) || '';
     } catch {
       return '';
     }
@@ -85,7 +93,7 @@ export class NewsItemComponent {
 
   async getAuthor(): Promise<string> {
     try {
-      const sourceText = await this.author.textContent() || '';
+      const sourceText = (await this.author.textContent()) || '';
       return sourceText.trim();
     } catch {
       return '';
@@ -94,7 +102,7 @@ export class NewsItemComponent {
 
   async getDate(): Promise<string> {
     try {
-      const dateText = await this.date.textContent() || '';
+      const dateText = (await this.date.textContent()) || '';
       return dateText.trim();
     } catch {
       return '';
@@ -103,7 +111,7 @@ export class NewsItemComponent {
 
   async getCategory(): Promise<string> {
     try {
-      const categoryText = await this.category.textContent() || '';
+      const categoryText = (await this.category.textContent()) || '';
       return categoryText.trim();
     } catch {
       return '';
@@ -145,7 +153,9 @@ export class NewsItemComponent {
   // Complex interactions with chaining
   async expandAndRead(): Promise<this> {
     await this.hover();
-    const expandButton = this.locator.getByRole('button', { name: /expand|more|read/i });
+    const expandButton = this.locator.getByRole('button', {
+      name: /expand|more|read/i,
+    });
     if (await expandButton.isVisible().catch(() => false)) {
       await expandButton.click();
     }
@@ -154,7 +164,9 @@ export class NewsItemComponent {
 
   async shareVia(platform: 'twitter' | 'facebook' | 'linkedin'): Promise<this> {
     await this.hover();
-    const shareButton = this.locator.getByRole('button', { name: new RegExp(platform, 'i') });
+    const shareButton = this.locator.getByRole('button', {
+      name: new RegExp(platform, 'i'),
+    });
     if (await shareButton.isVisible().catch(() => false)) {
       await shareButton.click();
     }
@@ -170,7 +182,7 @@ export class NewsItemComponent {
       date: await this.getDate(),
       category: await this.getCategory(),
       imageUrl: await this.getImageUrl(),
-      linkUrl: await this.getLinkUrl()
+      linkUrl: await this.getLinkUrl(),
     };
   }
 }
