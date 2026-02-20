@@ -3,10 +3,7 @@
 import type { RSSFeed } from '@/types/rss';
 
 import React from 'react';
-import { Card, CardBody } from '@heroui/react';
-import { Spinner } from '@heroui/spinner';
-import { Button } from '@heroui/button';
-import { Chip } from '@heroui/chip';
+import { Card, CardBody, Spinner, Button, Chip } from '@heroui/react';
 import { RefreshCw, Rss } from 'lucide-react';
 
 import { TrashIcon } from '@/components/icons';

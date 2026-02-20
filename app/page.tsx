@@ -1,11 +1,8 @@
 'use client';
 
-import { Link } from '@heroui/link';
+import { Link, Card, CardBody, Chip, Divider } from '@heroui/react';
 import { button as buttonStyles } from '@heroui/theme';
 import NextLink from 'next/link';
-import { Card, CardBody } from '@heroui/card';
-import { Chip } from '@heroui/chip';
-import { Divider } from '@heroui/divider';
 import {
   Shield,
   Rss,

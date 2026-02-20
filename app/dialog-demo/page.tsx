@@ -1,10 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@heroui/button';
-import { Card, CardBody } from '@heroui/card';
-import { Chip } from '@heroui/chip';
-import { Divider } from '@heroui/divider';
+import { Button, Card, CardBody, Chip, Divider } from '@heroui/react';
 import { AlertTriangle, MessageSquare, HelpCircle, ShieldAlert, Layers, Info } from 'lucide-react';
 
 import { title, subtitle } from '@/components/primitives';

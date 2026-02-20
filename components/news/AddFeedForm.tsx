@@ -1,9 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardBody } from '@heroui/react';
-import { Input } from '@heroui/input';
-import { Button } from '@heroui/button';
+import { Card, CardBody, Input, Button } from '@heroui/react';
 import { Plus } from 'lucide-react';
 
 interface AddFeedFormProps {

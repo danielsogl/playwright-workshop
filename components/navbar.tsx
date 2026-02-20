@@ -8,17 +8,15 @@ import {
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-} from '@heroui/navbar';
-import { Button } from '@heroui/button';
-import { Link } from '@heroui/link';
-import { link as linkStyles } from '@heroui/theme';
-import {
+  Button,
+  Link,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from '@heroui/dropdown';
-import { Avatar } from '@heroui/avatar';
+  Avatar,
+} from '@heroui/react';
+import { link as linkStyles } from '@heroui/theme';
 import NextLink from 'next/link';
 import clsx from 'clsx';
 import { useSession, signOut } from 'next-auth/react';

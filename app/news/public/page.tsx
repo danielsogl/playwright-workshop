@@ -3,9 +3,7 @@
 import type { RSSItem } from '@/types/rss';
 import type { ChangeEvent } from 'react';
 
-import { Card, CardBody, Input } from '@heroui/react';
-import { Chip } from '@heroui/chip';
-import { Spinner } from '@heroui/spinner';
+import { Card, CardBody, Input, Chip, Spinner } from '@heroui/react';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { Rss, Search } from 'lucide-react';

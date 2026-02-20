@@ -2,15 +2,10 @@
 
 import type { RSSItem, RSSFeed } from '@/types/rss';
 
-import { Card, CardBody } from '@heroui/react';
+import { Card, CardBody, CardHeader, Spinner, Button, Link, Divider } from '@heroui/react';
 import React, { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { Spinner } from '@heroui/spinner';
 import { useSession } from 'next-auth/react';
-import { Button } from '@heroui/button';
-import { Link } from '@heroui/link';
-import { CardHeader } from '@heroui/card';
-import { Divider } from '@heroui/divider';
 import { Shield, Rss } from 'lucide-react';
 
 import { subtitle, title } from '@/components/primitives';

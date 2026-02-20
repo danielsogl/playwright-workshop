@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardBody, CardHeader } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Divider } from '@heroui/divider';
-import { Chip } from '@heroui/chip';
+import { Card, CardBody, CardHeader, Button, Input, Divider, Chip } from '@heroui/react';
 import { User, Plus, Edit, Trash2, Users, Info } from 'lucide-react';
 
 import { title, subtitle } from '@/components/primitives';

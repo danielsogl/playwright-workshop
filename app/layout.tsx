@@ -1,7 +1,5 @@
 import '@/styles/globals.css';
 import { Metadata, Viewport } from 'next';
-import clsx from 'clsx';
-
 import { Providers } from './providers';
 
 import { siteConfig } from '@/config/site';
@@ -33,12 +31,8 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="de">
-      <head />
       <body
-        className={clsx(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable,
-        )}
+        className={`min-h-screen bg-background font-sans antialiased ${fontSans.variable}`}
       >
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
           <div className="relative flex flex-col h-screen">

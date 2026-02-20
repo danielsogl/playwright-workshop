@@ -3,12 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import useSWR, { mutate } from 'swr';
-import { Spinner } from '@heroui/spinner';
-import { Input } from '@heroui/input';
-import { Button } from '@heroui/button';
-import { Link } from '@heroui/link';
-import { Card, CardBody, CardHeader } from '@heroui/card';
-import { Divider } from '@heroui/divider';
+import { Spinner, Input, Button, Link, Card, CardBody, CardHeader, Divider } from '@heroui/react';
 import { Settings, UserCog, Lock, Shield } from 'lucide-react';
 
 import { title, subtitle } from '@/components/primitives';

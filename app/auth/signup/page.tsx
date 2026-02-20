@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Input } from '@heroui/input';
-import { Button } from '@heroui/button';
-import { Link } from '@heroui/link';
-import { Card, CardBody, CardHeader } from '@heroui/card';
-import { Divider } from '@heroui/divider';
+import { Input, Button, Link, Card, CardBody, CardHeader, Divider } from '@heroui/react';
 import { UserPlus } from 'lucide-react';
 
 export default function SignUpPage() {
