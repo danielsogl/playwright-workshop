@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import useSWR, { mutate } from 'swr';
 import { Spinner, Input, Button, Link, Card, CardBody, CardHeader, Divider } from '@heroui/react';
-import { Settings, UserCog, Lock, Shield } from 'lucide-react';
+import { UserCog, Lock, Shield } from 'lucide-react';
 
 import { title, subtitle } from '@/components/primitives';
 import { User } from '@/lib/db/models/user';

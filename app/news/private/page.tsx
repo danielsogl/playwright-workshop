@@ -6,7 +6,7 @@ import { Card, CardBody, CardHeader, Spinner, Button, Link, Divider } from '@her
 import React, { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { useSession } from 'next-auth/react';
-import { Shield, Rss } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 import { subtitle, title } from '@/components/primitives';
 import { fetcher } from '@/lib/utils/fetchers';
