@@ -26,7 +26,7 @@ export default function FileDownloadPage() {
 
   // PDF Download Handler mit jsPDF
   const handlePdfDownload = () => {
-    setDownloadStatus('PDF wird vorbereitet...');
+    setDownloadStatus('PDF wird vorbereitet\u2026');
 
     // Simuliere PDF-Generierung
     setTimeout(() => {
@@ -80,7 +80,7 @@ export default function FileDownloadPage() {
 
   // JSON Download Handler
   const handleJsonDownload = () => {
-    setDownloadStatus('JSON wird vorbereitet...');
+    setDownloadStatus('JSON wird vorbereitet\u2026');
 
     setTimeout(() => {
       const jsonData = generateTestData();
@@ -100,7 +100,7 @@ export default function FileDownloadPage() {
 
   // CSV Download Handler
   const handleCsvDownload = () => {
-    setDownloadStatus('CSV wird vorbereitet...');
+    setDownloadStatus('CSV wird vorbereitet\u2026');
 
     setTimeout(() => {
       const csvContent =
@@ -121,7 +121,7 @@ export default function FileDownloadPage() {
 
   // Text Download Handler
   const handleTextDownload = () => {
-    setDownloadStatus('Text wird vorbereitet...');
+    setDownloadStatus('Text wird vorbereitet\u2026');
 
     setTimeout(() => {
       const textContent = `Playwright Download Demo
@@ -169,7 +169,7 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
 
       {/* Download Status */}
       {downloadStatus && (
-        <Card className="w-full max-w-md mx-auto">
+        <Card className="w-full max-w-md mx-auto" role="status" aria-live="polite">
           <CardBody className="text-center">
             <p className="text-sm text-default-600">{downloadStatus}</p>
           </CardBody>

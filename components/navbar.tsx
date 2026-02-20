@@ -58,14 +58,13 @@ export const Navbar = () => {
             className="flex justify-start items-center gap-1"
             href="/"
           >
-            <Logo />
-            <p className="font-bold text-inherit">Feeds</p>
+            <Logo aria-hidden="true" />
+            <span className="font-bold text-inherit">Feeds</span>
           </NextLink>
         </NavbarBrand>
+        <nav aria-label="Main navigation" className="hidden lg:flex">
         <ul
-          className="hidden lg:flex gap-4 justify-start ml-2"
-          role="navigation"
-          aria-label="Main navigation"
+          className="flex gap-4 justify-start ml-2"
         >
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
@@ -84,6 +83,7 @@ export const Navbar = () => {
             </NavbarItem>
           ))}
         </ul>
+        </nav>
       </NavbarContent>
 
       <NavbarContent
@@ -101,7 +101,7 @@ export const Navbar = () => {
               aria-label="Loading authentication status"
               variant="flat"
             >
-              Loading...
+              Loading\u2026
             </Button>
           ) : session ? (
             <Dropdown placement="bottom-end">
@@ -199,7 +199,7 @@ export const Navbar = () => {
                 className="text-default-500"
                 aria-label="Loading authentication status"
               >
-                Loading...
+                Loading\u2026
               </span>
             ) : session ? (
               <Button

@@ -4,6 +4,7 @@ import type { RSSItem } from '@/types/rss';
 import type { ChangeEvent } from 'react';
 
 import { Card, Input } from '@heroui/react';
+import { Spinner } from '@heroui/spinner';
 import { useState } from 'react';
 import useSWR from 'swr';
 
@@ -37,22 +38,15 @@ export default function PublicNewsPage() {
         role="status"
         aria-label="Loading news feed"
       >
-        <div
-          aria-label="Loading news feed"
-          className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"
-          role="status"
-        />
+        <Spinner label="Loading news feed\u2026" size="lg" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        className="flex justify-center items-center min-h-screen"
-        role="alert"
-      >
-        <div className="text-red-500" role="alert">
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-danger" role="alert">
           Failed to load RSS feeds
         </div>
       </div>
@@ -60,7 +54,7 @@ export default function PublicNewsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8" role="main">
+    <div className="container mx-auto px-4 py-8">
       <h1 id="news-feed-title" className="text-3xl font-bold mb-8">
         News Feed
       </h1>
@@ -73,7 +67,7 @@ export default function PublicNewsPage() {
         <Input
           aria-label="Search news articles"
           className="flex-1"
-          placeholder="Search news..."
+          placeholder="Search news\u2026"
           type="text"
           value={searchQuery}
           id="search-news"
@@ -85,7 +79,7 @@ export default function PublicNewsPage() {
 
         <select
           aria-label="Filter news by category"
-          className="w-48 rounded-lg border border-gray-300 px-3 py-2"
+          className="w-48 rounded-lg border border-default-200 bg-default-50 text-foreground px-3 py-2"
           value={selectedCategory}
           id="filter-category"
           name="filter-category"
@@ -109,24 +103,15 @@ export default function PublicNewsPage() {
           <Card
             key={index}
             className="overflow-hidden"
-            role="article"
+            role="listitem"
             aria-labelledby={`news-title-${index}`}
-            aria-label={`News article: ${item.title}`}
           >
             <div className="p-4">
               <div className="flex justify-between items-start mb-2">
-                <span
-                  className="text-sm text-gray-500"
-                  role="doc-subtitle"
-                  aria-label={`Source: ${item.source}`}
-                >
+                <span className="text-sm text-default-400">
                   {item.source}
                 </span>
-                <span
-                  className="text-sm text-gray-500"
-                  role="doc-subtitle"
-                  aria-label={`Category: ${item.category}`}
-                >
+                <span className="text-sm text-default-400">
                   {item.category}
                 </span>
               </div>
@@ -136,31 +121,21 @@ export default function PublicNewsPage() {
                 id={`news-title-${index}`}
               >
                 <a
-                  aria-label={`Read article: ${item.title}`}
-                  className="hover:text-blue-600 transition-colors"
+                  className="hover:text-primary transition-colors"
                   href={item.link}
                   rel="noopener noreferrer"
                   target="_blank"
-                  role="link"
                 >
                   {item.title}
                 </a>
               </h2>
 
-              <p
-                className="text-gray-600 mb-4 line-clamp-3"
-                role="doc-description"
-                aria-label={`Description: ${item.description?.replace(/<[^>]*>/g, '').substring(0, 100)}...`}
-              >
+              <p className="text-default-500 mb-4 line-clamp-3">
                 {item.description?.replace(/<[^>]*>/g, '') ??
                   'No description available'}
               </p>
 
-              <div
-                className="text-sm text-gray-500"
-                role="doc-publication-date"
-                aria-label={`Published: ${item.pubDate ? new Date(item.pubDate).toLocaleDateString() : 'Date unavailable'}`}
-              >
+              <div className="text-sm text-default-400">
                 {item.pubDate
                   ? new Date(item.pubDate).toLocaleDateString()
                   : 'Date unavailable'}

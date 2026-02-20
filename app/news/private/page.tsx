@@ -142,7 +142,7 @@ export default function PrivateNewsPage() {
         role="status"
         aria-label="Loading session"
       >
-        <Spinner color="primary" label="Loading session..." size="lg" />
+        <Spinner color="primary" label="Loading session\u2026" size="lg" />
       </div>
     );
   }

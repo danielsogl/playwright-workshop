@@ -68,6 +68,7 @@ export default function SignInPage() {
           isRequired
           aria-label="Email address for sign in"
           autoComplete="email"
+          spellCheck="false"
           disabled={isLoading}
           label="Email"
           placeholder="you@example.com"
@@ -98,7 +99,7 @@ export default function SignInPage() {
             isLoading ? 'Submitting sign in form' : 'Submit sign in form'
           }
         >
-          {isLoading ? 'Signing In...' : 'Sign In'}
+          {isLoading ? 'Signing In\u2026' : 'Sign In'}
         </Button>
         <div className="text-center text-sm">
           <p>
@@ -108,7 +109,6 @@ export default function SignInPage() {
               href="/auth/signup"
               isDisabled={isLoading}
               size="sm"
-              role="link"
             >
               Sign Up
             </Link>

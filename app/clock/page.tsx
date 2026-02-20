@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Button } from '@heroui/button';
 import { Card, CardBody, CardHeader } from '@heroui/react';
 
 export default function ClockPage() {
@@ -86,14 +87,19 @@ export default function ClockPage() {
             <h2 className="text-xl font-semibold">Aktuelle Zeit</h2>
           </CardHeader>
           <CardBody>
-            <div className="text-center">
+            <div className="text-center" aria-live="polite" role="timer">
               <div
+                suppressHydrationWarning
                 data-testid="current-time"
-                className="text-4xl font-mono font-bold mb-2"
+                className="text-4xl font-mono font-bold mb-2 tabular-nums"
               >
                 {formatTime(currentTime)}
               </div>
-              <div data-testid="current-date" className="text-lg text-gray-600">
+              <div
+                suppressHydrationWarning
+                data-testid="current-date"
+                className="text-lg text-default-500"
+              >
                 {formatDate(currentTime)}
               </div>
             </div>
@@ -109,19 +115,31 @@ export default function ClockPage() {
             <div className="space-y-2">
               <div>
                 <span className="font-medium">Session Start: </span>
-                <span data-testid="session-start">
+                <span
+                  suppressHydrationWarning
+                  data-testid="session-start"
+                  className="tabular-nums"
+                >
                   {formatTime(sessionStart)}
                 </span>
               </div>
               <div>
                 <span className="font-medium">Session Dauer: </span>
-                <span data-testid="session-duration">
+                <span
+                  suppressHydrationWarning
+                  data-testid="session-duration"
+                  className="tabular-nums"
+                >
                   {getSessionDuration()}
                 </span>
               </div>
               <div>
                 <span className="font-medium">Timeout in: </span>
-                <span data-testid="session-timeout">
+                <span
+                  suppressHydrationWarning
+                  data-testid="session-timeout"
+                  className="tabular-nums"
+                >
                   {30 -
                     Math.floor(
                       (currentTime.getTime() - sessionStart.getTime()) /
@@ -144,40 +162,46 @@ export default function ClockPage() {
               <div className="text-center">
                 <div
                   data-testid="countdown-display"
-                  className="text-3xl font-mono font-bold mb-4"
+                  className="text-3xl font-mono font-bold mb-4 tabular-nums"
+                  aria-live="assertive"
+                  role="timer"
                 >
                   {formatCountdown(countdown)}
                 </div>
-                <button
-                  onClick={() => setCountdown(null)}
-                  className="bg-red-500 text-white px-4 py-2 rounded"
+                <Button
+                  color="danger"
+                  aria-label="Stop countdown timer"
+                  onPress={() => setCountdown(null)}
                 >
                   Stop
-                </button>
+                </Button>
               </div>
             ) : (
-              <div className="space-y-2">
-                <button
+              <div className="flex flex-wrap gap-2">
+                <Button
                   data-testid="start-1min-timer"
-                  onClick={() => startCountdown(1)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                  color="primary"
+                  aria-label="Start 1 minute timer"
+                  onPress={() => startCountdown(1)}
                 >
                   1 Minute
-                </button>
-                <button
+                </Button>
+                <Button
                   data-testid="start-5min-timer"
-                  onClick={() => startCountdown(5)}
-                  className="bg-green-500 text-white px-4 py-2 rounded mr-2"
+                  color="success"
+                  aria-label="Start 5 minute timer"
+                  onPress={() => startCountdown(5)}
                 >
                   5 Minuten
-                </button>
-                <button
+                </Button>
+                <Button
                   data-testid="start-10min-timer"
-                  onClick={() => startCountdown(10)}
-                  className="bg-purple-500 text-white px-4 py-2 rounded"
+                  color="secondary"
+                  aria-label="Start 10 minute timer"
+                  onPress={() => startCountdown(10)}
                 >
                   10 Minuten
-                </button>
+                </Button>
               </div>
             )}
           </CardBody>
@@ -191,11 +215,17 @@ export default function ClockPage() {
           <CardBody>
             <div>
               <span className="font-medium">Zuletzt aktualisiert: </span>
-              <span data-testid="last-updated">{formatTime(currentTime)}</span>
+              <span
+                suppressHydrationWarning
+                data-testid="last-updated"
+                className="tabular-nums"
+              >
+                {formatTime(currentTime)}
+              </span>
             </div>
             <div className="mt-2">
               <span className="font-medium">Auto-Refresh: </span>
-              <span className="text-green-500">Aktiv</span>
+              <span className="text-success">Aktiv</span>
             </div>
           </CardBody>
         </Card>
@@ -203,26 +233,26 @@ export default function ClockPage() {
 
       {/* Special Date Messages */}
       {currentTime.getMonth() === 11 && currentTime.getDate() === 25 && (
-        <Card className="mt-6 bg-red-50">
+        <Card className="mt-6 bg-danger-50">
           <CardBody>
             <div
               data-testid="christmas-message"
-              className="text-center text-xl font-bold text-red-600"
+              className="text-center text-xl font-bold text-danger"
             >
-              🎄 Frohe Weihnachten! 🎄
+              Frohe Weihnachten!
             </div>
           </CardBody>
         </Card>
       )}
 
       {currentTime.getMonth() === 11 && currentTime.getDate() === 31 && (
-        <Card className="mt-6 bg-blue-50">
+        <Card className="mt-6 bg-primary-50">
           <CardBody>
             <div
               data-testid="newyear-message"
-              className="text-center text-xl font-bold text-blue-600"
+              className="text-center text-xl font-bold text-primary"
             >
-              🎊 Frohes neues Jahr! 🎊
+              Frohes neues Jahr!
             </div>
           </CardBody>
         </Card>

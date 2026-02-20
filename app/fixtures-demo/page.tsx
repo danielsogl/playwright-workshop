@@ -99,7 +99,7 @@ export default function FixturesDemoPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4" role="main">
+    <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col gap-8">
         {/* Header */}
         <section className="text-center">
@@ -116,9 +116,9 @@ export default function FixturesDemoPage() {
             <CardHeader className="flex gap-3">
               <div className="flex items-center gap-2">
                 {editingUser ? (
-                  <Edit className="w-5 h-5" />
+                  <Edit className="w-5 h-5" aria-hidden="true" />
                 ) : (
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-5 h-5" aria-hidden="true" />
                 )}
                 <h2 className="text-lg font-semibold">
                   {editingUser ? 'Edit User' : 'Add New User'}
@@ -127,12 +127,19 @@ export default function FixturesDemoPage() {
             </CardHeader>
             <Divider />
             <CardBody>
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-4"
+                aria-label={editingUser ? 'Edit user form' : 'Add new user form'}
+                name="user-form"
+              >
                 <Input
                   data-testid="user-name-input"
                   label="Name"
                   placeholder="Enter user name"
                   value={formData.name}
+                  name="name"
+                  autoComplete="name"
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
@@ -144,6 +151,9 @@ export default function FixturesDemoPage() {
                   label="Email"
                   placeholder="Enter email address"
                   value={formData.email}
+                  name="email"
+                  autoComplete="email"
+                  spellCheck="false"
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
@@ -156,7 +166,7 @@ export default function FixturesDemoPage() {
                   <select
                     id="role-select"
                     data-testid="user-role-select"
-                    className="px-3 py-2 rounded-md border border-default-200 bg-default-50"
+                    className="px-3 py-2 rounded-md border border-default-200 bg-default-50 text-foreground"
                     value={formData.role}
                     onChange={(e) =>
                       setFormData({ ...formData, role: e.target.value })
@@ -196,7 +206,7 @@ export default function FixturesDemoPage() {
           <Card>
             <CardHeader className="flex gap-3">
               <div className="flex items-center gap-2">
-                <User className="w-5 h-5" />
+                <User className="w-5 h-5" aria-hidden="true" />
                 <h2 className="text-lg font-semibold">Users</h2>
                 <span
                   data-testid="user-count"
@@ -216,15 +226,16 @@ export default function FixturesDemoPage() {
                   No users found. Add a user to get started.
                 </div>
               ) : (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3" role="list" aria-label="User list">
                   {users.map((user) => (
                     <Card
                       key={user.id}
                       className="p-3"
                       data-testid={`user-item-${user.id}`}
+                      role="listitem"
                     >
                       <div className="flex justify-between items-start">
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <h3
                             className="font-semibold"
                             data-testid={`user-name-${user.id}`}
@@ -232,7 +243,7 @@ export default function FixturesDemoPage() {
                             {user.name}
                           </h3>
                           <p
-                            className="text-sm text-default-600"
+                            className="text-sm text-default-600 truncate"
                             data-testid={`user-email-${user.id}`}
                           >
                             {user.email}
@@ -257,22 +268,24 @@ export default function FixturesDemoPage() {
                             size="sm"
                             variant="light"
                             isIconOnly
+                            aria-label={`Edit user ${user.name}`}
                             data-testid={`edit-user-${user.id}`}
                             onClick={() => handleEdit(user)}
                             isDisabled={isLoading}
                           >
-                            <Edit className="w-4 h-4" />
+                            <Edit className="w-4 h-4" aria-hidden="true" />
                           </Button>
                           <Button
                             size="sm"
                             variant="light"
                             color="danger"
                             isIconOnly
+                            aria-label={`Delete user ${user.name}`}
                             data-testid={`delete-user-${user.id}`}
                             onClick={() => handleDelete(user.id)}
                             isDisabled={isLoading}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
                           </Button>
                         </div>
                       </div>

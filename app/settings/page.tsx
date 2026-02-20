@@ -153,7 +153,7 @@ export default function SettingsPage() {
         role="status"
         aria-label="Loading session"
       >
-        <Spinner color="primary" label="Loading session..." />
+        <Spinner color="primary" label="Loading session\u2026" />
       </div>
     );
   }
@@ -194,7 +194,7 @@ export default function SettingsPage() {
       </div>
 
       {isLoadingUser && (
-        <Spinner aria-label="Loading profile data" label="Loading profile..." />
+        <Spinner aria-label="Loading profile data" label="Loading profile\u2026" />
       )}
       {fetchError && (
         <p className="text-danger text-center" role="alert">
@@ -257,7 +257,7 @@ export default function SettingsPage() {
             type="submit"
             id="profile-update-button"
           >
-            {isUpdating ? 'Updating...' : 'Update Profile'}
+            {isUpdating ? 'Updating\u2026' : 'Update Profile'}
           </Button>
         </form>
       )}
@@ -357,7 +357,7 @@ export default function SettingsPage() {
             type="submit"
             id="change-password-button"
           >
-            {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+            {isChangingPassword ? 'Changing Password\u2026' : 'Change Password'}
           </Button>
         </form>
       )}

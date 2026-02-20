@@ -56,6 +56,9 @@ export default function DialogDemoPage() {
       align-items: center;
       z-index: 1000;
     `;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'custom-dialog-title');
 
     // Detect current theme by checking if dark class is present on html element
     const isDarkMode = document.documentElement.classList.contains('dark');
@@ -73,7 +76,7 @@ export default function DialogDemoPage() {
     `;
 
     dialog.innerHTML = `
-      <h3 style="margin-top: 0; color: ${isDarkMode ? '#f4f4f5' : '#09090b'};">Custom Dialog</h3>
+      <h3 id="custom-dialog-title" style="margin-top: 0; color: ${isDarkMode ? '#f4f4f5' : '#09090b'};">Custom Dialog</h3>
       <p style="color: ${isDarkMode ? '#a1a1aa' : '#71717a'};">This is a custom modal dialog created with JavaScript.</p>
       <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
         <button id="custom-cancel" style="padding: 8px 16px; border: 1px solid ${isDarkMode ? '#52525b' : '#d4d4d8'}; background: ${isDarkMode ? '#27272a' : 'white'}; color: ${isDarkMode ? '#f4f4f5' : '#09090b'}; border-radius: 4px; cursor: pointer;">Cancel</button>
@@ -86,6 +89,9 @@ export default function DialogDemoPage() {
 
     const cancelBtn = dialog.querySelector('#custom-cancel');
     const okBtn = dialog.querySelector('#custom-ok');
+
+    // Focus the OK button for keyboard accessibility
+    (okBtn as HTMLElement)?.focus();
 
     const cleanup = () => {
       document.body.removeChild(modal);
@@ -101,10 +107,21 @@ export default function DialogDemoPage() {
       cleanup();
     });
 
+    // Close on Escape key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setResult('Custom dialog result: Cancelled (Escape)');
+        cleanup();
+        document.removeEventListener('keydown', handleKeyDown);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         setResult('Custom dialog result: Cancelled (clicked outside)');
         cleanup();
+        document.removeEventListener('keydown', handleKeyDown);
       }
     });
   };
@@ -187,7 +204,7 @@ export default function DialogDemoPage() {
             role="status"
             aria-live="polite"
           >
-            {result || 'No dialog interactions yet...'}
+            {result || 'No dialog interactions yet\u2026'}
           </div>
         </CardBody>
       </Card>

@@ -115,6 +115,7 @@ export default function SignUpPage() {
           isRequired
           aria-label="Email address for sign up"
           autoComplete="email"
+          spellCheck="false"
           disabled={isLoading}
           label="Email"
           placeholder="you@example.com"
@@ -137,7 +138,6 @@ export default function SignUpPage() {
           name="password"
           onValueChange={setPassword}
         />
-        {/* Optional: Add password confirmation field */}
         <Button
           className="w-full"
           color="primary"
@@ -149,7 +149,7 @@ export default function SignUpPage() {
           }
           id="signup-submit"
         >
-          {isLoading ? 'Signing Up...' : 'Sign Up'}
+          {isLoading ? 'Signing Up\u2026' : 'Sign Up'}
         </Button>
 
         <div className="text-center text-sm">
@@ -159,7 +159,6 @@ export default function SignUpPage() {
               aria-label="Navigate to sign in page"
               href="/auth/signin"
               size="sm"
-              role="link"
             >
               Sign In
             </Link>
