@@ -1,13 +1,53 @@
 {
+  // TypeScript
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.variableTypes.enabled": false,
+  // Formatter
   "prettier.enable": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  // Editor
+  "editor.linkedEditing": true,
+  "editor.rulers": [
+    100
+  ],
+  "editor.tabSize": 2,
+  // Tailwind CSS IntelliSense
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "tv\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "clsx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ]
+  ],
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "tv"
+  ],
+  "css.validate": false,
+  // File associations
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  // Search & Explorer excludes
   "search.exclude": {
     "**/node_modules": true,
     "**/.next": true,
     "**/playwright-report": true,
-    "**/test-results": true
+    "**/test-results": true,
+    "**/.husky": true
   },
   "files.exclude": {
     "**/node_modules": true,
@@ -16,20 +56,15 @@
     "**/playwright-report": true,
     "**/test-results": true
   },
+  // Playwright
+  "playwright.reuseBrowser": false,
+  "playwright.showTrace": true,
+  // MCP
   "chat.mcp.discovery.enabled": {
     "claude-desktop": true,
     "windsurf": true,
     "cursor-global": true,
     "cursor-workspace": true
-  },
-  "mcp": {
-    "inputs": [],
-    "servers": {
-      "playwright": {
-        "command": "npx",
-        "args": ["@playwright/mcp@latest"]
-      }
-    }
   },
   "chat.mcp.access": "all"
 }
