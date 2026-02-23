@@ -7,8 +7,5 @@
     "ms-playwright.playwright",
     // Tailwind CSS
     "bradlc.vscode-tailwindcss",
-    // TypeScript / React
-    "formulahendry.auto-rename-tag",
-    "christian-kohler.path-intellisense"
   ]
 }
