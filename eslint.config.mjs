@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint';
 import nextPlugin from '@next/eslint-plugin-next';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import playwrightPlugin from 'eslint-plugin-playwright';
 import globals from 'globals';
 
 export default [
@@ -62,6 +63,7 @@ export default [
     },
   },
   {
+    ...playwrightPlugin.configs['flat/recommended'],
     files: ['e2e/**/*.ts', 'e2e/**/*.tsx'],
     languageOptions: {
       parserOptions: {
@@ -70,6 +72,7 @@ export default [
       },
     },
     rules: {
+      ...playwrightPlugin.configs['flat/recommended'].rules,
       'react-hooks/rules-of-hooks': 'off',
       'react-hooks/exhaustive-deps': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
