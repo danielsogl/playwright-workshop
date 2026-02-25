@@ -99,14 +99,18 @@ export default function Home() {
             color="secondary"
             variant="flat"
             size="md"
-            startContent={<Sparkles className="w-3.5 h-3.5 ml-1" aria-hidden="true" />}
+            startContent={
+              <Sparkles className="w-3.5 h-3.5 ml-1" aria-hidden="true" />
+            }
           >
             Playwright Workshop
           </Chip>
 
           <div className="inline-block max-w-3xl text-center">
             <h1 id="hero-title" className="text-pretty">
-              <span className={title({ size: 'lg' })}>Welcome to the&nbsp;</span>
+              <span className={title({ size: 'lg' })}>
+                Welcome to the&nbsp;
+              </span>
               <br />
               <span className={title({ color: 'violet', size: 'lg' })}>
                 Playwright Demo App
@@ -114,7 +118,7 @@ export default function Home() {
             </h1>
             <p className={subtitle({ class: 'mt-6 mx-auto' })}>
               Explore various features and testing scenarios for the Playwright
-              testing framework. From authentication flows to file downloads.
+              testing framework. From authentication flows to file downloads
             </p>
           </div>
 
@@ -190,10 +194,7 @@ export default function Home() {
           <Chip variant="flat" size="sm" className="mb-4">
             Explore
           </Chip>
-          <h2
-            className={title({ size: 'sm' })}
-            id="features-title"
-          >
+          <h2 className={title({ size: 'sm' })} id="features-title">
             Key Features
           </h2>
           <p className="text-default-500 mt-3 text-lg max-w-lg mx-auto">
