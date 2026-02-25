@@ -58,7 +58,7 @@
   },
   // Playwright
   "playwright.reuseBrowser": false,
-  "playwright.showTrace": true,
+  "playwright.showTrace": false,
   // MCP
   "chat.mcp.discovery.enabled": {
     "claude-desktop": true,
