@@ -31,3 +31,7 @@ export interface RSSFeedState {
   selectedCategory: string;
   searchQuery: string;
 }
+
+export interface RSSFeedResponse {
+  items: RSSItem[];
+}
