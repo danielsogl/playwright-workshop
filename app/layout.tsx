@@ -45,7 +45,9 @@ export default function RootLayout({
             <Navbar />
             <main
               id="main-content"
-              className="container mx-auto max-w-7xl pt-16 px-6 grow"
+              // tabIndex=-1 lets the skip link move focus here when activated.
+              tabIndex={-1}
+              className="container mx-auto max-w-7xl pt-16 px-6 grow outline-hidden"
             >
               {children}
             </main>

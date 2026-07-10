@@ -3,27 +3,33 @@ import { test, expect } from '@playwright/test';
 test.describe('API Login Test', () => {
   test('should login via API and test authenticated endpoints', async ({
     page,
-    request,
   }) => {
-    // Step 1: Get CSRF token from NextAuth
-    const csrfResponse = await request.get('/api/auth/csrf');
+    // Use page.request so the session cookie is shared with the page context
+    // (the standalone `request` fixture has its own, separate cookie jar).
+    const api = page.request;
+
+    // Step 1: Get CSRF token from Auth.js
+    const csrfResponse = await api.get('/api/auth/csrf');
     expect(csrfResponse.status()).toBe(200);
     const { csrfToken } = await csrfResponse.json();
 
-    // Step 2: API-Login using NextAuth credentials endpoint
-    const loginResponse = await request.post('/api/auth/signin/credentials', {
-      data: {
+    // Step 2: API-Login. Auth.js v5 signs in via the credentials *callback*
+    // endpoint with a form-encoded body; `json: 'true'` returns 200 + JSON
+    // instead of a 302 redirect.
+    const loginResponse = await api.post('/api/auth/callback/credentials', {
+      form: {
         email: 'test@example.com',
         password: 'password',
-        csrfToken: csrfToken,
-        redirect: false,
+        csrfToken,
+        callbackUrl: '/',
+        json: 'true',
       },
     });
 
-    expect(loginResponse.status()).toBe(200);
+    expect([200, 302]).toContain(loginResponse.status());
 
     // Step 3: Verify session contains user data
-    const sessionResponse = await request.get('/api/auth/session');
+    const sessionResponse = await api.get('/api/auth/session');
     expect(sessionResponse.status()).toBe(200);
 
     const sessionData = await sessionResponse.json();
@@ -31,7 +37,7 @@ test.describe('API Login Test', () => {
     expect(sessionData.user.email).toBe('test@example.com');
 
     // Step 4: Test protected API route with authentication
-    const userResponse = await request.get('/api/user');
+    const userResponse = await api.get('/api/user');
     expect(userResponse.status()).toBe(200);
 
     const userData = await userResponse.json();

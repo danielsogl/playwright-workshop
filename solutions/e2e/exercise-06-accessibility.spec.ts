@@ -202,7 +202,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
 
       if ((await searchContainer.count()) > 0) {
         const results = await new AxeBuilder({ page })
-          .include(searchContainer)
+          .include(['[role="search"]'])
           .analyze();
 
         expect(results.violations).toEqual([]);
@@ -343,7 +343,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
       if ((await themeToggle.count()) > 0) {
         // Test the theme toggle button itself
         const results = await new AxeBuilder({ page })
-          .include(themeToggle)
+          .include(['[role="switch"]'])
           .analyze();
 
         expect(results.violations).toEqual([]);
@@ -404,7 +404,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
       if ((await mobileMenuButton.count()) > 0) {
         // Test menu button accessibility
         const buttonResults = await new AxeBuilder({ page })
-          .include(mobileMenuButton)
+          .include(['button[aria-label*="menu"]'])
           .analyze();
 
         expect(buttonResults.violations).toEqual([]);
@@ -530,7 +530,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
 
       // Run accessibility check for focus-related issues
       const results = await new AxeBuilder({ page })
-        .withRules(['focus-order-semantics', 'focusable-content'])
+        .withRules(['focus-order-semantics', 'frame-focusable-content'])
         .analyze();
 
       expect(results.violations).toEqual([]);
@@ -567,6 +567,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
         const mainContentFocused =
           activeElementId === 'main' ||
           activeElementId === 'content' ||
+          activeElementId === 'main-content' ||
           (await page.locator('main:focus, [role="main"]:focus').count()) > 0;
 
         expect(mainContentFocused).toBe(true);
