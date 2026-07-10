@@ -6,14 +6,14 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     await page.goto('/news/public');
 
     // Warte bis News-Liste geladen ist - verwende spezifischeren Selektor
-    await expect(page.getByRole('listitem').first()).toBeVisible({
+    await expect(page.getByRole('article').first()).toBeVisible({
       timeout: 10000,
     });
   });
 
   test('zeigt initiale News-Artikel an', async ({ page }) => {
     // Finde alle News-Items über role=listitem
-    const newsItems = page.getByRole('listitem');
+    const newsItems = page.getByRole('article');
 
     // Zähle Artikel
     const count = await newsItems.count();
@@ -42,7 +42,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     });
 
     // Initiale Anzahl der Artikel
-    const initialItems = page.getByRole('listitem');
+    const initialItems = page.getByRole('article');
     const initialCount = await initialItems.count();
 
     // Suche nach einem Begriff
@@ -53,7 +53,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     await page.waitForLoadState('networkidle');
 
     // Prüfe ob gefiltert wurde
-    const filteredItems = page.getByRole('listitem');
+    const filteredItems = page.getByRole('article');
     const filteredCount = await filteredItems.count();
 
     // Es sollten weniger oder gleich viele Artikel sein
@@ -80,7 +80,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     await page.waitForLoadState('networkidle');
 
     // Prüfe ob keine Artikel oder eine Nachricht angezeigt wird
-    const items = page.getByRole('listitem');
+    const items = page.getByRole('article');
     const count = await items.count();
 
     if (count === 0) {
@@ -103,7 +103,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     });
 
     // Initiale Anzahl
-    const initialItems = page.getByRole('listitem');
+    const initialItems = page.getByRole('article');
     const initialCount = await initialItems.count();
 
     // Suche durchführen
@@ -117,7 +117,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
     await page.waitForLoadState('networkidle');
 
     // Anzahl sollte wieder wie initial sein
-    const resetItems = page.getByRole('listitem');
+    const resetItems = page.getByRole('article');
     const resetCount = await resetItems.count();
 
     // Sollte wieder alle Artikel zeigen
@@ -191,7 +191,7 @@ test.describe('Exercise 2: News Feed Search Navigation', () => {
       await page.waitForLoadState('networkidle');
 
       // Zähle Ergebnisse
-      const items = page.getByRole('listitem');
+      const items = page.getByRole('article');
       const count = await items.count();
 
       console.log(`Suche nach "${term}": ${count} Ergebnisse`);
@@ -246,7 +246,7 @@ test('News Search mit Trace für Debugging', async ({ page }) => {
     await page.goto('/news/public');
 
     // Warte auf News
-    await expect(page.getByRole('listitem').first()).toBeVisible({
+    await expect(page.getByRole('article').first()).toBeVisible({
       timeout: 10000,
     });
 

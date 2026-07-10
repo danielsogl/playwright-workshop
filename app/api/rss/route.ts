@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
 import Parser from 'rss-parser';
 import { z } from 'zod';
 
-import { authOptions } from '@/app/api/auth/[...nextauth]/auth.config';
+import { auth } from '@/auth';
 
 const parser = new Parser();
 
@@ -13,7 +12,7 @@ const RssQuerySchema = z.object({
 });
 
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });

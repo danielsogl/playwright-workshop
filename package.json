@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint . --fix",
     "e2e": "playwright test",
@@ -27,7 +27,7 @@
     "jspdf": "^4.2.1",
     "lucide-react": "^1.24.0",
     "next": "16.2.10",
-    "next-auth": "^4.24.14",
+    "next-auth": "^5.0.0-beta.31",
     "next-themes": "^0.4.6",
     "react": "19.2.7",
     "react-dom": "19.2.7",

@@ -125,14 +125,14 @@ export default function PublicNewsPage() {
       {/* News Grid */}
       <div
         className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-        role="list"
+        role="feed"
         aria-label="News articles"
       >
         {filteredItems.map((item, index) => (
           <Card
             key={index}
             className="border border-border hover:border-border transition-colors overflow-hidden"
-            role="listitem"
+            role="article"
             aria-labelledby={`news-title-${index}`}
           >
             <Card.Content className="p-5 gap-3">

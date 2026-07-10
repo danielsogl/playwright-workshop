@@ -7,7 +7,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
 
   test('Navigation Links prüfen', async ({ page }) => {
     // Public News Link prüfen
-    const publicNewsLink = page.getByRole('link', { name: /public news/i });
+    const publicNewsLink = page.getByRole('link', { name: /view public news/i });
     await expect(publicNewsLink).toBeVisible();
     await expect(publicNewsLink).toHaveText('View Public News');
 
@@ -42,7 +42,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Suchfeld Interaktion mit Assertions', async ({ page }) => {
     // Navigate to news page first for search box
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({
+    await expect(page.getByRole('article').first()).toBeVisible({
       timeout: 10000,
     });
 
@@ -152,7 +152,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
 
     // Navigate to news page for search box
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({
+    await expect(page.getByRole('article').first()).toBeVisible({
       timeout: 10000,
     });
 
@@ -186,7 +186,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Wait-Strategien mit Assertions', async ({ page }) => {
     // Navigate to news page first
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({
+    await expect(page.getByRole('article').first()).toBeVisible({
       timeout: 10000,
     });
 
@@ -216,7 +216,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Assertion Chains und Kombinationen', async ({ page }) => {
     // Navigate to news page first
     await page.goto('/news/public');
-    await expect(page.getByRole('listitem').first()).toBeVisible({
+    await expect(page.getByRole('article').first()).toBeVisible({
       timeout: 10000,
     });
 

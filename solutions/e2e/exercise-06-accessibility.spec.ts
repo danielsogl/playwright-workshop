@@ -56,7 +56,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
     }) => {
       await page.goto('/news/public');
       await expect(
-        page.getByRole('article').or(page.getByRole('listitem')).first(),
+        page.getByRole('article').or(page.getByRole('article')).first(),
       ).toBeVisible({ timeout: 10000 });
 
       const results = await new AxeBuilder({ page }).analyze();
@@ -216,7 +216,7 @@ test.describe('Exercise 8: Accessibility Testing', () => {
     test('News article list accessibility', async ({ page }) => {
       await page.goto('/news/public');
       await expect(
-        page.getByRole('article').or(page.getByRole('listitem')).first(),
+        page.getByRole('article').or(page.getByRole('article')).first(),
       ).toBeVisible({ timeout: 10000 });
 
       // Test the news list structure

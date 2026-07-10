@@ -11,7 +11,7 @@ interface AddFeedFormProps {
   setNewFeedUrl: (value: string) => void;
   newFeedCategory: string;
   setNewFeedCategory: (value: string) => void;
-  handleAddFeed: (e: React.FormEvent) => Promise<void>;
+  handleAddFeed: (e: React.SyntheticEvent) => Promise<void>;
   addingFeed: boolean;
   feedError: string | null;
 }

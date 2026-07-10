@@ -129,7 +129,7 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
       await page.goto('/news/public');
       await expect(page.getByRole('article').first()).toBeVisible();
 
-      const firstNewsCard = page.getByRole('listitem').first();
+      const firstNewsCard = page.getByRole('article').first();
 
       // Mask dynamic content like timestamps
       const maskSelectors = [

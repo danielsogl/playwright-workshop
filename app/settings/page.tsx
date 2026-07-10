@@ -72,7 +72,7 @@ export default function SettingsPage() {
     }
   }, [userData]);
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setIsUpdating(true);
     setUpdateError(null);
@@ -106,7 +106,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setPasswordChangeError('New passwords do not match.');

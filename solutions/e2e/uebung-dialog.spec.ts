@@ -102,7 +102,7 @@ test.describe('Dialog Handling API Demo', () => {
 
     // Beforeunload-Button klicken
     await page
-      .getByRole('button', { name: 'Add beforeunload handler' })
+      .getByRole('button', { name: 'Add BeforeUnload' })
       .click();
 
     // Überprüfen, dass der Handler hinzugefügt wurde

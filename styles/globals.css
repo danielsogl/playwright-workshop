@@ -4,3 +4,14 @@
 @config "../tailwind.config.js";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Darken the accent so white text on an accent background meets WCAG AA (4.5:1).
+ * HeroUI v3's default accent (#0485f7) only reaches ~3.58:1. Applied to both
+ * themes (accent buttons use white text in light and dark).
+ */
+:root,
+.dark {
+  --accent: #0068d6;
+  --accent-hover: #0057b8;
+}

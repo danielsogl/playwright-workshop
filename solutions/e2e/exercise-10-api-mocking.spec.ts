@@ -124,7 +124,7 @@ test.describe('Exercise 5: API Mocking', () => {
     }
 
     // News list should not be visible or should be empty
-    const newsList = page.getByRole('list', { name: /news|articles/i });
+    const newsList = page.getByRole('feed', { name: /news|articles/i });
     const isListVisible = await newsList.isVisible().catch(() => false);
 
     if (isListVisible) {

@@ -7,7 +7,7 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
 
   test('Klick-Interaktionen üben', async ({ page }) => {
     // 1. Auf den "Public News" Link klicken
-    const publicNewsLink = page.getByRole('link', { name: /public news/i });
+    const publicNewsLink = page.getByRole('link', { name: /view public news/i });
     await publicNewsLink.click();
     console.log('Public News Link wurde geklickt');
 
@@ -33,7 +33,7 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
     await page.waitForLoadState('networkidle');
 
     // 1. Suchfeld finden und Text eingeben
-    const searchBox = page.getByPlaceholder('Search news...');
+    const searchBox = page.getByPlaceholder('Search news');
     await searchBox.click();
     console.log('Suchfeld wurde angeklickt');
 

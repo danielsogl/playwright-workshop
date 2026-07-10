@@ -62,7 +62,7 @@ export default function PrivateNewsPage() {
     }
   };
 
-  const handleAddFeed = async (e: React.FormEvent) => {
+  const handleAddFeed = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!newFeedName || !newFeedUrl) {
       setFeedError('Both name and URL are required.');

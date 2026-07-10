@@ -1,4 +1,11 @@
+import type { Route } from 'next';
+
 export type SiteConfig = typeof siteConfig;
+
+interface NavItem {
+  label: string;
+  href: Route;
+}
 
 export const siteConfig = {
   name: 'Playwright Demo App',
@@ -28,7 +35,7 @@ export const siteConfig = {
       label: 'Fixtures Demo',
       href: '/fixtures-demo',
     },
-  ],
+  ] satisfies NavItem[],
   navMenuItems: [
     {
       label: 'Home',
@@ -58,5 +65,5 @@ export const siteConfig = {
       label: 'Settings',
       href: '/settings',
     },
-  ],
+  ] satisfies NavItem[],
 };

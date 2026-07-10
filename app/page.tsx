@@ -1,5 +1,7 @@
 'use client';
 
+import type { Route } from 'next';
+
 import { Card, Chip, Separator } from '@heroui/react';
 import { buttonVariants } from '@heroui/styles';
 import NextLink from 'next/link';
@@ -99,7 +101,7 @@ export default function Home() {
     <div className="flex flex-col gap-20 py-8 md:py-16">
       {/* Hero Section */}
       <section
-        className="flex flex-col items-center justify-center gap-8 relative"
+        className="flex flex-col items-center justify-center gap-8 relative overflow-x-clip"
         aria-labelledby="hero-title"
       >
         {/* Decorative gradient blobs */}
@@ -127,7 +129,6 @@ export default function Home() {
 
           <div className="flex flex-wrap justify-center gap-4 mt-2">
             <NextLink
-              aria-label="Navigate to public news page"
               className={buttonVariants({ variant: 'primary', size: 'lg' }) + ' rounded-full'}
               href="/news/public"
             >
@@ -135,15 +136,13 @@ export default function Home() {
               <ArrowRight className="w-4 h-4 ml-1" aria-hidden="true" />
             </NextLink>
             <NextLink
-              aria-label="Navigate to private news page"
-              className={buttonVariants({ variant: 'secondary', size: 'lg' }) + ' rounded-full'}
+              className={buttonVariants({ variant: 'tertiary', size: 'lg' }) + ' rounded-full'}
               href="/news/private"
             >
               View Private News
             </NextLink>
             <NextLink
-              aria-label="Navigate to sign in page"
-              className={buttonVariants({ variant: 'secondary', size: 'lg' }) + ' rounded-full'}
+              className={buttonVariants({ variant: 'tertiary', size: 'lg' }) + ' rounded-full'}
               href="/auth/signin"
             >
               Sign In
@@ -197,7 +196,10 @@ export default function Home() {
             const Icon = feature.icon;
             return (
               <li key={feature.id}>
-                <NextLink href={feature.href} className="block h-full group">
+                <NextLink
+                  href={feature.href as Route}
+                  className="block h-full group"
+                >
                   <Card
                     aria-labelledby={`${feature.id}-feature-title`}
                     className="border border-border hover:border-border transition-all h-full group-hover:shadow-lg group-hover:-translate-y-1"

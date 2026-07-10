@@ -32,10 +32,10 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="de">
       <body
-        className={`min-h-screen bg-background font-sans antialiased ${fontSans.variable}`}
+        className={`min-h-dvh bg-background font-sans antialiased ${fontSans.variable}`}
       >
         <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
-          <div className="relative flex flex-col h-screen">
+          <div className="relative flex flex-col min-h-dvh">
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-accent focus:text-white focus:rounded-md focus:m-2"

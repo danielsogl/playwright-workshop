@@ -1,7 +1,7 @@
 import { test as setup, expect, Page } from '@playwright/test';
 import path from 'path';
 
-const authFile = path.join(__dirname, '../../playwright/.auth/user.json');
+const authFile = path.join(import.meta.dirname, '../../playwright/.auth/user.json');
 
 // Setup-Test für Authentifizierung
 setup.describe('Exercise 3: Authentication Setup', () => {
@@ -108,8 +108,8 @@ test.describe('Exercise 3: Authenticated Tests', () => {
     // Warte auf Umleitung zur Homepage
     await page.waitForURL((url) => url.pathname === '/');
 
-    // Prüfe ob abgemeldet - Sign In Button sollte wieder sichtbar sein
-    const signInButton = page.getByRole('button', {
+    // Prüfe ob abgemeldet - Sign In Link sollte wieder sichtbar sein
+    const signInButton = page.getByRole('link', {
       name: /sign in to your account/i,
     });
     await expect(signInButton).toBeVisible({ timeout: 5000 });
@@ -117,7 +117,7 @@ test.describe('Exercise 3: Authenticated Tests', () => {
 });
 
 // Multi-Role Testing
-const adminAuthFile = path.join(__dirname, '../../playwright/.auth/admin.json');
+const adminAuthFile = path.join(import.meta.dirname, '../../playwright/.auth/admin.json');
 
 setup('authenticate as admin', async ({ page }) => {
   await page.goto('/auth/signin');

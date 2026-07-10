@@ -1,7 +1,6 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/auth.config';
+import { auth } from '@/auth';
 import { jsonUnauthorized } from '@/lib/utils/api';
 import type { Session } from 'next-auth';
-import { getServerSession } from 'next-auth/next';
 import { NextRequest, NextResponse } from 'next/server';
 
 type AuthenticatedHandler = (
@@ -21,7 +20,7 @@ export const withAuth = (
   handler: AuthenticatedHandler,
 ): ((req: NextRequest) => Promise<NextResponse>) => {
   return async (req: NextRequest): Promise<NextResponse> => {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return jsonUnauthorized();

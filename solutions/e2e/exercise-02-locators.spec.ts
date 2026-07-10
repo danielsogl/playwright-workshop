@@ -7,7 +7,7 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
 
   test('verschiedene Locator-Strategien verwenden', async ({ page }) => {
     // 1. Den "Public News" Link mit getByRole() finden
-    const publicNewsLink = page.getByRole('link', { name: /public news/i });
+    const publicNewsLink = page.getByRole('link', { name: /view public news/i });
     console.log('Public News link gefunden:', await publicNewsLink.isVisible());
 
     // Navigation zur News-Seite für weitere Tests
@@ -19,7 +19,7 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
     console.log('News Feed Überschrift gefunden:', await heading.isVisible());
 
     // 3. Das Suchfeld mit getByPlaceholder() finden
-    const searchBox = page.getByPlaceholder('Search news...');
+    const searchBox = page.getByPlaceholder('Search news');
     console.log('Suchfeld gefunden:', await searchBox.isVisible());
 
     // 4. Den Theme-Toggle Button mit getByRole() finden

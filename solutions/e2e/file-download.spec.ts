@@ -4,7 +4,7 @@ import fs from 'fs';
 
 test.describe('File Download Demo Tests', () => {
   // Downloads-Verzeichnis für Tests erstellen
-  const downloadsDir = path.join(__dirname, '../downloads');
+  const downloadsDir = path.join(import.meta.dirname, '../downloads');
 
   test.beforeAll(async () => {
     // Downloads-Verzeichnis erstellen falls es nicht existiert

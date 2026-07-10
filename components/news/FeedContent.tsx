@@ -90,14 +90,14 @@ export const FeedContent: React.FC<FeedContentProps> = ({
             </div>
             <div
               className="flex flex-col gap-4"
-              role="list"
+              role="feed"
               aria-label={`Articles from ${selectedFeed.name}`}
             >
               {feedItemsData?.items.map((item, index) => (
                 <Card
                   key={item.link || index}
                   className="border border-border hover:border-border transition-colors"
-                  role="listitem"
+                  role="article"
                   aria-labelledby={`feed-item-title-${selectedFeed.id}-${index}`}
                 >
                   <Card.Content className="p-4">

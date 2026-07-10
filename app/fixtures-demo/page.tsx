@@ -44,7 +44,7 @@ export default function FixturesDemoPage() {
     ]);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setIsLoading(true);
 

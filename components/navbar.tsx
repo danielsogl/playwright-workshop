@@ -30,7 +30,7 @@ export const Navbar = () => {
     <header className="sticky top-0 z-40 w-full bg-background/70 backdrop-blur-lg border-b border-border">
       <nav
         aria-label="Main navigation bar"
-        className="mx-auto flex max-w-[76rem] items-center justify-between gap-4 px-6 h-16"
+        className="mx-auto flex max-w-304 items-center justify-between gap-4 px-6 h-16"
       >
         {/* Brand + desktop nav */}
         <div className="flex items-center gap-6">
@@ -50,7 +50,6 @@ export const Navbar = () => {
                     aria-label={`Navigate to ${item.label}`}
                     className="whitespace-nowrap text-foreground hover:text-accent data-[active=true]:text-accent data-[active=true]:font-medium"
                     href={item.href}
-                    role="menuitem"
                   >
                     {item.label}
                   </NextLink>
@@ -125,7 +124,7 @@ export const Navbar = () => {
             ) : (
               <NextLink
                 aria-label="Sign in to your account"
-                className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+                className={buttonVariants({ variant: 'tertiary', size: 'sm' })}
                 href="/auth/signin"
               >
                 Sign In
@@ -158,9 +157,7 @@ export const Navbar = () => {
             role="navigation"
             aria-label="Mobile navigation"
           >
-            {siteConfig.navMenuItems
-              .filter((item) => item.href !== '/logout')
-              .map((item, index) => (
+            {siteConfig.navMenuItems.map((item, index) => (
                 <NextLink
                   key={`${item.href}-${index}`}
                   aria-label={`Navigate to ${item.label}`}
