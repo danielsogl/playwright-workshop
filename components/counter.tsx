@@ -9,7 +9,7 @@ export const Counter = () => {
   return (
     <Button
       aria-label={`Increment counter, current count is ${count}`}
-      radius="full"
+      className="rounded-full"
       onPress={() => setCount(count + 1)}
     >
       Count is {count}

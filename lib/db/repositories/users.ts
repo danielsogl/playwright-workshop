@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { hash, compare } from 'bcryptjs';
 
 import { User } from '../models/user';
@@ -48,7 +47,7 @@ export const addUser = async (
   }
 
   const hashedPassword = await hash(userData.password, 10);
-  const userId = uuidv4();
+  const userId = crypto.randomUUID();
   const newUser: User = {
     id: userId,
     email: userData.email,
@@ -137,7 +136,7 @@ const seedUsers = async () => {
     if (!existingUser) {
       try {
         const hashedPassword = await hash(seedUser.password, 10);
-        const userId = seedUser.id || uuidv4();
+        const userId = seedUser.id || crypto.randomUUID();
         const newUser: User = {
           id: userId,
           email: seedUser.email,

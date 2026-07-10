@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Input, Button, Link, Card, CardBody, CardHeader, Divider } from '@heroui/react';
+import { TextField, Label, Input, Button, Card, Separator } from '@heroui/react';
+import NextLink from 'next/link';
 import { UserPlus } from 'lucide-react';
 
 export default function SignUpPage() {
@@ -73,20 +74,20 @@ export default function SignUpPage() {
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
-      <Card className="w-full max-w-md shadow-lg border border-default-200">
-        <CardHeader className="flex flex-col items-center gap-2 pt-8 pb-0">
-          <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-2">
-            <UserPlus className="w-7 h-7 text-secondary" aria-hidden="true" />
+      <Card className="w-full max-w-md shadow-lg border border-border">
+        <Card.Header className="flex flex-col items-center gap-2 pt-8 pb-0">
+          <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-2">
+            <UserPlus className="w-7 h-7 text-accent" aria-hidden="true" />
           </div>
           <h1 className="text-2xl font-bold" id="signup-title">
             Create Account
           </h1>
-          <p className="text-default-500 text-sm">
+          <p className="text-muted text-sm">
             Get started with your free account
           </p>
-        </CardHeader>
-        <Divider className="mt-4" />
-        <CardBody className="px-8 py-6">
+        </Card.Header>
+        <Separator className="mt-4" />
+        <Card.Content className="px-8 py-6">
           <form
             aria-label="Sign up form"
             className="space-y-5"
@@ -95,7 +96,7 @@ export default function SignUpPage() {
           >
             {error && (
               <div
-                className="p-3 bg-danger-50 text-danger border border-danger-200 rounded-lg text-sm"
+                className="p-3 bg-danger/10 text-danger border border-danger rounded-lg text-sm"
                 role="alert"
                 aria-live="assertive"
               >
@@ -103,58 +104,61 @@ export default function SignUpPage() {
               </div>
             )}
 
-            <Input
+            <TextField
               isRequired
               aria-label="Your name for sign up"
-              autoComplete="name"
-              disabled={isLoading}
-              label="Name"
-              placeholder="Your Name"
+              isDisabled={isLoading}
               type="text"
               value={name}
-              id="signup-name"
               name="name"
-              variant="bordered"
-              size="lg"
-              onValueChange={setName}
-            />
-            <Input
+              onChange={setName}
+            >
+              <Label>Name</Label>
+              <Input
+                placeholder="Your Name"
+                autoComplete="name"
+                id="signup-name"
+              />
+            </TextField>
+            <TextField
               isRequired
               aria-label="Email address for sign up"
-              autoComplete="email"
-              spellCheck="false"
-              disabled={isLoading}
-              label="Email"
-              placeholder="you@example.com"
+              isDisabled={isLoading}
               type="email"
               value={email}
-              id="signup-email"
               name="email"
-              variant="bordered"
-              size="lg"
-              onValueChange={setEmail}
-            />
-            <Input
+              onChange={setEmail}
+            >
+              <Label>Email</Label>
+              <Input
+                placeholder="you@example.com"
+                autoComplete="email"
+                spellCheck="false"
+                id="signup-email"
+              />
+            </TextField>
+            <TextField
               isRequired
               aria-label="Password for sign up"
-              autoComplete="new-password"
-              disabled={isLoading}
-              label="Password"
-              placeholder="Choose a password"
+              isDisabled={isLoading}
               type="password"
               value={password}
-              id="signup-password"
               name="password"
-              variant="bordered"
-              size="lg"
-              onValueChange={setPassword}
-            />
+              onChange={setPassword}
+            >
+              <Label>Password</Label>
+              <Input
+                placeholder="Choose a password"
+                autoComplete="new-password"
+                id="signup-password"
+              />
+            </TextField>
             <Button
               className="w-full font-semibold"
-              color="primary"
+              variant="primary"
               size="lg"
-              disabled={isLoading || !name || !email || !password}
-              isLoading={isLoading}
+              isDisabled={isLoading || !name || !email || !password}
+              isPending={isLoading}
               type="submit"
               aria-label={
                 isLoading ? 'Submitting sign up form' : 'Submit sign up form'
@@ -165,20 +169,19 @@ export default function SignUpPage() {
             </Button>
 
             <div className="text-center text-sm pt-2">
-              <p className="text-default-500">
+              <p className="text-muted">
                 Already have an account?{' '}
-                <Link
+                <NextLink
                   aria-label="Navigate to sign in page"
                   href="/auth/signin"
-                  size="sm"
-                  className="font-semibold"
+                  className="font-semibold text-sm text-accent hover:opacity-80"
                 >
                   Sign In
-                </Link>
+                </NextLink>
               </p>
             </div>
           </form>
-        </CardBody>
+        </Card.Content>
       </Card>
     </div>
   );

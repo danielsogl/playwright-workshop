@@ -3,7 +3,7 @@
 import type { RSSFeed } from '@/types/rss';
 
 import React from 'react';
-import { Card, CardBody, Spinner, Button, Chip } from '@heroui/react';
+import { Card, Spinner, Button, Chip } from '@heroui/react';
 import { RefreshCw, Rss } from 'lucide-react';
 
 import { TrashIcon } from '@/components/icons';
@@ -33,25 +33,29 @@ export const FeedList: React.FC<FeedListProps> = ({
 }) => {
   return (
     <Card
-      className="lg:col-span-4 border border-default-200"
+      className="lg:col-span-4 border border-border"
       role="list"
       aria-label="Your RSS feeds"
     >
-      <CardBody className="p-5">
+      <Card.Content className="p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Rss className="w-5 h-5 text-primary" aria-hidden="true" />
+          <Rss className="w-5 h-5 text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold" id="feed-list-heading">
             Your Feeds
           </h2>
           {feeds && (
-            <Chip variant="flat" size="sm">
+            <Chip variant="soft" size="sm">
               {feeds.length}
             </Chip>
           )}
         </div>
         {isLoading ? (
-          <div className="flex justify-center p-4" aria-label="Loading feeds">
-            <Spinner label="Loading your feeds…" size="sm" />
+          <div
+            className="flex flex-col items-center gap-2 justify-center p-4"
+            aria-label="Loading feeds"
+          >
+            <Spinner size="sm" />
+            <span className="text-muted text-sm">Loading your feeds…</span>
           </div>
         ) : error ? (
           <p className="text-danger text-center p-4" role="alert">
@@ -59,9 +63,9 @@ export const FeedList: React.FC<FeedListProps> = ({
           </p>
         ) : !feeds?.length ? (
           <div className="text-center py-8">
-            <Rss className="w-10 h-10 mx-auto mb-3 text-default-300" aria-hidden="true" />
+            <Rss className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
             <p
-              className="text-default-500 text-sm"
+              className="text-muted text-sm"
               aria-label="No feeds available"
             >
               No feeds added yet. Add your first feed above!
@@ -78,8 +82,8 @@ export const FeedList: React.FC<FeedListProps> = ({
                 key={feed.id}
                 className={`rounded-xl border-2 transition-colors ${
                   selectedFeed?.id === feed.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-transparent hover:border-default-200'
+                    ? 'border-accent bg-accent/5'
+                    : 'border-transparent hover:border-border'
                 }`}
                 role="listitem"
               >
@@ -102,9 +106,9 @@ export const FeedList: React.FC<FeedListProps> = ({
                       {feed.category && (
                         <Chip
                           className="mt-1"
-                          variant="flat"
+                          variant="soft"
                           size="sm"
-                          color="secondary"
+                          color="default"
                         >
                           {feed.category}
                         </Chip>
@@ -114,9 +118,9 @@ export const FeedList: React.FC<FeedListProps> = ({
                       <Button
                         isIconOnly
                         aria-label={`Refresh feed: ${feed.name}`}
-                        isLoading={refreshingFeed === feed.id}
+                        isPending={refreshingFeed === feed.id}
                         size="sm"
-                        variant="light"
+                        variant="secondary"
                         onPress={() => onRefreshFeed(feed)}
                         id={`refresh-feed-${feed.id}`}
                       >
@@ -125,10 +129,9 @@ export const FeedList: React.FC<FeedListProps> = ({
                       <Button
                         isIconOnly
                         aria-label={`Delete feed: ${feed.name}`}
-                        color="danger"
-                        isLoading={deletingFeedId === feed.id}
+                        variant="danger"
+                        isPending={deletingFeedId === feed.id}
                         size="sm"
-                        variant="light"
                         onPress={() => onDeleteFeed(feed.id)}
                         id={`delete-feed-${feed.id}`}
                       >
@@ -141,7 +144,7 @@ export const FeedList: React.FC<FeedListProps> = ({
             ))}
           </div>
         )}
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 };

@@ -38,7 +38,7 @@ export default function RootLayout({
           <div className="relative flex flex-col h-screen">
             <a
               href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-primary focus:text-white focus:rounded-md focus:m-2"
+              className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-accent focus:text-white focus:rounded-md focus:m-2"
             >
               Skip to main content
             </a>

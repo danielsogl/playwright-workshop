@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import useSWR, { mutate } from 'swr';
-import { Spinner, Input, Button, Link, Card, CardBody, CardHeader, Divider } from '@heroui/react';
+import NextLink from 'next/link';
+import { Spinner, TextField, Label, Input, Button, FieldError, Card, Separator } from '@heroui/react';
+import { buttonVariants } from '@heroui/styles';
 import { UserCog, Lock, Shield } from 'lucide-react';
 
 import { title, subtitle } from '@/components/primitives';
@@ -148,7 +150,8 @@ export default function SettingsPage() {
         role="status"
         aria-label="Loading session"
       >
-        <Spinner color="primary" label="Loading session…" />
+        <Spinner color="accent" aria-label="Loading session…" />
+        <span className="ml-2">Loading session…</span>
       </div>
     );
   }
@@ -156,31 +159,28 @@ export default function SettingsPage() {
   if (!isAuthenticated) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
-        <Card className="w-full max-w-md shadow-lg border border-default-200">
-          <CardHeader className="flex flex-col items-center gap-2 pt-8 pb-0">
+        <Card className="w-full max-w-md shadow-lg border border-border">
+          <Card.Header className="flex flex-col items-center gap-2 pt-8 pb-0">
             <div className="w-14 h-14 rounded-2xl bg-danger/10 flex items-center justify-center mb-2">
               <Shield className="w-7 h-7 text-danger" aria-hidden="true" />
             </div>
             <h1 className="text-2xl font-bold" id="access-denied-title">
               Access Denied
             </h1>
-            <p className="text-default-500 text-sm">
+            <p className="text-muted text-sm">
               You must be signed in to view this page.
             </p>
-          </CardHeader>
-          <Divider className="mt-4" />
-          <CardBody className="px-8 py-6 flex justify-center">
-            <Button
+          </Card.Header>
+          <Separator className="mt-4" />
+          <Card.Content className="px-8 py-6 flex justify-center">
+            <NextLink
               aria-label="Sign in to view settings"
-              as={Link}
-              color="primary"
               href="/auth/signin"
-              size="lg"
-              className="font-semibold"
+              className={buttonVariants({ variant: 'primary', size: 'lg' }) + ' font-semibold'}
             >
               Sign In
-            </Button>
-          </CardBody>
+            </NextLink>
+          </Card.Content>
         </Card>
       </div>
     );
@@ -205,7 +205,8 @@ export default function SettingsPage() {
 
       {isLoadingUser && (
         <div className="flex justify-center">
-          <Spinner aria-label="Loading profile data" label="Loading profile…" />
+          <Spinner aria-label="Loading profile data" />
+          <span className="ml-2">Loading profile…</span>
         </div>
       )}
       {fetchError && (
@@ -216,17 +217,17 @@ export default function SettingsPage() {
 
       {/* Profile Form */}
       {!isLoadingUser && !fetchError && userData && (
-        <Card className="border border-default-200 shadow-lg">
-          <CardHeader className="flex gap-3 p-6 pb-0">
+        <Card className="border border-border shadow-lg">
+          <Card.Header className="flex gap-3 p-6 pb-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <UserCog className="w-5 h-5 text-primary" aria-hidden="true" />
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                <UserCog className="w-5 h-5 text-accent" aria-hidden="true" />
               </div>
               <h2 className="text-lg font-semibold">Profile Information</h2>
             </div>
-          </CardHeader>
-          <Divider className="mt-4" />
-          <CardBody className="p-6">
+          </Card.Header>
+          <Separator className="mt-4" />
+          <Card.Content className="p-6">
             <form
               aria-label="Update profile form"
               className="space-y-5"
@@ -235,7 +236,7 @@ export default function SettingsPage() {
             >
               {updateSuccess && (
                 <div
-                  className="p-3 bg-success-50 text-success border border-success-200 rounded-lg text-sm"
+                  className="p-3 bg-success/10 text-success border border-success rounded-lg text-sm"
                   role="status"
                   aria-live="polite"
                 >
@@ -244,7 +245,7 @@ export default function SettingsPage() {
               )}
               {updateError && (
                 <div
-                  className="p-3 bg-danger-50 text-danger border border-danger-200 rounded-lg text-sm"
+                  className="p-3 bg-danger/10 text-danger border border-danger rounded-lg text-sm"
                   role="alert"
                   aria-live="assertive"
                 >
@@ -252,35 +253,32 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              <Input
+              <TextField
                 isReadOnly
                 aria-label="Your email address (read-only)"
-                label="Email"
-                value={userData.email}
-                id="profile-email"
                 name="email"
-                variant="bordered"
-                size="lg"
-              />
-              <Input
+                value={userData.email}
+              >
+                <Label>Email</Label>
+                <Input id="profile-email" />
+              </TextField>
+              <TextField
                 aria-label="Your name"
-                disabled={isUpdating}
-                label="Name"
-                placeholder="Your name"
-                value={name}
-                id="profile-name"
+                isDisabled={isUpdating}
                 name="name"
-                variant="bordered"
-                size="lg"
-                onValueChange={setName}
-              />
+                value={name}
+                onChange={setName}
+              >
+                <Label>Name</Label>
+                <Input placeholder="Your name" id="profile-name" />
+              </TextField>
               <Button
                 aria-label={
                   isUpdating ? 'Submitting profile update' : 'Submit profile update'
                 }
-                color="primary"
-                disabled={isUpdating}
-                isLoading={isUpdating}
+                variant="primary"
+                isDisabled={isUpdating}
+                isPending={isUpdating}
                 type="submit"
                 id="profile-update-button"
                 className="w-full font-semibold"
@@ -289,25 +287,25 @@ export default function SettingsPage() {
                 {isUpdating ? 'Updating…' : 'Update Profile'}
               </Button>
             </form>
-          </CardBody>
+          </Card.Content>
         </Card>
       )}
 
       {/* Password Change Form */}
       {!isLoadingUser && !fetchError && userData && (
-        <Card className="border border-default-200 shadow-lg">
-          <CardHeader className="flex gap-3 p-6 pb-0">
+        <Card className="border border-border shadow-lg">
+          <Card.Header className="flex gap-3 p-6 pb-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-secondary" aria-hidden="true" />
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                <Lock className="w-5 h-5 text-accent" aria-hidden="true" />
               </div>
               <h2 className="text-lg font-semibold" id="password-change-title">
                 Change Password
               </h2>
             </div>
-          </CardHeader>
-          <Divider className="mt-4" />
-          <CardBody className="p-6">
+          </Card.Header>
+          <Separator className="mt-4" />
+          <Card.Content className="p-6">
             <form
               aria-label="Change password form"
               className="space-y-5"
@@ -316,7 +314,7 @@ export default function SettingsPage() {
             >
               {passwordChangeSuccess && (
                 <div
-                  className="p-3 bg-success-50 text-success border border-success-200 rounded-lg text-sm"
+                  className="p-3 bg-success/10 text-success border border-success rounded-lg text-sm"
                   role="status"
                   aria-live="polite"
                 >
@@ -325,7 +323,7 @@ export default function SettingsPage() {
               )}
               {passwordChangeError && (
                 <div
-                  className="p-3 bg-danger-50 text-danger border border-danger-200 rounded-lg text-sm"
+                  className="p-3 bg-danger/10 text-danger border border-danger rounded-lg text-sm"
                   role="alert"
                   aria-live="assertive"
                 >
@@ -333,74 +331,75 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              <Input
+              <TextField
                 isRequired
                 aria-label="Your current password"
-                autoComplete="current-password"
-                disabled={isChangingPassword}
-                label="Current Password"
-                placeholder="Enter your current password"
+                isDisabled={isChangingPassword}
                 type="password"
                 value={currentPassword}
-                id="current-password"
                 name="current-password"
-                variant="bordered"
-                size="lg"
-                onValueChange={setCurrentPassword}
-              />
-              <Input
+                onChange={setCurrentPassword}
+              >
+                <Label>Current Password</Label>
+                <Input
+                  placeholder="Enter your current password"
+                  autoComplete="current-password"
+                  id="current-password"
+                />
+              </TextField>
+              <TextField
                 isRequired
                 aria-label="Your new password"
-                autoComplete="new-password"
-                disabled={isChangingPassword}
-                label="New Password"
-                placeholder="Enter your new password"
+                isDisabled={isChangingPassword}
                 type="password"
                 value={newPassword}
-                id="new-password"
                 name="new-password"
-                variant="bordered"
-                size="lg"
-                onValueChange={setNewPassword}
-              />
-              <Input
+                onChange={setNewPassword}
+              >
+                <Label>New Password</Label>
+                <Input
+                  placeholder="Enter your new password"
+                  autoComplete="new-password"
+                  id="new-password"
+                />
+              </TextField>
+              <TextField
                 isRequired
                 aria-label="Confirm your new password"
-                autoComplete="new-password"
-                disabled={isChangingPassword}
-                errorMessage={
-                  newPassword !== confirmPassword && confirmPassword !== ''
-                    ? 'Passwords do not match'
-                    : undefined
-                }
+                isDisabled={isChangingPassword}
                 isInvalid={
                   newPassword !== confirmPassword && confirmPassword !== ''
                 }
-                label="Confirm New Password"
-                placeholder="Confirm your new password"
                 type="password"
                 value={confirmPassword}
-                id="confirm-password"
                 name="confirm-password"
-                variant="bordered"
-                size="lg"
-                onValueChange={setConfirmPassword}
-              />
+                onChange={setConfirmPassword}
+              >
+                <Label>Confirm New Password</Label>
+                <Input
+                  placeholder="Confirm your new password"
+                  autoComplete="new-password"
+                  id="confirm-password"
+                />
+                {newPassword !== confirmPassword && confirmPassword !== '' && (
+                  <FieldError>Passwords do not match</FieldError>
+                )}
+              </TextField>
               <Button
                 aria-label={
                   isChangingPassword
                     ? 'Submitting password change'
                     : 'Submit password change'
                 }
-                color="secondary"
-                disabled={
+                variant="secondary"
+                isDisabled={
                   isChangingPassword ||
                   !currentPassword ||
                   !newPassword ||
                   !confirmPassword ||
                   newPassword !== confirmPassword
                 }
-                isLoading={isChangingPassword}
+                isPending={isChangingPassword}
                 type="submit"
                 id="change-password-button"
                 className="w-full font-semibold"
@@ -409,7 +408,7 @@ export default function SettingsPage() {
                 {isChangingPassword ? 'Changing Password…' : 'Change Password'}
               </Button>
             </form>
-          </CardBody>
+          </Card.Content>
         </Card>
       )}
     </section>

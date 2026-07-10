@@ -1,7 +1,7 @@
 'use client';
 
-import { Link, Card, CardBody, Chip, Divider } from '@heroui/react';
-import { button as buttonStyles } from '@heroui/theme';
+import { Card, Chip, Separator } from '@heroui/react';
+import { buttonVariants } from '@heroui/styles';
 import NextLink from 'next/link';
 import {
   Shield,
@@ -24,7 +24,7 @@ const features = [
     title: 'Authentication Testing',
     description:
       'Test user authentication flows with protected routes and role-based access control.',
-    color: 'primary' as const,
+    color: 'accent' as const,
     href: '/auth/signin',
   },
   {
@@ -33,7 +33,7 @@ const features = [
     title: 'API Integration',
     description:
       'Explore API interactions with both public and protected endpoints.',
-    color: 'secondary' as const,
+    color: 'accent' as const,
     href: '/news/public',
   },
   {
@@ -69,7 +69,7 @@ const features = [
     title: 'Dialog Handling',
     description:
       'Test alert, confirm, prompt and custom modal dialog interactions.',
-    color: 'primary' as const,
+    color: 'accent' as const,
     href: '/dialog-demo',
   },
   {
@@ -78,10 +78,21 @@ const features = [
     title: 'User Settings',
     description:
       'Profile management and password changes with form validation testing.',
-    color: 'secondary' as const,
+    color: 'accent' as const,
     href: '/settings',
   },
 ];
+
+// Static classes so Tailwind can generate them (dynamic `bg-${color}` is never emitted).
+const featureColorClasses: Record<
+  (typeof features)[number]['color'],
+  { bg: string; text: string }
+> = {
+  accent: { bg: 'bg-accent/10', text: 'text-accent' },
+  success: { bg: 'bg-success/10', text: 'text-success' },
+  warning: { bg: 'bg-warning/10', text: 'text-warning' },
+  danger: { bg: 'bg-danger/10', text: 'text-danger' },
+};
 
 export default function Home() {
   return (
@@ -92,15 +103,11 @@ export default function Home() {
         aria-labelledby="hero-title"
       >
         {/* Decorative gradient blobs */}
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/20 via-secondary/20 to-success/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-accent/20 via-accent/20 to-success/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
 
         <div className="relative flex flex-col items-center gap-6">
-          <Chip
-            color="secondary"
-            variant="flat"
-            size="md"
-            startContent={<Sparkles className="w-3.5 h-3.5 ml-1" aria-hidden="true" />}
-          >
+          <Chip color="default" variant="soft" size="md">
+            <Sparkles className="w-3.5 h-3.5 ml-1" aria-hidden="true" />
             Playwright Workshop
           </Chip>
 
@@ -119,46 +126,28 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-4 mt-2">
-            <Link
+            <NextLink
               aria-label="Navigate to public news page"
-              as={NextLink}
-              className={buttonStyles({
-                color: 'primary',
-                radius: 'full',
-                variant: 'shadow',
-                size: 'lg',
-              })}
+              className={buttonVariants({ variant: 'primary', size: 'lg' }) + ' rounded-full'}
               href="/news/public"
             >
               View Public News
               <ArrowRight className="w-4 h-4 ml-1" aria-hidden="true" />
-            </Link>
-            <Link
+            </NextLink>
+            <NextLink
               aria-label="Navigate to private news page"
-              as={NextLink}
-              className={buttonStyles({
-                color: 'secondary',
-                radius: 'full',
-                variant: 'shadow',
-                size: 'lg',
-              })}
+              className={buttonVariants({ variant: 'secondary', size: 'lg' }) + ' rounded-full'}
               href="/news/private"
             >
               View Private News
-            </Link>
-            <Link
+            </NextLink>
+            <NextLink
               aria-label="Navigate to sign in page"
-              as={NextLink}
-              className={buttonStyles({
-                color: 'default',
-                radius: 'full',
-                variant: 'bordered',
-                size: 'lg',
-              })}
+              className={buttonVariants({ variant: 'secondary', size: 'lg' }) + ' rounded-full'}
               href="/auth/signin"
             >
               Sign In
-            </Link>
+            </NextLink>
           </div>
         </div>
       </section>
@@ -171,23 +160,23 @@ export default function Home() {
           { value: 'CRUD', label: 'Operations' },
           { value: 'a11y', label: 'Accessible' },
         ].map((stat) => (
-          <Card key={stat.label} className="border border-default-200">
-            <CardBody className="p-4 text-center">
-              <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          <Card key={stat.label} className="border border-border">
+            <Card.Content className="p-4 text-center">
+              <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-success">
                 {stat.value}
               </p>
-              <p className="text-xs text-default-500 mt-1">{stat.label}</p>
-            </CardBody>
+              <p className="text-xs text-muted mt-1">{stat.label}</p>
+            </Card.Content>
           </Card>
         ))}
       </section>
 
-      <Divider />
+      <Separator />
 
       {/* Features Section */}
       <section className="flex flex-col gap-12">
         <div className="text-center">
-          <Chip variant="flat" size="sm" className="mb-4">
+          <Chip variant="soft" size="sm" className="mb-4">
             Explore
           </Chip>
           <h2
@@ -196,7 +185,7 @@ export default function Home() {
           >
             Key Features
           </h2>
-          <p className="text-default-500 mt-3 text-lg max-w-lg mx-auto">
+          <p className="text-muted mt-3 text-lg max-w-lg mx-auto">
             Each page is designed for specific Playwright testing scenarios
           </p>
         </div>
@@ -211,20 +200,20 @@ export default function Home() {
                 <NextLink href={feature.href} className="block h-full group">
                   <Card
                     aria-labelledby={`${feature.id}-feature-title`}
-                    className="border border-default-200 hover:border-default-400 transition-all h-full group-hover:shadow-lg group-hover:-translate-y-1"
+                    className="border border-border hover:border-border transition-all h-full group-hover:shadow-lg group-hover:-translate-y-1"
                   >
-                    <CardBody className="p-6 gap-4">
+                    <Card.Content className="p-6 gap-4">
                       <div className="flex items-center justify-between">
                         <div
-                          className={`w-12 h-12 rounded-xl bg-${feature.color}/10 flex items-center justify-center`}
+                          className={`w-12 h-12 rounded-xl ${featureColorClasses[feature.color].bg} flex items-center justify-center`}
                         >
                           <Icon
-                            className={`w-6 h-6 text-${feature.color}`}
+                            className={`w-6 h-6 ${featureColorClasses[feature.color].text}`}
                             aria-hidden="true"
                           />
                         </div>
                         <ArrowRight
-                          className="w-4 h-4 text-default-300 group-hover:text-default-600 group-hover:translate-x-1 transition-all"
+                          className="w-4 h-4 text-muted group-hover:text-foreground group-hover:translate-x-1 transition-all"
                           aria-hidden="true"
                         />
                       </div>
@@ -235,11 +224,11 @@ export default function Home() {
                         >
                           {feature.title}
                         </h3>
-                        <p className="text-default-500 text-sm leading-relaxed">
+                        <p className="text-muted text-sm leading-relaxed">
                           {feature.description}
                         </p>
                       </div>
-                    </CardBody>
+                    </Card.Content>
                   </Card>
                 </NextLink>
               </li>

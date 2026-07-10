@@ -1,5 +1,5 @@
 import type { RSSFeed } from '@/types/rss';
-import { v4 as uuidv4 } from 'uuid';
+
 
 import { loadSeedData } from '../services/data-service';
 
@@ -37,7 +37,7 @@ export const addPrivateFeed = async (
   const userFeeds = await getPrivateFeedsByUserId(userId);
   const newFeed: RSSFeed = {
     ...feed,
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     category: feed.category || 'Uncategorized',
   };
 

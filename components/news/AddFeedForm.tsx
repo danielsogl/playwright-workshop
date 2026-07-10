@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardBody, Input, Button } from '@heroui/react';
+import { Card, TextField, Label, Input, Button } from '@heroui/react';
 import { Plus } from 'lucide-react';
 
 interface AddFeedFormProps {
@@ -29,74 +29,68 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
 }) => {
   return (
     <Card
-      className="border border-default-200"
+      className="border border-border"
       aria-label="Add new RSS feed"
     >
-      <CardBody className="p-6">
+      <Card.Content className="p-6">
         <form
           aria-label="Add new RSS feed form"
           className="flex flex-col md:flex-row gap-4 items-end"
           onSubmit={handleAddFeed}
           name="add-feed-form"
         >
-          <Input
+          <TextField
             aria-label="Name for the new feed"
             className="flex-grow"
-            disabled={addingFeed}
-            label="Feed Name"
-            labelPlacement="outside"
-            placeholder="e.g., TechCrunch"
+            isDisabled={addingFeed}
             value={newFeedName}
-            variant="bordered"
-            id="feed-name"
             name="feed-name"
-            onValueChange={setNewFeedName}
-          />
-          <Input
+            onChange={setNewFeedName}
+          >
+            <Label>Feed Name</Label>
+            <Input placeholder="e.g., TechCrunch" id="feed-name" />
+          </TextField>
+          <TextField
             aria-label="URL for the new feed"
             className="flex-grow"
-            disabled={addingFeed}
-            label="Feed URL"
-            labelPlacement="outside"
-            placeholder="https://example.com/feed.xml"
+            isDisabled={addingFeed}
             type="url"
             value={newFeedUrl}
-            variant="bordered"
-            id="feed-url"
             name="feed-url"
-            onValueChange={setNewFeedUrl}
-          />
-          <Input
+            onChange={setNewFeedUrl}
+          >
+            <Label>Feed URL</Label>
+            <Input placeholder="https://example.com/feed.xml" id="feed-url" />
+          </TextField>
+          <TextField
             aria-label="Optional category for the new feed"
             className="flex-grow"
-            disabled={addingFeed}
-            label="Category (optional)"
-            labelPlacement="outside"
-            placeholder="e.g., Tech"
+            isDisabled={addingFeed}
             value={newFeedCategory}
-            variant="bordered"
-            id="feed-category"
             name="feed-category"
-            onValueChange={setNewFeedCategory}
-          />
+            onChange={setNewFeedCategory}
+          >
+            <Label>Category (optional)</Label>
+            <Input placeholder="e.g., Tech" id="feed-category" />
+          </TextField>
           <Button
             aria-label={addingFeed ? 'Adding new feed' : 'Add new feed'}
             className="min-w-[120px] font-semibold"
-            color="primary"
-            isLoading={addingFeed}
+            variant="primary"
+            isPending={addingFeed}
             type="submit"
             id="add-feed-button"
-            startContent={!addingFeed ? <Plus className="w-4 h-4" aria-hidden="true" /> : undefined}
           >
+            {!addingFeed && <Plus className="w-4 h-4" aria-hidden="true" />}
             Add Feed
           </Button>
         </form>
         {feedError && (
-          <div className="mt-3 p-3 bg-danger-50 text-danger border border-danger-200 rounded-lg text-sm" role="alert">
+          <div className="mt-3 p-3 bg-danger/10 text-danger border border-danger rounded-lg text-sm" role="alert">
             {feedError}
           </div>
         )}
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button, Card, CardBody, Chip } from '@heroui/react';
+import { Button, Card, Chip } from '@heroui/react';
 import { Clock, Timer, Activity, RefreshCw } from 'lucide-react';
 
 export default function ClockPage() {
@@ -82,46 +82,46 @@ export default function ClockPage() {
     <div className="flex flex-col gap-8 py-8 md:py-10">
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-2">Clock & Timer</h1>
-        <p className="text-default-500">Testing Page for time-based interactions</p>
+        <p className="text-muted">Testing Page for time-based interactions</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Current Time Display */}
-        <Card className="border border-default-200 bg-gradient-to-br from-primary-50/50 to-secondary-50/50 dark:from-primary-900/10 dark:to-secondary-900/10">
-          <CardBody className="p-6">
+        <Card className="border border-border bg-gradient-to-br from-accent/10 to-accent/10 dark:from-accent/20 dark:to-accent/20">
+          <Card.Content className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-primary" aria-hidden="true" />
+              <Clock className="w-5 h-5 text-accent" aria-hidden="true" />
               <h2 className="text-lg font-semibold">Aktuelle Zeit</h2>
             </div>
             <div className="text-center py-4" aria-live="polite" role="timer">
               <div
                 suppressHydrationWarning
                 data-testid="current-time"
-                className="text-5xl font-mono font-bold mb-3 tabular-nums bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
+                className="text-5xl font-mono font-bold mb-3 tabular-nums bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent"
               >
                 {formatTime(currentTime)}
               </div>
               <div
                 suppressHydrationWarning
                 data-testid="current-date"
-                className="text-default-500"
+                className="text-muted"
               >
                 {formatDate(currentTime)}
               </div>
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
 
         {/* Session Info */}
-        <Card className="border border-default-200">
-          <CardBody className="p-6">
+        <Card className="border border-border">
+          <Card.Content className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Activity className="w-5 h-5 text-secondary" aria-hidden="true" />
+              <Activity className="w-5 h-5 text-accent" aria-hidden="true" />
               <h2 className="text-lg font-semibold">Session Info</h2>
             </div>
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
-                <span className="text-sm text-default-500">Session Start</span>
+              <div className="flex justify-between items-center p-3 bg-default-soft rounded-lg">
+                <span className="text-sm text-muted">Session Start</span>
                 <span
                   suppressHydrationWarning
                   data-testid="session-start"
@@ -130,8 +130,8 @@ export default function ClockPage() {
                   {formatTime(sessionStart)}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
-                <span className="text-sm text-default-500">Session Dauer</span>
+              <div className="flex justify-between items-center p-3 bg-default-soft rounded-lg">
+                <span className="text-sm text-muted">Session Dauer</span>
                 <span
                   suppressHydrationWarning
                   data-testid="session-duration"
@@ -140,25 +140,25 @@ export default function ClockPage() {
                   {getSessionDuration()}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
-                <span className="text-sm text-default-500">Timeout in</span>
+              <div className="flex justify-between items-center p-3 bg-default-soft rounded-lg">
+                <span className="text-sm text-muted">Timeout in</span>
                 <Chip
                   suppressHydrationWarning
                   data-testid="session-timeout"
                   color={timeoutMinutes < 10 ? 'warning' : 'success'}
-                  variant="flat"
+                  variant="soft"
                   size="sm"
                 >
                   {timeoutMinutes} Min
                 </Chip>
               </div>
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
 
         {/* Countdown Timer */}
-        <Card className="border border-default-200">
-          <CardBody className="p-6">
+        <Card className="border border-border">
+          <Card.Content className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Timer className="w-5 h-5 text-warning" aria-hidden="true" />
               <h2 className="text-lg font-semibold">Countdown Timer</h2>
@@ -174,8 +174,7 @@ export default function ClockPage() {
                   {formatCountdown(countdown)}
                 </div>
                 <Button
-                  color="danger"
-                  variant="flat"
+                  variant="danger"
                   size="lg"
                   aria-label="Stop countdown timer"
                   onPress={() => setCountdown(null)}
@@ -187,8 +186,7 @@ export default function ClockPage() {
               <div className="flex flex-wrap gap-3 justify-center py-4">
                 <Button
                   data-testid="start-1min-timer"
-                  color="primary"
-                  variant="flat"
+                  variant="primary"
                   size="lg"
                   aria-label="Start 1 minute timer"
                   onPress={() => startCountdown(1)}
@@ -197,8 +195,7 @@ export default function ClockPage() {
                 </Button>
                 <Button
                   data-testid="start-5min-timer"
-                  color="success"
-                  variant="flat"
+                  variant="primary"
                   size="lg"
                   aria-label="Start 5 minute timer"
                   onPress={() => startCountdown(5)}
@@ -207,8 +204,7 @@ export default function ClockPage() {
                 </Button>
                 <Button
                   data-testid="start-10min-timer"
-                  color="secondary"
-                  variant="flat"
+                  variant="secondary"
                   size="lg"
                   aria-label="Start 10 minute timer"
                   onPress={() => startCountdown(10)}
@@ -217,19 +213,19 @@ export default function ClockPage() {
                 </Button>
               </div>
             )}
-          </CardBody>
+          </Card.Content>
         </Card>
 
         {/* Last Updated */}
-        <Card className="border border-default-200">
-          <CardBody className="p-6">
+        <Card className="border border-border">
+          <Card.Content className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <RefreshCw className="w-5 h-5 text-success" aria-hidden="true" />
               <h2 className="text-lg font-semibold">Auto-Update Info</h2>
             </div>
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
-                <span className="text-sm text-default-500">Zuletzt aktualisiert</span>
+              <div className="flex justify-between items-center p-3 bg-default-soft rounded-lg">
+                <span className="text-sm text-muted">Zuletzt aktualisiert</span>
                 <span
                   suppressHydrationWarning
                   data-testid="last-updated"
@@ -238,41 +234,41 @@ export default function ClockPage() {
                   {formatTime(currentTime)}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-default-100 rounded-lg">
-                <span className="text-sm text-default-500">Auto-Refresh</span>
-                <Chip color="success" variant="dot" size="sm">
+              <div className="flex justify-between items-center p-3 bg-default-soft rounded-lg">
+                <span className="text-sm text-muted">Auto-Refresh</span>
+                <Chip color="success" variant="soft" size="sm">
                   Aktiv
                 </Chip>
               </div>
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
 
       {/* Special Date Messages */}
       {currentTime.getMonth() === 11 && currentTime.getDate() === 25 && (
-        <Card className="border border-danger-200 bg-danger-50/50">
-          <CardBody className="p-4">
+        <Card className="border border-danger bg-danger/10">
+          <Card.Content className="p-4">
             <div
               data-testid="christmas-message"
               className="text-center text-xl font-bold text-danger"
             >
               Frohe Weihnachten!
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
       )}
 
       {currentTime.getMonth() === 11 && currentTime.getDate() === 31 && (
-        <Card className="border border-primary-200 bg-primary-50/50">
-          <CardBody className="p-4">
+        <Card className="border border-accent bg-accent/10">
+          <Card.Content className="p-4">
             <div
               data-testid="newyear-message"
-              className="text-center text-xl font-bold text-primary"
+              className="text-center text-xl font-bold text-accent"
             >
               Frohes neues Jahr!
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
       )}
     </div>

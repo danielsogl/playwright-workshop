@@ -2,7 +2,9 @@
 
 import type { RSSItem, RSSFeed } from '@/types/rss';
 
-import { Card, CardBody, CardHeader, Spinner, Button, Link, Divider } from '@heroui/react';
+import { Card, Spinner, Separator } from '@heroui/react';
+import { buttonVariants } from '@heroui/styles';
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { useSession } from 'next-auth/react';
@@ -135,11 +137,12 @@ export default function PrivateNewsPage() {
   if (isLoadingSession) {
     return (
       <div
-        className="flex justify-center items-center min-h-[calc(100vh-10rem)]"
+        className="flex flex-col justify-center items-center gap-2 min-h-[calc(100vh-10rem)]"
         role="status"
         aria-label="Loading session"
       >
-        <Spinner color="primary" label="Loading session…" size="lg" />
+        <Spinner color="accent" size="lg" />
+        <span className="text-muted">Loading session…</span>
       </div>
     );
   }
@@ -147,33 +150,29 @@ export default function PrivateNewsPage() {
   if (!isAuthenticated) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
-        <Card className="w-full max-w-md shadow-lg border border-default-200">
-          <CardHeader className="flex flex-col items-center gap-2 pt-8 pb-0">
+        <Card className="w-full max-w-md shadow-lg border border-border">
+          <Card.Header className="flex flex-col items-center gap-2 pt-8 pb-0">
             <div className="w-14 h-14 rounded-2xl bg-danger/10 flex items-center justify-center mb-2">
               <Shield className="w-7 h-7 text-danger" aria-hidden="true" />
             </div>
             <h1 className="text-2xl font-bold" id="access-denied-title">
               Access Denied
             </h1>
-            <p className="text-default-500 text-sm">
+            <p className="text-muted text-sm">
               You must be signed in to view this page.
             </p>
-          </CardHeader>
-          <Divider className="mt-4" />
-          <CardBody className="px-8 py-6 flex justify-center">
-            <Button
+          </Card.Header>
+          <Separator className="mt-4" />
+          <Card.Content className="px-8 py-6 flex justify-center">
+            <NextLink
               aria-label="Sign in to view private feeds"
-              as={Link}
-              color="primary"
               href="/auth/signin"
-              variant="shadow"
-              size="lg"
-              className="font-semibold"
               id="btn-signin-private"
+              className={buttonVariants({ variant: 'primary', size: 'lg' }) + ' font-semibold'}
             >
               Sign In
-            </Button>
-          </CardBody>
+            </NextLink>
+          </Card.Content>
         </Card>
       </div>
     );

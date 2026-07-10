@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, CardBody, Chip, Divider } from '@heroui/react';
+import { Button, Card, Chip, Separator } from '@heroui/react';
 import { FileText, FileJson, FileSpreadsheet, FileDown, Info } from 'lucide-react';
 import { title, subtitle } from '@/components/primitives';
 import jsPDF from 'jspdf';
@@ -165,6 +165,13 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
     text: handleTextDownload,
   };
 
+  const colorToVariant = {
+    primary: 'primary',
+    secondary: 'secondary',
+    success: 'primary',
+    warning: 'primary',
+  } as const;
+
   return (
     <main className="flex flex-col gap-10 py-8 md:py-10">
       {/* Header */}
@@ -187,8 +194,8 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
           aria-live="polite"
         >
           <Chip
-            color={downloadStatus.includes('erfolgreich') ? 'success' : 'primary'}
-            variant="flat"
+            color={downloadStatus.includes('erfolgreich') ? 'success' : 'accent'}
+            variant="soft"
             size="lg"
           >
             {downloadStatus}
@@ -203,9 +210,9 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
           return (
             <Card
               key={card.id}
-              className="border border-default-200 hover:border-default-300 transition-colors"
+              className="border border-border hover:border-border transition-colors"
             >
-              <CardBody className="p-6 gap-4">
+              <Card.Content className="p-6 gap-4">
                 <div className="flex items-start gap-4">
                   <div
                     className={`w-12 h-12 rounded-xl bg-${card.color}/10 flex items-center justify-center shrink-0`}
@@ -217,12 +224,11 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold mb-1">{card.title}</h3>
-                    <p className="text-sm text-default-500 mb-4">
+                    <p className="text-sm text-muted mb-4">
                       {card.description}
                     </p>
                     <Button
-                      color={card.color}
-                      variant="flat"
+                      variant={colorToVariant[card.color]}
                       onPress={handlers[card.id]}
                       className="w-full"
                       data-testid={card.testId}
@@ -231,24 +237,24 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
                     </Button>
                   </div>
                 </div>
-              </CardBody>
+              </Card.Content>
             </Card>
           );
         })}
       </div>
 
-      <Divider />
+      <Separator />
 
       {/* Testing Information */}
       <section className="flex flex-col gap-4">
         <h2 className={title({ size: 'sm', class: 'text-center' })}>
           Playwright Testing Hinweise
         </h2>
-        <Card className="border border-default-200">
-          <CardBody className="p-6">
+        <Card className="border border-border">
+          <Card.Content className="p-6">
             <div className="flex items-start gap-3 mb-4">
-              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-sm text-default-500">
+              <Info className="w-5 h-5 text-accent shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-sm text-muted">
                 Nutze diese Methoden um File Downloads in Playwright zu testen:
               </p>
             </div>
@@ -261,16 +267,16 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="p-3 bg-default-100 rounded-lg"
+                  className="p-3 bg-default-soft rounded-lg"
                 >
-                  <p className="text-xs text-default-400 mb-1">{item.label}</p>
-                  <code className="text-sm text-primary font-mono">
+                  <p className="text-xs text-muted mb-1">{item.label}</p>
+                  <code className="text-sm text-accent font-mono">
                     {item.code}
                   </code>
                 </div>
               ))}
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
       </section>
     </main>

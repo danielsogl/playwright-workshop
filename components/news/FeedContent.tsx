@@ -3,7 +3,7 @@
 import type { RSSItem, RSSFeed } from '@/types/rss';
 
 import React from 'react';
-import { Card, CardBody, Spinner, Button, Link, Chip } from '@heroui/react';
+import { Card, Spinner, Button, Link, Chip } from '@heroui/react';
 import { Rss, RefreshCw } from 'lucide-react';
 
 import { cleanHtml, formatDate, truncateText } from '@/lib/utils/format';
@@ -31,25 +31,23 @@ export const FeedContent: React.FC<FeedContentProps> = ({
 }) => {
   return (
     <Card
-      className="lg:col-span-8 border border-default-200"
+      className="lg:col-span-8 border border-border"
       role="region"
       aria-label="Feed content"
     >
-      <CardBody className="p-5">
+      <Card.Content className="p-5">
         {!selectedFeed ? (
           <div className="text-center py-12">
-            <Rss className="w-12 h-12 mx-auto mb-3 text-default-300" aria-hidden="true" />
-            <p className="text-default-500">Select a feed to view its content</p>
+            <Rss className="w-12 h-12 mx-auto mb-3 text-muted" aria-hidden="true" />
+            <p className="text-muted">Select a feed to view its content</p>
           </div>
         ) : isLoading ? (
           <div
-            className="flex justify-center py-12"
+            className="flex flex-col items-center gap-2 justify-center py-12"
             aria-label="Loading feed content"
           >
-            <Spinner
-              label={`Loading content for ${selectedFeed.name}…`}
-              size="lg"
-            />
+            <Spinner size="lg" />
+            <span className="text-muted">{`Loading content for ${selectedFeed.name}…`}</span>
           </div>
         ) : error ? (
           <div className="text-center py-12">
@@ -59,9 +57,8 @@ export const FeedContent: React.FC<FeedContentProps> = ({
             </p>
             <Button
               aria-label={`Retry loading feed: ${selectedFeed.name}`}
-              color="primary"
-              isLoading={refreshingFeedId === selectedFeed.id}
-              variant="flat"
+              variant="primary"
+              isPending={refreshingFeedId === selectedFeed.id}
               onPress={() => onRefreshFeed(selectedFeed)}
             >
               Try Again
@@ -76,19 +73,18 @@ export const FeedContent: React.FC<FeedContentProps> = ({
               <div className="flex items-center gap-3">
                 <h2 className="text-xl font-bold">{selectedFeed.name}</h2>
                 {feedItemsData?.items && (
-                  <Chip variant="flat" size="sm">
+                  <Chip variant="soft" size="sm">
                     {feedItemsData.items.length} articles
                   </Chip>
                 )}
               </div>
               <Button
                 aria-label={`Refresh feed content for ${selectedFeed.name}`}
-                color="primary"
-                isLoading={refreshingFeedId === selectedFeed.id}
-                variant="flat"
-                startContent={<RefreshCw className="w-4 h-4" aria-hidden="true" />}
+                variant="primary"
+                isPending={refreshingFeedId === selectedFeed.id}
                 onPress={() => onRefreshFeed(selectedFeed)}
               >
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
                 Refresh
               </Button>
             </div>
@@ -100,17 +96,17 @@ export const FeedContent: React.FC<FeedContentProps> = ({
               {feedItemsData?.items.map((item, index) => (
                 <Card
                   key={item.link || index}
-                  className="border border-default-200 hover:border-default-300 transition-colors"
+                  className="border border-border hover:border-border transition-colors"
                   role="listitem"
                   aria-labelledby={`feed-item-title-${selectedFeed.id}-${index}`}
                 >
-                  <CardBody className="p-4">
+                  <Card.Content className="p-4">
                     <h3
                       className="text-lg font-semibold mb-2"
                       id={`feed-item-title-${selectedFeed.id}-${index}`}
                     >
                       <Link
-                        className="hover:text-primary"
+                        className="hover:text-accent"
                         href={item.link || '#'}
                         target="_blank"
                       >
@@ -118,22 +114,22 @@ export const FeedContent: React.FC<FeedContentProps> = ({
                       </Link>
                     </h3>
                     {item.pubDate && (
-                      <p className="text-small text-default-400 mb-2">
+                      <p className="text-small text-muted mb-2">
                         {formatDate(item.pubDate)}
                       </p>
                     )}
                     {item.snippet && (
-                      <p className="text-default-600 text-sm">
+                      <p className="text-foreground text-sm">
                         {truncateText(cleanHtml(item.snippet), 200)}
                       </p>
                     )}
-                  </CardBody>
+                  </Card.Content>
                 </Card>
               ))}
               {feedItemsData?.items.length === 0 && (
                 <div className="text-center py-8">
-                  <Rss className="w-10 h-10 mx-auto mb-3 text-default-300" aria-hidden="true" />
-                  <p className="text-default-500 text-sm">
+                  <Rss className="w-10 h-10 mx-auto mb-3 text-muted" aria-hidden="true" />
+                  <p className="text-muted text-sm">
                     No items found in this feed.
                   </p>
                 </div>
@@ -141,7 +137,7 @@ export const FeedContent: React.FC<FeedContentProps> = ({
             </div>
           </div>
         )}
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 };
