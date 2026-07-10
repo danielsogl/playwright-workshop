@@ -266,7 +266,7 @@ export default function DialogDemoPage() {
             )}
           </div>
           <div
-            className="p-4 bg-default-soft rounded-xl min-h-[60px] flex items-center font-mono text-sm"
+            className="p-4 bg-default-soft rounded-xl min-h-15 flex items-center font-mono text-sm"
             role="status"
             aria-live="polite"
           >

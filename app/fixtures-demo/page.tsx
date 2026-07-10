@@ -182,7 +182,7 @@ export default function FixturesDemoPage() {
                 <select
                   id="role-select"
                   data-testid="user-role-select"
-                  className="px-3 py-2.5 rounded-xl border-2 border-border bg-default-soft text-foreground hover:border-border transition-colors focus:border-accent focus:outline-none"
+                  className="px-3 py-2.5 rounded-xl border-2 border-border bg-default-soft text-foreground hover:border-border transition-colors focus:border-accent focus:outline-hidden"
                   value={formData.role}
                   onChange={(e) =>
                     setFormData({ ...formData, role: e.target.value })

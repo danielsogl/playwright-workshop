@@ -103,7 +103,7 @@ export default function Home() {
         aria-labelledby="hero-title"
       >
         {/* Decorative gradient blobs */}
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-accent/20 via-accent/20 to-success/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-150 h-150 bg-linear-to-r from-accent/20 via-accent/20 to-success/20 rounded-full blur-3xl opacity-30 pointer-events-none" />
 
         <div className="relative flex flex-col items-center gap-6">
           <Chip color="default" variant="soft" size="md">
@@ -162,7 +162,7 @@ export default function Home() {
         ].map((stat) => (
           <Card key={stat.label} className="border border-border">
             <Card.Content className="p-4 text-center">
-              <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-success">
+              <p className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-accent to-success">
                 {stat.value}
               </p>
               <p className="text-xs text-muted mt-1">{stat.label}</p>

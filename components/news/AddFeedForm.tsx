@@ -41,7 +41,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
         >
           <TextField
             aria-label="Name for the new feed"
-            className="flex-grow"
+            className="grow"
             isDisabled={addingFeed}
             value={newFeedName}
             name="feed-name"
@@ -52,7 +52,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </TextField>
           <TextField
             aria-label="URL for the new feed"
-            className="flex-grow"
+            className="grow"
             isDisabled={addingFeed}
             type="url"
             value={newFeedUrl}
@@ -64,7 +64,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </TextField>
           <TextField
             aria-label="Optional category for the new feed"
-            className="flex-grow"
+            className="grow"
             isDisabled={addingFeed}
             value={newFeedCategory}
             name="feed-category"
@@ -75,7 +75,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </TextField>
           <Button
             aria-label={addingFeed ? 'Adding new feed' : 'Add new feed'}
-            className="min-w-[120px] font-semibold"
+            className="min-w-30 font-semibold"
             variant="primary"
             isPending={addingFeed}
             type="submit"

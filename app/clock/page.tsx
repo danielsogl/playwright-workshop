@@ -87,7 +87,7 @@ export default function ClockPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Current Time Display */}
-        <Card className="border border-border bg-gradient-to-br from-accent/10 to-accent/10 dark:from-accent/20 dark:to-accent/20">
+        <Card className="border border-border bg-linear-to-br from-accent/10 to-accent/10 dark:from-accent/20 dark:to-accent/20">
           <Card.Content className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-5 h-5 text-accent" aria-hidden="true" />
@@ -97,7 +97,7 @@ export default function ClockPage() {
               <div
                 suppressHydrationWarning
                 data-testid="current-time"
-                className="text-5xl font-mono font-bold mb-3 tabular-nums bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent"
+                className="text-5xl font-mono font-bold mb-3 tabular-nums bg-clip-text text-transparent bg-linear-to-r from-accent to-accent"
               >
                 {formatTime(currentTime)}
               </div>

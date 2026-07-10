@@ -97,7 +97,7 @@ export default function PublicNewsPage() {
             </div>
             <select
               aria-label="Filter news by category"
-              className="w-full sm:w-48 rounded-xl border-2 border-border bg-default-soft text-foreground px-3 py-2.5 hover:border-border transition-colors focus:border-accent focus:outline-none"
+              className="w-full sm:w-48 rounded-xl border-2 border-border bg-default-soft text-foreground px-3 py-2.5 hover:border-border transition-colors focus:border-accent focus:outline-hidden"
               value={selectedCategory}
               id="filter-category"
               name="filter-category"
