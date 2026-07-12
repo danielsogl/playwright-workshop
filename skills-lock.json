@@ -1,15 +1,41 @@
 {
   "version": 1,
   "skills": {
+    "dev": {
+      "source": "microsoft/playwright-cli",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/dev/SKILL.md",
+      "computedHash": "da14d3749ab3f65b479db8b056ab64cd262ce15d07dd642f7d3263ad10708c1b"
+    },
     "playwright-cli": {
       "source": "microsoft/playwright-cli",
       "sourceType": "github",
-      "computedHash": "7075ab30f588019197a2f1518bb4c9d33d69d33352af079b5f9c60303ad3886e"
+      "skillPath": "skills/playwright-cli/SKILL.md",
+      "computedHash": "f602822b51bcb6d033749c60731b8f1e80f308222fcb2e4af551905a817c6e08"
     },
     "playwright-dev": {
       "source": "microsoft/playwright",
       "sourceType": "github",
-      "computedHash": "9ffad569566c602baf01c3b8c5db745be326ebeb1f8186904d1a7254f69a1de6"
+      "skillPath": ".claude/skills/playwright-dev/SKILL.md",
+      "computedHash": "c491b4f287224c452e01f1f3e3ae3109dc7fd5f633f2ae7d11f569d7065ef084"
+    },
+    "playwright-devops": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-devops/SKILL.md",
+      "computedHash": "5f6899cfc05fcd27045190a7fc733eb299460a49573bbe898f74f800af8b7e77"
+    },
+    "playwright-test-results": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-test-results/SKILL.md",
+      "computedHash": "27958c7609e6c406084e548273ba8012ff431c4df128d83030677ef96730394c"
+    },
+    "playwright-triage": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/playwright-triage/SKILL.md",
+      "computedHash": "01d869580ac79d7af63806352f2612e24fe7adfa1b91c127a5eaea8f0051ad59"
     }
   }
 }
