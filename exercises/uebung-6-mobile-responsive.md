@@ -85,7 +85,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
      test('Desktop: zeigt 3 Spalten', async ({ page }) => {
        await page.goto('/news/public');
 
-       const newsGrid = page.getByRole('list', { name: 'News articles' });
+       const newsGrid = page.getByRole('feed', { name: 'News articles' });
        await expect(newsGrid).toHaveCSS('grid-template-columns', /repeat\(3/);
      });
 
@@ -94,7 +94,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await page.setViewportSize({ width: 768, height: 1024 });
        await page.goto('/news/public');
 
-       const newsGrid = page.getByRole('list', { name: 'News articles' });
+       const newsGrid = page.getByRole('feed', { name: 'News articles' });
        await expect(newsGrid).toHaveCSS('grid-template-columns', /repeat\(2/);
      });
 
@@ -104,7 +104,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        }
        await page.goto('/news/public');
 
-       const newsGrid = page.getByRole('list', { name: 'News articles' });
+       const newsGrid = page.getByRole('feed', { name: 'News articles' });
        await expect(newsGrid).toHaveCSS('grid-template-columns', /repeat\(1/);
      });
    });
@@ -121,7 +121,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
      await page.goto('/news/public');
 
      // Simuliere Swipe/Scroll
-     const newsItem = page.getByRole('listitem').first();
+     const newsItem = page.getByRole('article').first();
      await newsItem.scrollIntoViewIfNeeded();
 
      // Simuliere Touch auf News-Item

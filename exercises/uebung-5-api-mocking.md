@@ -67,7 +67,7 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      await page.goto('/news/public');
 
      // Prüfe ob Mock-Daten angezeigt werden
-     const newsItems = page.getByRole('listitem');
+     const newsItems = page.getByRole('article');
      await expect(newsItems).toHaveCount(2);
 
      // Prüfe spezifische Inhalte
@@ -97,7 +97,7 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
 
      // News-Liste sollte nicht angezeigt werden
      await expect(
-       page.getByRole('list', { name: 'News articles' }),
+       page.getByRole('feed', { name: 'News articles' }),
      ).not.toBeVisible();
    });
    ```
@@ -119,7 +119,7 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
 
      // Prüfe Empty State
      await expect(page.getByText(/keine news|no news/i)).toBeVisible();
-     await expect(page.getByRole('listitem')).toHaveCount(0);
+     await expect(page.getByRole('article')).toHaveCount(0);
    });
    ```
 
@@ -156,7 +156,7 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      ).not.toBeVisible();
 
      // Daten sollten angezeigt werden
-     await expect(page.getByRole('listitem')).toHaveCount(2);
+     await expect(page.getByRole('article')).toHaveCount(2);
    });
    ```
 
@@ -188,14 +188,14 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      await page.goto('/news/public');
 
      // Initiale Daten
-     await expect(page.getByRole('listitem')).toHaveCount(2);
+     await expect(page.getByRole('article')).toHaveCount(2);
 
      // Suche durchführen
      await page.getByRole('textbox', { name: 'Search news' }).fill('test');
      await page.waitForLoadState('networkidle');
 
      // Gefilterte Daten
-     await expect(page.getByRole('listitem')).toHaveCount(1);
+     await expect(page.getByRole('article')).toHaveCount(1);
    });
    ```
 

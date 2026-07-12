@@ -46,7 +46,7 @@ npm install --save-dev @axe-core/playwright
    ```typescript
    test('News Feed Accessibility mit Details', async ({ page }) => {
      await page.goto('/news/public');
-     await page.waitForSelector('[role="listitem"]');
+     await page.waitForSelector('[role="article"]');
 
      const results = await new AxeBuilder({ page }).analyze();
 

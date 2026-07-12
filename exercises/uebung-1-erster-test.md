@@ -68,7 +68,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
      await page.goto('/news/public');
 
      // Finde alle News-Artikel
-     const allArticles = page.getByRole('listitem');
+     const allArticles = page.getByRole('article');
 
      // Zähle die Artikel (Auto-Wait inklusive!)
      const count = await allArticles.count();

@@ -28,11 +28,11 @@ Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbes
      }
 
      get newsList() {
-       return this.page.getByRole('list', { name: 'News articles' });
+       return this.page.getByRole('feed', { name: 'News articles' });
      }
 
      get newsItems() {
-       return this.newsList.getByRole('listitem');
+       return this.newsList.getByRole('article');
      }
 
      get loadingIndicator() {

@@ -14,13 +14,13 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
    ```
 
 2. **Umgebungsvariablen einrichten:**
-   - Erstelle eine `.env.test` Datei:
+   - Kopiere die Beispiel-Datei nach `.env`:
 
    ```bash
-   # Test-Benutzer für Authentifizierung
-   TEST_USER_EMAIL=test@example.com
-   TEST_USER_PASSWORD=password123
+   cp .env.example .env
    ```
+
+   Sie enthält bereits Test-Zugangsdaten (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`), den Offline-Modus für die News-Feeds (`RSS_OFFLINE_MODE=true`) und ein `AUTH_SECRET`.
 
 3. **Playwright-Konfiguration mit webServer anpassen:**
    - Öffne `playwright.config.ts` und aktiviere den webServer:
@@ -68,7 +68,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
 
 ```
 playwright-workshop/
-├── .env.test              # Umgebungsvariablen
+├── .env                   # Umgebungsvariablen
 ├── playwright.config.ts   # Hauptkonfiguration
 ├── e2e/
 │   └── setup.spec.ts     # Erster Test
@@ -76,7 +76,3 @@ playwright-workshop/
 ```
 
 **Zeit:** 10 Minuten
-
----
-
-> **Tipp:** Siehe [Cheat-Sheet: Projekt-Setup](./cheat-sheets/projekt-setup.md)

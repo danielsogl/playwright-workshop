@@ -30,7 +30,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
        .fill(process.env.TEST_USER_EMAIL || 'test@example.com');
      await page
        .getByLabel('Password')
-       .fill(process.env.TEST_USER_PASSWORD || 'password123');
+       .fill(process.env.TEST_USER_PASSWORD || 'password');
 
      // Klicke auf den Login-Button
      await page.getByRole('button', { name: 'Sign in' }).click();
@@ -39,7 +39,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
      await page.waitForURL('/');
 
      // Optional: Prüfe ob Login erfolgreich war
-     await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+     await expect(page.getByRole('button', { name: 'User profile actions menu' })).toBeVisible();
 
      // Speichere den authentifizierten State
      await page.context().storageState({ path: authFile });
@@ -63,7 +63,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
        {
          form: {
            email: process.env.TEST_USER_EMAIL || 'test@example.com',
-           password: process.env.TEST_USER_PASSWORD || 'password123',
+           password: process.env.TEST_USER_PASSWORD || 'password',
            csrfToken: csrfToken,
          },
          maxRedirects: 3,
@@ -114,25 +114,25 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
 
      // Sollte direkt zugreifen können ohne Login
      await expect(
-       page.getByRole('heading', { name: 'Private News Feed' }),
+       page.getByRole('heading', { name: 'Your Private News Feeds' }),
      ).toBeVisible();
      await expect(
-       page.getByRole('list', { name: 'News articles' }),
+       page.getByRole('list', { name: 'Your RSS feeds' }),
      ).toBeVisible();
    });
    ```
 
 6. **Environment-Variablen einrichten:**
-   - Erstelle eine `.env.test` Datei:
+   - Erstelle eine `.env` Datei:
    ```
    TEST_USER_EMAIL=test@example.com
-   TEST_USER_PASSWORD=password123
+   TEST_USER_PASSWORD=password
    ```
 
    - Lade sie in der Playwright-Config:
    ```typescript
    import dotenv from 'dotenv';
-   dotenv.config({ path: '.env.test' });
+   dotenv.config({ path: '.env' });
    ```
 
 **Bonus: Multi-Role Testing**

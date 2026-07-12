@@ -17,7 +17,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 
        // Warte bis die News geladen sind
        await expect(
-         page.getByRole('list', { name: 'News articles' }),
+         page.getByRole('feed', { name: 'News articles' }),
        ).toBeVisible();
      });
 
@@ -30,8 +30,8 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```typescript
    test('zeigt alle News-Artikel initial an', async ({ page }) => {
      // Finde die News-Liste
-     const newsList = page.getByRole('list', { name: 'News articles' });
-     const newsItems = newsList.getByRole('listitem');
+     const newsList = page.getByRole('feed', { name: 'News articles' });
+     const newsItems = newsList.getByRole('article');
 
      // Prüfe die Anzahl der Artikel (65 items im feed.json)
      await expect(newsItems).toHaveCount(65);
@@ -54,7 +54,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
      await searchInput.press('Enter'); // Oder warte auf auto-search
 
      // Prüfe dass keine Artikel angezeigt werden
-     const newsItems = page.getByRole('listitem');
+     const newsItems = page.getByRole('article');
      await expect(newsItems).toHaveCount(0);
 
      // Leere Suche und prüfe Reset
@@ -79,16 +79,16 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```typescript
    test('zeigt Suchergebnisse korrekt an', async ({ page }) => {
      const searchInput = page.getByRole('textbox', { name: 'Search news' });
-     const newsList = page.getByRole('list', { name: 'News articles' });
+     const newsList = page.getByRole('feed', { name: 'News articles' });
 
      // Suche nach spezifischem Artikel (tatsächlich im Feed vorhanden)
      await searchInput.fill('Revelo');
 
      // Warte bis genau 1 Ergebnis angezeigt wird
-     await expect(newsList.getByRole('listitem')).toHaveCount(1);
+     await expect(newsList.getByRole('article')).toHaveCount(1);
 
      // Prüfe den Inhalt des Ergebnisses
-     const result = newsList.getByRole('listitem').first();
+     const result = newsList.getByRole('article').first();
      await expect(result).toContainText('Revelo');
 
      // Optional: Prüfe weitere Details

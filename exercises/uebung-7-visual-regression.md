@@ -36,10 +36,10 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
        await page.goto('/news/public');
 
        // Warte auf News-Items
-       await page.waitForSelector('[role="listitem"]');
+       await page.waitForSelector('[role="article"]');
 
        // Screenshot nur vom News-Grid
-       const newsGrid = page.getByRole('list', { name: 'News articles' });
+       const newsGrid = page.getByRole('feed', { name: 'News articles' });
        await expect(newsGrid).toHaveScreenshot('news-grid.png');
      });
    });
@@ -68,9 +68,9 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
    ```typescript
    test('News Card mit dynamischen Inhalten', async ({ page }) => {
      await page.goto('/news/public');
-     await page.waitForSelector('[role="listitem"]');
+     await page.waitForSelector('[role="article"]');
 
-     const firstNewsCard = page.getByRole('listitem').first();
+     const firstNewsCard = page.getByRole('article').first();
 
      // Maskiere dynamische Inhalte (Datum, Zeit)
      await expect(firstNewsCard).toHaveScreenshot('news-card.png', {
@@ -111,7 +111,7 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
    // Nutze browserName aus dem Test-Context
    test('Cross-Browser Consistency', async ({ page, browserName }) => {
      await page.goto('/news/public');
-     await page.waitForSelector('[role="listitem"]');
+     await page.waitForSelector('[role="article"]');
 
      await expect(page).toHaveScreenshot(`news-page-${browserName}.png`, {
        fullPage: true,

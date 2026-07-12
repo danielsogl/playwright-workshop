@@ -70,7 +70,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      await page.waitForLoadState('networkidle');
 
      // Prüfe ob gefiltert wurde
-     const results = page.getByRole('listitem');
+     const results = page.getByRole('article');
      const count = await results.count();
      expect(count).toBeLessThan(65); // Weniger als alle Items
    });
@@ -81,9 +81,9 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```typescript
    test('News Card Hover zeigt zusätzliche Optionen', async ({ page }) => {
      await page.goto('/news/public');
-     await page.waitForSelector('[role="listitem"]');
+     await page.waitForSelector('[role="article"]');
 
-     const firstCard = page.getByRole('listitem').first();
+     const firstCard = page.getByRole('article').first();
 
      // Hover über die Karte
      await firstCard.hover();
@@ -223,7 +223,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      }
 
      // Alternative: Mehrfachauswahl mit Shift
-     const items = page.getByRole('listitem');
+     const items = page.getByRole('article');
      if ((await items.count()) > 3) {
        await items.first().click();
        await items.nth(2).click({ modifiers: ['Shift'] });
