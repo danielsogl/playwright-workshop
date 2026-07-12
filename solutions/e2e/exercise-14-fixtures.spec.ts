@@ -30,8 +30,8 @@ test.describe('Fixtures Demo - Basic Tests', () => {
     await page.goto('/fixtures-demo');
 
     // Use fixture data with semantic locators
-    await page.getByLabel('Name').fill(testUser.name);
-    await page.getByLabel('Email').fill(testUser.email);
+    await page.getByLabel('Name').pressSequentially(testUser.name);
+    await page.getByLabel('Email').pressSequentially(testUser.email);
     await page.getByLabel('Role').selectOption(testUser.role);
 
     await page.getByRole('button', { name: /add user|update user/i }).click();
@@ -74,8 +74,8 @@ const testWithHelpers = base.extend<FixturesDemo>({
 
     const userPage = {
       addUser: async (user: { name: string; email: string; role: string }) => {
-        await page.getByLabel('Name').fill(user.name);
-        await page.getByLabel('Email').fill(user.email);
+        await page.getByLabel('Name').pressSequentially(user.name);
+        await page.getByLabel('Email').pressSequentially(user.email);
         await page.getByLabel('Role').selectOption(user.role);
         await page
           .getByRole('button', { name: /add user|update user/i })

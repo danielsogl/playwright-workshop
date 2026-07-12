@@ -423,7 +423,13 @@ test.describe('Exercise 8: Accessibility Testing', () => {
   });
 
   test.describe('Keyboard Navigation Tests', () => {
-    test('Tab navigation order', async ({ page }) => {
+    test('Tab navigation order', async ({ page, browserName }) => {
+      // WebKit/Safari fokussiert Links & Buttons per Tab nur, wenn macOS
+      // "Full Keyboard Access" aktiv ist – headless bleibt die Tab-Reihenfolge leer.
+      test.skip(
+        browserName === 'webkit',
+        'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
+      );
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -536,7 +542,13 @@ test.describe('Exercise 8: Accessibility Testing', () => {
       expect(results.violations).toEqual([]);
     });
 
-    test('Skip links functionality', async ({ page }) => {
+    test('Skip links functionality', async ({ page, browserName }) => {
+      // Der Skip-Link ist sr-only bis er per Tab fokussiert wird – WebKit
+      // fokussiert Links per Tab nur mit macOS Full Keyboard Access.
+      test.skip(
+        browserName === 'webkit',
+        'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
+      );
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
