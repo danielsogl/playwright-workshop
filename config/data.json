@@ -5,6 +5,12 @@
       "email": "test@example.com",
       "name": "Test User",
       "password": "password"
+    },
+    {
+      "id": "seed-admin-1",
+      "email": "admin@example.com",
+      "name": "Admin User",
+      "password": "admin123"
     }
   ],
   "privateNewsFeeds": {
