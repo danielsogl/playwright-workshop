@@ -1,4 +1,7 @@
 import { test as base, expect } from '@playwright/test';
+// Auth-Fixture (siehe ./fixtures/auth.fixture.ts) – kapselt den API-Login aus
+// Übung 7. Wird u. a. vom Capstone (Übung 17) importiert.
+import { test as authTest } from './fixtures/auth.fixture';
 
 // Simple fixture for test data
 const test = base.extend<{
@@ -132,6 +135,21 @@ testWithHelpers.describe('Fixtures Demo - With Helpers', () => {
     const finalCount = await userPage.getUserCount();
     expect(finalCount).toBe(initialCount + 2);
   });
+});
+
+// Auth-Fixture in Aktion: `authenticatedPage` liefert eine bereits
+// eingeloggte Page – der geschützte Private-Feeds-Bereich ist direkt erreichbar.
+authTest.describe('Fixtures Demo - Auth Fixture', () => {
+  authTest(
+    'authenticatedPage kann direkt auf geschützte Route zugreifen',
+    async ({ authenticatedPage: page }) => {
+      await page.goto('/news/private');
+
+      await expect(
+        page.getByRole('heading', { name: 'Your Private News Feeds' }),
+      ).toBeVisible();
+    },
+  );
 });
 
 export { test, testWithHelpers };

@@ -1,5 +1,5 @@
 /**
- * Exercise 5 - API Mocking Solution
+ * Exercise 11 - API Mocking Solution
  *
  * This test suite demonstrates comprehensive API mocking techniques with Playwright.
  * Covers success states, error handling, loading states, and dynamic mocking based on requests.
@@ -18,7 +18,7 @@ import {
   mockRateLimitResponse,
 } from './mocks/news-mocks';
 
-test.describe('Exercise 5: API Mocking', () => {
+test.describe('Exercise 11: API Mocking', () => {
   test('shows mocked news data successfully', async ({ page }) => {
     // Mock API before the page loads - this is crucial for proper interception
     // Use a flexible pattern to catch the API call

@@ -4,7 +4,7 @@ import path from 'path';
 const authFile = path.join(import.meta.dirname, '../../playwright/.auth/user.json');
 
 // Setup-Test für Authentifizierung
-setup.describe('Exercise 3: Authentication Setup', () => {
+setup.describe('Exercise 7: Authentication Setup', () => {
   setup('authenticate as user', async ({ page }) => {
     // Use UI-Login for reliable authentication
     await page.goto('/auth/signin');
@@ -46,7 +46,7 @@ setup.describe('Exercise 3: Authentication Setup', () => {
 // Tests die Authentifizierung benötigen
 import { test } from '@playwright/test';
 
-test.describe('Exercise 3: Authenticated Tests', () => {
+test.describe('Exercise 7: Authenticated Tests', () => {
   // Use-Klausel lädt den gespeicherten Auth-State
   test.use({ storageState: authFile });
 

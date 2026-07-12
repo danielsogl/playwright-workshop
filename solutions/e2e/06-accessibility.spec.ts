@@ -1,5 +1,5 @@
 /**
- * Exercise 8 - Accessibility Testing Solution
+ * Exercise 6 - Accessibility Testing Solution
  *
  * This test suite demonstrates comprehensive accessibility testing using axe-core with Playwright.
  * Tests WCAG compliance, keyboard navigation, and accessibility across different themes and viewports.
@@ -18,7 +18,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test.describe('Exercise 8: Accessibility Testing', () => {
+test.describe('Exercise 6: Accessibility Testing', () => {
   test.describe('Basic Accessibility Tests', () => {
     test('Homepage accessibility scan', async ({ page }) => {
       await page.goto('/');

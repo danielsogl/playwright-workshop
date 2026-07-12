@@ -1,7 +1,24 @@
 /**
- * Mock data for API testing in Exercise 5
- * Used to test success, error, and empty states
+ * Mock data for API testing (Exercise 11)
+ * Used to test success, error, and empty states.
+ * Shared across exercises – Exercise 12 imports `mockSearchFeed` from here.
  */
+
+// Single-item feed reused by Exercise 12 (waitForResponse) so the mock data
+// lives in one place instead of being redefined inline per test.
+export const mockSearchFeed = {
+  items: [
+    {
+      title: 'Gemockte News',
+      description: 'Beschreibung der gemockten News',
+      link: 'https://example.com/mock-1',
+      category: 'Technology',
+      source: 'Mock Source',
+      pubDate: '2026-01-01T10:00:00.000Z',
+      isoDate: '2026-01-01T10:00:00.000Z',
+    },
+  ],
+};
 
 export const mockNewsData = {
   success: {

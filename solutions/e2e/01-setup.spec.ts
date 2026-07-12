@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Exercise 0: Project Setup', () => {
+test.describe('Exercise 1: Project Setup', () => {
   test('App ist erreichbar', async ({ page }) => {
     await page.goto('/');
 

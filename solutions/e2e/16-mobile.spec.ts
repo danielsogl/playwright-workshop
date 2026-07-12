@@ -1,5 +1,5 @@
 /**
- * Exercise 6 - Mobile and Responsive Testing Solution
+ * Exercise 16 - Mobile and Responsive Testing Solution
  *
  * This test suite demonstrates mobile device emulation and responsive design testing.
  * Tests navigation patterns, layout changes, and touch interactions across different viewports.
@@ -12,8 +12,10 @@
  */
 
 import { test, expect, devices } from '@playwright/test';
+// Reuse aus Übung 9: NewsPage-POM zum Navigieren (Fallback wäre page.goto('/news/public')).
+import { NewsPage } from '../pages/NewsPage';
 
-test.describe('Exercise 6: Mobile and Responsive Testing', () => {
+test.describe('Exercise 16: Mobile and Responsive Testing', () => {
   test.describe('Responsive Navigation', () => {
     test('Desktop: shows normal navigation', async ({ page }) => {
       // Ensure desktop viewport
@@ -172,11 +174,10 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
   test.describe('News Grid Responsive Layout', () => {
     test('Desktop: shows multi-column layout', async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 720 });
-      await page.goto('/news/public');
 
-      // Wait for news items to load
-      // Wait for news items to load
-      await expect(page.getByRole('article').first()).toBeVisible();
+      // Reuse aus Übung 9: POM navigiert und wartet auf die News-Items.
+      // Fallback ohne POM: await page.goto('/news/public');
+      await new NewsPage(page).goto();
 
       // Check for grid layout indicators
       const newsContainer = page

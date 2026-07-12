@@ -1,21 +1,9 @@
 import { test, expect } from '@playwright/test';
+// Reuse aus Übung 11: die Mock-Daten kommen aus der geteilten Datei statt inline.
+import { mockSearchFeed as mockFeed } from './mocks/news-mocks';
 
 // Musterlösung zu Übung 12 – API Mocking mit waitForResponse
 test.describe('API Mocking mit waitForResponse', () => {
-  const mockFeed = {
-    items: [
-      {
-        title: 'Gemockte News',
-        description: 'Beschreibung der gemockten News',
-        link: 'https://example.com/mock-1',
-        category: 'Technology',
-        source: 'Mock Source',
-        pubDate: '2026-01-01T10:00:00.000Z',
-        isoDate: '2026-01-01T10:00:00.000Z',
-      },
-    ],
-  };
-
   test('empfängt und verarbeitet gemockte Response', async ({ page }) => {
     // 1. API mocken
     await page.route('**/api/news/public', async (route) => {

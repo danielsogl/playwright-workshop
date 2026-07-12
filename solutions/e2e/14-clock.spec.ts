@@ -1,5 +1,5 @@
 /**
- * Exercise 9 - Clock API for Internal Clock Page Testing Solution
+ * Exercise 14 - Clock API for Internal Clock Page Testing Solution
  *
  * This test suite demonstrates time-based testing using Playwright's Clock API
  * with the internal demo application clock page at /clock.
@@ -13,7 +13,7 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('Exercise 9: Clock API Testing', () => {
+test.describe('Exercise 14: Clock API Testing', () => {
   test('Clock display shows correct time', async ({ page }) => {
     // WICHTIG: Clock installieren VOR page.goto()!
     const testTime = new Date('2024-01-15 14:30:00');

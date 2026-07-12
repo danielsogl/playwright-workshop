@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Exercise 2: News Feed Search Navigation', () => {
+test.describe('Exercise 5: News Feed Search Navigation', () => {
   // Gemeinsame Navigation vor jedem Test
   test.beforeEach(async ({ page }) => {
     await page.goto('/news/public');

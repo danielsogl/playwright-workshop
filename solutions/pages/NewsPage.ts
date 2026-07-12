@@ -4,6 +4,9 @@ export class NewsPage {
   readonly page: Page;
   readonly searchInput: Locator;
   readonly newsItems: Locator;
+  readonly newsFeed: Locator;
+  readonly categoryFilter: Locator;
+  readonly resultsCount: Locator;
   readonly loadMoreButton: Locator;
   readonly noResultsMessage: Locator;
 
@@ -16,6 +19,16 @@ export class NewsPage {
     });
 
     this.newsItems = page.getByRole('article');
+
+    this.newsFeed = page.getByRole('feed', { name: 'News articles' });
+
+    // Kategorie-Filter ist ein <select> → als combobox ansprechbar.
+    this.categoryFilter = page.getByRole('combobox', {
+      name: 'Filter news by category',
+    });
+
+    // Ergebniszähler „{n} articles found"
+    this.resultsCount = page.getByText(/\d+ articles found/);
 
     this.loadMoreButton = page.getByRole('button', {
       name: /load more|mehr laden/i,
@@ -115,12 +128,15 @@ export class NewsPage {
     }
   }
 
-  // Filter-Aktionen
+  // Filter-Aktionen: der Kategorie-Filter ist ein <select> (combobox).
   async filterByCategory(category: string) {
-    const categoryButton = this.page.getByRole('button', { name: category });
-    if (await categoryButton.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await categoryButton.click();
-      await this.page.waitForLoadState('networkidle');
-    }
+    await this.categoryFilter.selectOption(category);
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  // Liest die Zahl aus „{n} articles found".
+  async getResultsCount(): Promise<number> {
+    const text = (await this.resultsCount.textContent()) ?? '';
+    return parseInt(text.match(/(\d+)/)?.[1] ?? '0', 10);
   }
 }

@@ -3,7 +3,7 @@ import { NewsPage } from '../pages/NewsPage';
 import { HomePage } from '../pages/HomePage';
 import { LoginPage } from '../pages/LoginPage';
 
-test.describe('Exercise 4: Page Object Pattern', () => {
+test.describe('Exercise 9: Page Object Pattern', () => {
   let newsPage: NewsPage;
   let homePage: HomePage;
   let loginPage: LoginPage;

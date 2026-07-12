@@ -1,5 +1,5 @@
 /**
- * Exercise 7 - Visual Regression Testing Solution
+ * Exercise 15 - Visual Regression Testing Solution
  *
  * This test suite demonstrates visual regression testing with Playwright's screenshot capabilities.
  * Tests visual consistency across different states, themes, and viewports.
@@ -12,8 +12,10 @@
  */
 
 import { test, expect } from '@playwright/test';
+// Reuse aus Übung 9: NewsPage-POM zum Navigieren (Fallback wäre page.goto('/news/public')).
+import { NewsPage } from '../pages/NewsPage';
 
-test.describe('Exercise 7: Visual Regression Testing', () => {
+test.describe('Exercise 15: Visual Regression Testing', () => {
   // Global test configuration for consistent screenshots
   test.beforeEach(async ({ page }) => {
     // Disable animations for consistent screenshots
@@ -99,10 +101,10 @@ test.describe('Exercise 7: Visual Regression Testing', () => {
 
   test.describe('News Feed Visual Tests', () => {
     test('News feed layout screenshot', async ({ page }) => {
-      await page.goto('/news/public');
-
-      // Wait for news items to load
-      await expect(page.getByRole('article').first()).toBeVisible();
+      // Reuse aus Übung 9: POM navigiert und wartet auf die News-Items.
+      // Fallback ohne POM: await page.goto('/news/public');
+      const newsPage = new NewsPage(page);
+      await newsPage.goto();
       await page.waitForLoadState('networkidle');
 
       // Take screenshot of the news grid/list
