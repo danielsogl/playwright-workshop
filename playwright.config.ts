@@ -12,10 +12,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
+ * Standardmäßig laufen die Teilnehmer-Tests aus `e2e/`.
+ * Mit E2E_SOLUTIONS=1 (npm run e2e:solutions) laufen stattdessen die
+ * Musterlösungen aus `solutions/e2e/` inkl. Auth-Setup.
+ */
+const withSolutions = process.env.E2E_SOLUTIONS === '1';
+
+/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './e2e',
+  testDir: '.',
+  testMatch: withSolutions
+    ? 'solutions/e2e/**/*.spec.ts'
+    : 'e2e/**/*.spec.ts',
+  // Glob-Patterns sind nicht am Pfadanfang verankert; ohne dieses Ignore
+  // würden im Teilnehmer-Modus auch die solutions/e2e/-Dateien matchen.
+  testIgnore: withSolutions ? undefined : 'solutions/**',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -38,17 +51,27 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      // Auth-Setup für die Musterlösungen: erzeugt storageState.
+      // Läuft nur, wenn solutions/ im Testlauf enthalten ist.
+      name: 'setup',
+      testMatch: /exercise-07-authentication\.spec\.ts/,
+      grep: /authenticate as/,
+    },
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
     },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      dependencies: ['setup'],
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      dependencies: ['setup'],
     },
 
     /* Test against mobile viewports. */
