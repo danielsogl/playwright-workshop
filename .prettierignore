@@ -12,3 +12,7 @@ public
 *.lock
 *.log
 *.md
+.agents
+.claude
+.github
+.vscode
