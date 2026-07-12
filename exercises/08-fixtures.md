@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst die Grundlagen von Playwright Fixtures kennen – ein System für wiederverwendbare Test-Setups. Fixtures machen Tests sauberer und wartbarer.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 7 – der API-Login wird zur wiederverwendbaren Fixture gekapselt.
+> **Du gibst weiter:** eine **`authenticatedPage`-Fixture** (`solutions/e2e/fixtures/auth.fixture.ts`), die der Capstone (Übung 17) importiert. Die Daten-Fixture übst du weiter auf `/fixtures-demo`.
+> **Zurückgefallen?** Das komplette Fixture-Snippet steht im Handout und in `solutions/e2e/fixtures/auth.fixture.ts`.
+
 ## Was sind Fixtures?
 
 Fixtures sind **wiederverwendbare Bausteine** für Tests, die:

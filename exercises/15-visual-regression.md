@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der Fokus liegt auf dem Erkennen von unbeabsichtigten visuellen Änderungen in der Feed App.
 
+> **🧵 Roter Faden**
+> **Baut auf (weich):** Übung 9 – optional navigierst du mit der `NewsPage`-POM zu den Screenshot-Zielen.
+> **Du gibst weiter:** Visual-Baselines als Regressions-Schutz.
+> **Zurückgefallen?** `page.goto()` funktioniert genauso – die POM ist hier nur Komfort.
+
 **Warum Visual Testing?**
 
 - Erkennt CSS/Layout-Probleme, die funktionale Tests übersehen

@@ -3,6 +3,11 @@
 **Ziel:**
 Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst du Test-Organisation mit `beforeEach`, Formular-Interaktionen und das Arbeiten mit dynamischen Inhalten.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 4 – Assertions und Locators auf `/news/public`.
+> **Du gibst weiter:** deinen **ersten vollwertigen Feature-Test** (News-Suche). ⭐ **Genau diesen Test refactorierst du in Übung 9** ins Page Object Model – halte ihn griffbereit. Er wird außerdem in Übung 11 (Mocking) wieder aufgegriffen.
+> **Zurückgefallen?** Der komplette Suchtest liegt in `solutions/e2e/05-suche.spec.ts`.
+
 **Aufgaben:**
 
 1. **Test-Suite mit Setup erstellen:**

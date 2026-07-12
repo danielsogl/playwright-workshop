@@ -3,6 +3,11 @@
 **Ziel:**
 Du kombinierst Request-Interception (`page.route`) mit `page.waitForResponse`, um gezielt die empfangenen Netzwerkdaten zu prüfen – und abzugleichen, dass sie korrekt im UI dargestellt werden.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 11 – du importierst die Mock-Daten aus `e2e/mocks/news-mocks.ts` statt sie inline zu definieren (siehe Snippet-Variante unten).
+> **Du gibst weiter:** das Muster „Response abfangen + gegen UI abgleichen".
+> **Zurückgefallen?** Fehlt Übung 11, definiere den Mock inline – das Handout zeigt beide Wege.
+
 **Aufgaben:**
 
 1. **Antwort mocken:** Fange `**/api/news/public` mit `page.route` ab und liefere einen eigenen Feed zurück.
@@ -12,20 +17,23 @@ Du kombinierst Request-Interception (`page.route`) mit `page.waitForResponse`, u
 
    ```typescript
    import { test, expect } from '@playwright/test';
+   // Reuse aus Übung 11: die Mock-Daten kommen aus der geteilten Datei.
+   import { mockSearchFeed as mockFeed } from './mocks/news-mocks';
 
-   const mockFeed = {
-     items: [
-       {
-         title: 'Gemockte News',
-         description: 'Beschreibung der gemockten News',
-         link: 'https://example.com/mock-1',
-         category: 'Technology',
-         source: 'Mock Source',
-         pubDate: '2026-01-01T10:00:00.000Z',
-         isoDate: '2026-01-01T10:00:00.000Z',
-       },
-     ],
-   };
+   // Fallback ohne Übung 11 – Mock inline definieren:
+   // const mockFeed = {
+   //   items: [
+   //     {
+   //       title: 'Gemockte News',
+   //       description: 'Beschreibung der gemockten News',
+   //       link: 'https://example.com/mock-1',
+   //       category: 'Technology',
+   //       source: 'Mock Source',
+   //       pubDate: '2026-01-01T10:00:00.000Z',
+   //       isoDate: '2026-01-01T10:00:00.000Z',
+   //     },
+   //   ],
+   // };
 
    test('empfängt und verarbeitet gemockte Response', async ({ page }) => {
      // 1. API mocken

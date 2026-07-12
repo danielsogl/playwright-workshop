@@ -2,6 +2,10 @@
 
 **Ziel:** Du lernst die Clock API zu nutzen, um zeitabhängige Features zu testen.
 
+> **🧵 Roter Faden**
+> **Nächster Winkel derselben App:** `/clock` – eigenständige Technik, kein Reuse nötig.
+> **Zurückgefallen?** Vollständig eigenständig.
+
 **Website:** http://localhost:3000/clock (Clock & Timer Testing Page)
 
 **Aufgaben:**

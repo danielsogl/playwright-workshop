@@ -3,6 +3,11 @@
 **Ziel:**
 Dies ist eine optionale Bonusübung für Fortgeschrittene. Verbessere das Page Object Model für die Public News Seite, indem du wiederverwendbare Komponenten-Objekte für einzelne News-Artikel erstellst und das Fluent Interface Pattern für eine bessere Lesbarkeit und Verkettung von Aktionen anwendest.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 9 (harte Voraussetzung) – du erweiterst die `NewsPage` zu einer `NewsPageAdvanced` mit Komponenten-Objekten.
+> **Du gibst weiter:** `NewsItemComponent` + Fluent Interface – zeigt das Muster für komponentenbasierte POMs.
+> **Zurückgefallen?** Fertige Lösung in `solutions/pages/NewsPageAdvanced.ts` + `solutions/pages/components/NewsItemComponent.ts`.
+
 **Hinweis:** Diese Übung ist optional und kann übersprungen werden. Sie zeigt fortgeschrittene Patterns, die in größeren Projekten hilfreich sein können.
 
 **Aufgaben:**
@@ -13,13 +18,13 @@ Dies ist eine optionale Bonusübung für Fortgeschrittene. Verbessere das Page O
    - Kapsle semantische Selektoren für Elemente innerhalb des Artikels als Properties.
    - Implementiere Methoden zur Datenextraktion und Interaktion (z.B. `getTitle()`, `getCategory()`, `getDescription()`, `clickTitle()`).
 
-2. **PublicNewsPage mit Komponenten-Objekten anpassen:**
-   - Importiere `NewsItemComponent` in `e2e/pages/PublicNewsPage.ts`.
+2. **`NewsPageAdvanced` mit Komponenten-Objekten anpassen:**
+   - Erweitere die `NewsPage` aus Übung 9 zu `e2e/pages/NewsPageAdvanced.ts` und importiere dort `NewsItemComponent`.
    - Entferne Methoden, die jetzt in `NewsItemComponent` gekapselt sind.
    - Füge eine Methode hinzu, die ein `NewsItemComponent`-Objekt für einen bestimmten Index zurückgibt.
    - Optional: Füge eine Methode hinzu, die alle `NewsItemComponent`-Objekte als Array zurückgibt.
 
-3. **Fluent Interface in PublicNewsPage implementieren:**
+3. **Fluent Interface in `NewsPageAdvanced` implementieren:**
    - Passe Aktionsmethoden so an, dass sie `this` (oder `Promise<this>`) zurückgeben, um Verkettung zu ermöglichen.
 
 4. **Tests mit erweiterten Page Objects refaktorieren:**

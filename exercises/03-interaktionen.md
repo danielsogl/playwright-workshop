@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fokus liegt auf realistischen Aktionen wie Klicks, Eingaben, Hover-Effekte und Tastatur-Navigation.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 2 – dieselben Elemente (Theme-Toggle, Suche, Login-Form), jetzt interaktiv.
+> **Du gibst weiter:** Interaktions-Muster (fill, click, keyboard), u. a. den Login-Flow, den Übung 7 zum Auth-Setup ausbaut.
+> **Zurückgefallen?** Alle Locators stehen in den Snippets unten – Übung 2 ist keine harte Voraussetzung.
+
 **Warum Interaktions-Tests?**
 
 - Simulieren echte Nutzer-Aktionen

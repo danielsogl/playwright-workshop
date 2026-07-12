@@ -3,6 +3,11 @@
 **Ziel:**
 Du wendest verschiedene Locator-Strategien praktisch an. Fokus: Elemente **finden** – noch keine Assertions, nur finden und loggen.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 1 – lauffähiges Setup.
+> **Du gibst weiter:** dein Locator-Vokabular für die Seiten `/` und `/news/public`, die Tag 1 tragen (eingelöst in Übung 4).
+> **Zurückgefallen?** Kein Vorarbeit nötig – die App läuft über den `webServer` automatisch, nur `npm install`.
+
 **Aufgaben:**
 
 1. **Neuer Test:** Erstelle `e2e/locators-practice.spec.ts` und übe auf der Startseite verschiedene Locator-Typen.

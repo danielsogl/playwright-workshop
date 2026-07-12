@@ -3,6 +3,10 @@
 **Ziel:**
 Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs testest. Der Fokus liegt auf praktischen Tests für die Next.js Feed App.
 
+> **🧵 Roter Faden**
+> **Baut auf (weich):** Übung 9 – optionaler `NewsPage`-POM-Reuse zum Navigieren von `/` und dem Feed.
+> **Zurückgefallen?** `page.goto()` reicht; die POM ist hier nur Komfort.
+
 **Aufgaben:**
 
 1. **Mobile Projekte in der Konfiguration definieren:**

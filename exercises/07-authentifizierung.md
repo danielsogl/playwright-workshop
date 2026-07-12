@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen: vom einfachen UI-Login bis zur optimierten API-basierten Authentifizierung. Der gespeicherte Auth-Status wird für alle nachfolgenden Tests wiederverwendet.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 3 – die Login-Form, jetzt als wiederverwendbarer Auth-Flow.
+> **Du gibst weiter:** den **`storageState`** (`playwright/.auth/user.json`) – schaltet `/news/private` + `/settings` für Tag 2/3 frei – und den **API-Login-Flow** (CSRF → credentials), Basis für die Fixture in Übung 8, die API-Tests in Übung 13 und den Capstone (Übung 17).
+> **Zurückgefallen?** Setup-Spec + Config-Auszug liegen in `solutions/e2e/07-authentifizierung.spec.ts`.
+
 **Teil A: UI-basierte Authentifizierung**
 
 **Aufgaben:**
@@ -11,6 +16,8 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    - Lege einen Ordner `playwright/.auth` im Projekt-Root an
    - Füge `playwright/.auth` zu deiner `.gitignore` hinzu
    - Erstelle eine Datei `e2e/auth.setup.ts` für den Login-Prozess
+
+   > **Hinweis zur Musterlösung:** Die Lösung bündelt den Setup-Test aus Kürze im selben Spec (`solutions/e2e/07-authentifizierung.spec.ts`); das `setup`-Projekt in der Config matcht ihn über `grep: /authenticate as/`. In deinem eigenen Projekt ist eine separate `*.setup.ts`-Datei mit `testMatch: /.*\.setup\.ts/` die sauberere Variante.
 
 2. **UI-Login implementieren:**
 

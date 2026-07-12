@@ -3,6 +3,11 @@
 **Ziel:**
 Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights `request`-Fixture (`APIRequestContext`). Das ist schnell und ideal für Contract- und Integrationstests.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 7 – dieselben Auth-Endpunkte (CSRF → credentials), jetzt ohne Browser geprüft.
+> **Du gibst weiter:** API-Contract-Wissen als schnelle Ergänzung zu den UI-Tests.
+> **Zurückgefallen?** Vollständig eigenständig lauffähig gegen die laufende App.
+
 **Aufgaben:**
 
 1. **Öffentlichen Feed testen (GET):**

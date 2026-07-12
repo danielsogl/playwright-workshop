@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu implementieren. Der Fokus liegt auf dem Finden und Beheben von Barrierefreiheits-Problemen in der Feed App.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 4 – dieselben Seiten (`/`, `/news/public`), neue Prüf-Dimension.
+> **Du gibst weiter:** a11y-Scans als zusätzliche Qualitätsstufe deiner Suite.
+> **Zurückgefallen?** Die Seiten sind ohne Vorarbeit erreichbar; nur `@axe-core/playwright` installieren.
+
 **Warum Accessibility Testing?**
 
 - Gesetzliche Anforderungen (WCAG 2.1, EU-Richtlinie 2016/2102)

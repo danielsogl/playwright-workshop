@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuverlässiger zu machen. Der Fokus liegt auf häufigen Szenarien: Success, Error und Loading States.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 5/9 – derselbe Suchtest auf `/news/public`, jetzt mit deterministischen Mock-Daten statt Live-Feed.
+> **Du gibst weiter:** die Mock-Datei `e2e/mocks/news-mocks.ts` – wird in Übung 12 direkt importiert.
+> **Zurückgefallen?** Mock-Daten + Routen stehen im Handout; `solutions/e2e/mocks/news-mocks.ts` ist die Referenz.
+
 **Warum API Mocking?**
 
 - Tests sind unabhängig vom Backend

@@ -3,6 +3,10 @@
 **Ziel:**
 Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit automatischem Server-Start und Umgebungsvariablen.
 
+> **🧵 Roter Faden**
+> **Das baust du:** Über die drei Tage entsteht Schritt für Schritt eine professionelle E2E-Test-Suite für genau diese **Feeds**-App – jede Übung fügt ein Stück hinzu oder verbessert Bestehendes (Login → Public-News/Suche → Private-Feeds → Settings → Logout). Ein Projekt, ein wachsender `e2e/`-Ordner, ein `e2e/pages/`-Ordner.
+> **Du gibst weiter:** ein lauffähiges Setup (`.env`, `webServer`), auf dem alle folgenden Übungen aufbauen.
+
 **Aufgaben:**
 
 1. **Projektverzeichnis vorbereiten:**

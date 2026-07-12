@@ -3,6 +3,11 @@
 **Ziel:**
 Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Assertions. Der Fokus liegt auf benutzerorientierten Selektoren statt technischen Details.
 
+> **🧵 Roter Faden**
+> **Baut auf:** Übung 2 – du löst die dort aufgeschobenen Assertions auf dem Public-News-Flow ein.
+> **Du gibst weiter:** dein erstes echtes Assertion-Vokabular (`expect`, Auto-Waiting) – Grundlage für den Feature-Test in Übung 5.
+> **Zurückgefallen?** Die verwendeten Locators sind in den Snippets enthalten.
+
 **Aufgaben:**
 
 1. **Testdatei erstellen:**

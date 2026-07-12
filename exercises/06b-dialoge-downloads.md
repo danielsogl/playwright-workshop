@@ -3,6 +3,10 @@
 **Ziel:**
 Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/prompt) behandeln und Datei-Downloads testen.
 
+> **🧵 Roter Faden**
+> **Anderer Winkel derselben App:** `/dialog-demo` und `/file-download` – eigenständige Bonus-Techniken, kein harter Reuse.
+> **Zurückgefallen?** Vollständig eigenständig; keine Voraussetzung aus früheren Übungen.
+
 ## Teil A: Dialoge (`/dialog-demo`)
 
 1. **Alert automatisch bestätigen** – wichtig: den `dialog`-Handler **vor** dem Auslösen registrieren, sonst wird der Dialog automatisch geschlossen.
