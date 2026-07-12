@@ -6,7 +6,10 @@ import { defineConfig, devices } from '@playwright/test';
  */
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -38,7 +41,9 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: '**/exercise-07-authentication.spec.ts',
-      testIgnore: [],
+      // Nur die Auth-Setups ausführen (nicht die authentifizierten Tests,
+      // die den storageState erst brauchen – die laufen im chromium-Projekt)
+      grep: /authenticate as/,
     },
     {
       name: 'chromium',

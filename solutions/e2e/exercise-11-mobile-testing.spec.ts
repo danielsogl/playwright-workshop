@@ -194,8 +194,8 @@ test.describe('Exercise 6: Mobile and Responsive Testing', () => {
 
         console.log('Desktop grid layout:', gridColumns);
 
-        // Should have multiple columns or be a grid
-        expect(gridColumns).toMatch(/grid|repeat|fr|\s\d+px.*\d+px/);
+        // Should have multiple columns or be a grid (mehrere px-Spaltenwerte)
+        expect(gridColumns).toMatch(/grid|repeat|fr|px[\s\S]*px/);
       } else {
         // Alternative: check layout by measuring item positions
         const newsItems = page.getByRole('article');

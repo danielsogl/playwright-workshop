@@ -17,7 +17,7 @@ export class HomePage {
     // Navigation Elements - use flexible selectors
     this.navigation = page.getByRole('navigation').first();
     this.newsLink = page.getByRole('link', {
-      name: /public news|view public news/i,
+      name: 'View Public News',
     });
     this.aboutLink = page.getByRole('link', { name: /about/i });
     this.blogLink = page.getByRole('link', { name: /blog/i });

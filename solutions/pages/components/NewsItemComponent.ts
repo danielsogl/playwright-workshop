@@ -29,9 +29,9 @@ export class NewsItemComponent {
   }
 
   get date() {
-    // Date text appears as "10/4/2025" in the browser
+    // Datum wird als deutsches Langformat gerendert, z. B. "4. Oktober 2025"
     return this.locator
-      .locator('text=/^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$/')
+      .locator('text=/^\\d{1,2}\\.\\s\\S+\\s\\d{4}$/')
       .first();
   }
 

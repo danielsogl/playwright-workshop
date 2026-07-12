@@ -226,14 +226,14 @@ test.describe('File Download Demo Tests', () => {
   test('Download-Status-Anzeige überprüfen', async ({ page }) => {
     // Status-Nachricht sollte zunächst nicht sichtbar sein
     await expect(
-      page.locator('text=PDF wird vorbereitet...'),
+      page.locator('text=PDF wird vorbereitet'),
     ).not.toBeVisible();
 
     // Download-Button klicken
     await page.getByTestId('download-pdf-button').click();
 
     // Status-Nachricht sollte nach dem Klick erscheinen
-    await expect(page.locator('text=PDF wird vorbereitet...')).toBeVisible();
+    await expect(page.locator('text=PDF wird vorbereitet')).toBeVisible();
 
     // Nach erfolgreichem Download sollte Erfolgsmeldung erscheinen
     await expect(
