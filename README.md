@@ -16,7 +16,7 @@ weitere Seiten, gegen die die Übungen geschrieben werden.
 npm install
 
 # 2. Playwright-Browser installieren (mindestens Chromium)
-npx playwright install chromium
+npx playwright install
 
 # 3. Umgebungsvariablen anlegen
 cp .env.example .env

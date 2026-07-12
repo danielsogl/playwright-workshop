@@ -10,7 +10,7 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
    ```bash
    cd playwright-workshop
    npm install
-   npx playwright install chromium  # Installiere mindestens einen Browser
+   npx playwright install  # Chromium, Firefox und WebKit
    ```
 
 2. **Umgebungsvariablen einrichten:**
