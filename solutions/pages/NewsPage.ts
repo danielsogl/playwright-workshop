@@ -15,7 +15,7 @@ export class NewsPage {
       name: 'Search news articles',
     });
 
-    this.newsItems = page.getByRole('listitem');
+    this.newsItems = page.getByRole('article');
 
     this.loadMoreButton = page.getByRole('button', {
       name: /load more|mehr laden/i,
