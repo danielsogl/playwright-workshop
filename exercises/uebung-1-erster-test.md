@@ -18,7 +18,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
      await page.goto('/');
 
      // Finde den Link über seinen sichtbaren Text
-     const newsLink = page.getByRole('link', { name: /public news/i });
+     const newsLink = page.getByRole('link', { name: 'View Public News' });
 
      // Playwright wartet automatisch bis der Link klickbar ist!
      await newsLink.click();
@@ -37,27 +37,29 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
 
    ```typescript
    test('verwendet verschiedene semantische Locators', async ({ page }) => {
-     await page.goto('/');
+     await page.goto('/auth/signin');
 
-     // Nach Rolle und Name
-     const button = page.getByRole('button', { name: 'Sign in' });
+     // Nach Rolle und Name (Regex = case-insensitiver Teiltreffer)
+     const signInButton = page.getByRole('button', { name: /sign in/i });
 
-     // Nach Label (für Formularfelder)
+     // Nach Label (ideal für Formularfelder)
      const emailInput = page.getByLabel('Email');
+     const passwordInput = page.getByLabel('Password');
 
-     // Nach Platzhalter
-     const searchInput = page.getByPlaceholder('Search...');
+     // Nach Platzhalter (dasselbe Feld, anderer Locator)
+     const emailByPlaceholder = page.getByPlaceholder('you@example.com');
 
      // Nach sichtbarem Text
-     const welcomeText = page.getByText('Welcome to');
+     const introText = page.getByText('Sign in to access');
 
-     // Nach Test-ID (nur wenn nötig!)
-     const specialElement = page.getByTestId('special-element');
+     // getByTestId nur als letzte Option, wenn kein semantischer Locator passt
 
      // Alle Locators unterstützen Auto-Waiting
-     await expect(button).toBeVisible();
+     await expect(signInButton).toBeVisible();
      await expect(emailInput).toBeEditable();
-     await expect(welcomeText).toContainText('Welcome');
+     await expect(passwordInput).toBeEditable();
+     await expect(emailByPlaceholder).toBeVisible();
+     await expect(introText).toBeVisible();
    });
    ```
 

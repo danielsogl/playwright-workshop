@@ -87,36 +87,37 @@ Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbes
      test('zeigt alle News initial', async () => {
        // Verwende Page Object Methoden
        const count = await newsPage.getNewsCount();
-       expect(count).toBe(65);
+       expect(count).toBeGreaterThan(0);
 
        // Verwende Page Object Locators
        await expect(newsPage.newsItems.first()).toBeVisible();
      });
 
      test('kann nach News suchen', async () => {
-       // Initiale Anzahl prüfen
-       expect(await newsPage.getNewsCount()).toBe(65);
+       // Initiale Anzahl merken
+       const initialCount = await newsPage.getNewsCount();
+       expect(initialCount).toBeGreaterThan(0);
 
        // Suche durchführen
        await newsPage.searchNews('Technology');
 
        // Ergebnisse prüfen
        const count = await newsPage.getNewsCount();
-       expect(count).toBeLessThan(65);
+       expect(count).toBeLessThan(initialCount);
        expect(count).toBeGreaterThan(0);
 
        // Suche zurücksetzen
        await newsPage.clearSearch();
-       expect(await newsPage.getNewsCount()).toBe(65);
+       expect(await newsPage.getNewsCount()).toBe(initialCount);
      });
 
      test('findet spezifischen Artikel', async () => {
-       await newsPage.searchNews('Revelo');
+       await newsPage.searchNews('Cybersecurity');
 
        expect(await newsPage.getNewsCount()).toBe(1);
 
        const title = await newsPage.getFirstNewsTitle();
-       expect(title).toContain('Revelo');
+       expect(title).toContain('Cybersecurity');
      });
    });
    ```

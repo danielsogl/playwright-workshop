@@ -33,11 +33,9 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
      const newsList = page.getByRole('feed', { name: 'News articles' });
      const newsItems = newsList.getByRole('article');
 
-     // Prüfe die Anzahl der Artikel (65 items im feed.json)
-     await expect(newsItems).toHaveCount(65);
-
-     // Prüfe ob der erste Artikel sichtbar ist
+     // Der Feed zeigt initial mehrere Artikel an
      await expect(newsItems.first()).toBeVisible();
+     expect(await newsItems.count()).toBeGreaterThan(0);
    });
    ```
 
@@ -45,31 +43,34 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 
    ```typescript
    test('kann nach News suchen', async ({ page }) => {
-     // Finde das Suchfeld
+     // Finde das Suchfeld und die Artikel
      const searchInput = page.getByRole('textbox', { name: 'Search news' });
+     const newsItems = page.getByRole('article');
      await expect(searchInput).toBeVisible();
+
+     // Anzahl der initial angezeigten Artikel merken
+     const initialCount = await newsItems.count();
 
      // Suche nach einem Begriff der keine Ergebnisse liefert
      await searchInput.fill('XYZ123');
      await searchInput.press('Enter'); // Oder warte auf auto-search
 
      // Prüfe dass keine Artikel angezeigt werden
-     const newsItems = page.getByRole('article');
      await expect(newsItems).toHaveCount(0);
 
      // Leere Suche und prüfe Reset
      await searchInput.clear();
-     await expect(newsItems).toHaveCount(65);
+     await expect(newsItems).toHaveCount(initialCount);
 
      // Suche nach existierendem Begriff
      await searchInput.fill('Technology');
 
      // Warte bis die Filterung angewendet wurde
-     await expect(newsItems.first()).toContainText('Technology');
+     await expect(newsItems.first()).toContainText(/technology/i);
 
      // Prüfe dass weniger Artikel angezeigt werden
      const count = await newsItems.count();
-     expect(count).toBeLessThan(65);
+     expect(count).toBeLessThan(initialCount);
      expect(count).toBeGreaterThan(0);
    });
    ```
@@ -81,15 +82,15 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
      const searchInput = page.getByRole('textbox', { name: 'Search news' });
      const newsList = page.getByRole('feed', { name: 'News articles' });
 
-     // Suche nach spezifischem Artikel (tatsächlich im Feed vorhanden)
-     await searchInput.fill('Revelo');
+     // Suche nach spezifischem Artikel (genau ein Treffer im Feed)
+     await searchInput.fill('Cybersecurity');
 
      // Warte bis genau 1 Ergebnis angezeigt wird
      await expect(newsList.getByRole('article')).toHaveCount(1);
 
      // Prüfe den Inhalt des Ergebnisses
      const result = newsList.getByRole('article').first();
-     await expect(result).toContainText('Revelo');
+     await expect(result).toContainText('Cybersecurity');
 
      // Optional: Prüfe weitere Details
      const headline = result.getByRole('heading');
