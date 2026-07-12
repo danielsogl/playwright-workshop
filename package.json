@@ -19,7 +19,6 @@
     "@heroui/styles": "^3.2.2",
     "@react-aria/ssr": "^3.10.1",
     "@react-aria/visually-hidden": "^3.9.1",
-    "@types/sqlite3": "^3.1.11",
     "bcryptjs": "^3.0.2",
     "clsx": "2.1.1",
     "framer-motion": "^12.42.2",
@@ -32,7 +31,6 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "rss-parser": "^3.13.0",
-    "sqlite3": "^6.0.1",
     "swr": "^2.4.2",
     "zod": "^4.4.3"
   },
