@@ -72,13 +72,12 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
      // Finde alle News-Artikel
      const allArticles = page.getByRole('article');
 
-     // Zähle die Artikel (Auto-Wait inklusive!)
+     // Warte mit Auto-Waiting bis die Artikel geladen sind
+     await expect(allArticles.first()).toBeVisible();
+
+     // Zähle die Artikel (count() selbst wartet NICHT – daher vorher asserten)
      const count = await allArticles.count();
      expect(count).toBeGreaterThan(0);
-
-     // Finde den ersten Artikel
-     const firstArticle = allArticles.first();
-     await expect(firstArticle).toBeVisible();
 
      // Filtere Artikel die "Technology" enthalten
      const techArticles = allArticles.filter({ hasText: 'Technology' });
