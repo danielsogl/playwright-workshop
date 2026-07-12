@@ -1,4 +1,4 @@
-# Übung 8 – Accessibility Testing mit Axe
+# Übung 6 – Accessibility Testing mit Axe
 
 **Ziel:**
 Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu implementieren. Der Fokus liegt auf dem Finden und Beheben von Barrierefreiheits-Problemen in der Feed App.

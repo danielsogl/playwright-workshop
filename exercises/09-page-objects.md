@@ -1,7 +1,7 @@
-# Übung 4 – Page Object Model (POM)
+# Übung 9 – Page Object Model (POM)
 
 **Ziel:**
-Du refaktorierst die Tests aus Übung 2 mit dem Page Object Pattern. Dies verbessert die Wartbarkeit und Wiederverwendbarkeit deines Test-Codes.
+Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbessert die Wartbarkeit und Wiederverwendbarkeit deines Test-Codes.
 
 **Warum Page Objects?**
 

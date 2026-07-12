@@ -1,4 +1,4 @@
-# Übung 4B – Erweiterte Page Objects (BONUS/OPTIONAL)
+# Übung 10 – Erweiterte Page Objects (BONUS)
 
 **Ziel:**
 Dies ist eine optionale Bonusübung für Fortgeschrittene. Verbessere das Page Object Model für die Public News Seite, indem du wiederverwendbare Komponenten-Objekte für einzelne News-Artikel erstellst und das Fluent Interface Pattern für eine bessere Lesbarkeit und Verkettung von Aktionen anwendest.
@@ -32,7 +32,7 @@ Dies ist eine optionale Bonusübung für Fortgeschrittene. Verbessere das Page O
 
 **Zeit:** 30 Minuten (optional)
 
-**Voraussetzungen:** Übung 4 sollte abgeschlossen sein
+**Voraussetzungen:** Übung 9 sollte abgeschlossen sein
 
 ---
 

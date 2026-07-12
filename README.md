@@ -54,8 +54,8 @@ ist – ein grüner Startpunkt nach dem Setup.
 ## Projektstruktur
 
 ```
-exercises/    Übungsaufgaben (uebung-0 … uebung-10) – das, was die Teilnehmer umsetzen
-solutions/    Musterlösungen (e2e-Specs + Page Objects) zum Abgleich
+exercises/    Übungsaufgaben (01 … 16, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
+solutions/    Musterlösungen (e2e-Specs mit gleicher Nummerierung + Page Objects) zum Abgleich
 e2e/          Verzeichnis für die eigenen Tests der Teilnehmer
 app/          Next.js App (news, auth, settings, clock, file-download, …)
 components/   UI-Komponenten

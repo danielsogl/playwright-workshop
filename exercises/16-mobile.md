@@ -1,4 +1,4 @@
-# Übung 6 – Mobile Testing
+# Übung 16 – Mobile Testing
 
 **Ziel:**
 Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs testest. Der Fokus liegt auf praktischen Tests für die Next.js Feed App.

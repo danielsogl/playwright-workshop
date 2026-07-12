@@ -1,4 +1,4 @@
-# Übung 2 – News Feed Suche testen
+# Übung 5 – News Feed Suche testen
 
 **Ziel:**
 Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst du Test-Organisation mit `beforeEach`, Formular-Interaktionen und das Arbeiten mit dynamischen Inhalten.

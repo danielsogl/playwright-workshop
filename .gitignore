@@ -46,6 +46,8 @@ node_modules/
 # von exercise-05 erzeugte Demo-Trace
 trace-news-search.zip
 **/*-snapshots/
+# von den Download-Übungen erzeugte Dateien
+/solutions/downloads/
 
 # Environment variables
 .env

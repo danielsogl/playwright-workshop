@@ -1,4 +1,4 @@
-# Übung 7 – Visual Regression Testing
+# Übung 15 – Visual Regression Testing
 
 **Ziel:**
 Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der Fokus liegt auf dem Erkennen von unbeabsichtigten visuellen Änderungen in der Feed App.

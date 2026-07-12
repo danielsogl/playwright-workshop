@@ -1,4 +1,4 @@
-# Übung 1 – Erster Test mit Locators
+# Übung 4 – Erster Test mit Assertions
 
 **Ziel:**
 Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Assertions. Der Fokus liegt auf benutzerorientierten Selektoren statt technischen Details.

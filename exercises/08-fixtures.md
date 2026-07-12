@@ -1,4 +1,4 @@
-# Übung 10 – Playwright Fixtures
+# Übung 8 – Playwright Fixtures
 
 **Ziel:**
 Du lernst die Grundlagen von Playwright Fixtures kennen – ein System für wiederverwendbare Test-Setups. Fixtures machen Tests sauberer und wartbarer.

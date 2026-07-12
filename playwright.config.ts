@@ -54,7 +54,7 @@ export default defineConfig({
       // Auth-Setup für die Musterlösungen: erzeugt storageState.
       // Läuft nur, wenn solutions/ im Testlauf enthalten ist.
       name: 'setup',
-      testMatch: /exercise-07-authentication\.spec\.ts/,
+      testMatch: /07-authentifizierung\.spec\.ts/,
       grep: /authenticate as/,
     },
     {

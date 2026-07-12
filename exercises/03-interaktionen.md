@@ -1,4 +1,4 @@
-# Übung 1B – Interaktionen in der Feed App
+# Übung 3 – Interaktionen in der Feed App
 
 **Ziel:**
 Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fokus liegt auf realistischen Aktionen wie Klicks, Eingaben, Hover-Effekte und Tastatur-Navigation.

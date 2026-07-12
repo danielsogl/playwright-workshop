@@ -1,4 +1,4 @@
-# Übung 0 – Projekt-Setup
+# Übung 1 – Projekt-Setup
 
 **Ziel:**
 Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit automatischem Server-Start und Umgebungsvariablen.

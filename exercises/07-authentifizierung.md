@@ -1,4 +1,4 @@
-# Übung 3 – Authentifizierung optimieren
+# Übung 7 – Authentifizierung optimieren
 
 **Ziel:**
 Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen: vom einfachen UI-Login bis zur optimierten API-basierten Authentifizierung. Der gespeicherte Auth-Status wird für alle nachfolgenden Tests wiederverwendet.
