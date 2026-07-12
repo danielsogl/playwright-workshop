@@ -1,53 +1,67 @@
-# Next.js & HeroUI Template
+# Playwright Workshop – Demo-App
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+Next.js Feed-App, die als Testobjekt für den 3-tägigen Playwright-Workshop dient.
+Die App zeigt öffentliche und private News-Feeds, Login/Auth, Einstellungen und
+weitere Seiten, gegen die die Übungen geschrieben werden.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+## Voraussetzungen
 
-## Technologies Used
+- **Node.js 20 LTS oder neuer**
+- npm (im Repo enthaltenes `package-lock.json` wird genutzt)
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
-
-## How to Use
-
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
+## Setup
 
 ```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
+# 1. Abhängigkeiten installieren
 npm install
+
+# 2. Playwright-Browser installieren (mindestens Chromium)
+npx playwright install chromium
+
+# 3. Umgebungsvariablen anlegen
+cp .env.example .env
 ```
 
-### Run the development server
+Die `.env` enthält:
+
+- `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` – Zugangsdaten des Test-Users, die von den Tests gelesen werden
+- `RSS_OFFLINE_MODE=true` – nutzt statische Feed-Daten (kein Live-Fetch, WLAN-unabhängig)
+- `AUTH_SECRET` – Secret für Auth.js
+
+**Test-User:** `test@example.com` / `password`
+
+## App starten
 
 ```bash
 npm run dev
 ```
 
-### Setup pnpm (optional)
+Läuft auf <http://localhost:3000>. Playwright startet den Dev-Server über den
+`webServer`-Block in `playwright.config.ts` bei Bedarf automatisch.
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## Tests ausführen
 
 ```bash
-public-hoist-pattern[]=*@heroui/*
+npm run e2e          # alle Tests (headless)
+npm run e2e:ui       # interaktiver UI-Mode
+npm run e2e:debug    # Playwright Inspector
+npm run e2e:report   # letzten HTML-Report öffnen
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+Der mitgelieferte Smoke-Test `e2e/example.spec.ts` prüft, ob die App erreichbar
+ist – ein grüner Startpunkt nach dem Setup.
 
-## License
+## Projektstruktur
 
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
+```
+exercises/    Übungsaufgaben (uebung-0 … uebung-10) – das, was die Teilnehmer umsetzen
+solutions/    Musterlösungen (e2e-Specs + Page Objects) zum Abgleich
+e2e/          Verzeichnis für die eigenen Tests der Teilnehmer
+app/          Next.js App (news, auth, settings, clock, file-download, …)
+components/   UI-Komponenten
+config/       Seed-Daten & Site-Konfiguration
+```
+
+## Tech-Stack
+
+Next.js 16 (App Router) · HeroUI · Tailwind CSS · TypeScript · next-auth (Auth.js v5) · Playwright
