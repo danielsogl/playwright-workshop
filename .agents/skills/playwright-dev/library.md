@@ -7,12 +7,12 @@ Playwright uses a client-server architecture connected by a protocol layer. The 
 ```
 packages/protocol/src/
   protocol.yml              — RPC protocol definition (source of truth)
-  channels.d.ts             — generated TypeScript channel interfaces
-  callMetadata.d.ts         — call metadata types
 
 packages/playwright-core/src/
   client/                   — public API objects (ChannelOwner subclasses)
+    channels.d.ts           — generated client channel interfaces
   server/                   — browser automation implementation (SdkObject subclasses)
+    channels.d.ts           — generated server channel interfaces
   server/dispatchers/       — protocol bridge (Dispatcher subclasses)
   protocol/                 — validators (generated + primitives)
   utils/isomorphic/         — shared code used by both client and server
@@ -22,6 +22,8 @@ packages/playwright-core/src/
 ## Dependency Rules (DEPS.list)
 
 Each directory has a `DEPS.list` constraining its imports. These are enforced by `npm run flint`.
+
+Entries can be relative paths, alias paths (`@isomorphic/**`, `@utils/**`), or `node_modules/<pkg>` to allow a specific npm package import. The `"strict"` marker disables inheritance from parent folders. Section headers like `[filename.ts]` scope rules to a single file.
 
 **client/** can import from:
 - `../protocol/` — validators and channel types
@@ -38,6 +40,8 @@ Each directory has a `DEPS.list` constraining its imports. These are enforced by
 - `../**` — all server modules
 
 **Key rule:** Client code NEVER imports server code. Server code NEVER imports client code. They communicate only through the protocol.
+
+**Vendored npm packages** (anything under `node_modules/`) go through `src/utilsBundle.ts` — a single bundled file that re-exports the vendored symbols. Adding a new dep or changing a DEPS.list entry for vendored code: see [vendor.md](vendor.md).
 
 ## Protocol Layer
 
@@ -140,10 +144,6 @@ Manages the client-server transport:
 | `Frame` | `frame.ts` | `goto()`, `click()`, `evaluate()` → `_channel.*` |
 | `Locator` | `locator.ts` | Delegates to `Frame` methods with selector + `strict: true` |
 | `ElementHandle` | `elementHandle.ts` | DOM element reference |
-
-### Public API Exports
-
-`packages/playwright-core/src/client/api.ts` exports all public classes.
 
 ## Server Layer
 
