@@ -59,9 +59,11 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
    }) => {
      await page.goto('/fixtures-demo');
 
-     // Verwende die Fixture-Daten mit semantischen Locators
-     await page.getByLabel('Name').fill(testUser.name);
-     await page.getByLabel('Email').fill(testUser.email);
+     // Verwende die Fixture-Daten mit semantischen Locators.
+     // pressSequentially() tippt echte Tastenanschläge – nötig, weil fill()
+     // den State dieser React-Aria-Felder in WebKit nicht zuverlässig setzt.
+     await page.getByLabel('Name').pressSequentially(testUser.name);
+     await page.getByLabel('Email').pressSequentially(testUser.email);
      await page.getByLabel('Role').selectOption(testUser.role);
 
      await page.getByRole('button', { name: /add user/i }).click();
@@ -106,8 +108,8 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
 
        const userPage = {
          addUser: async (user) => {
-           await page.getByLabel('Name').fill(user.name);
-           await page.getByLabel('Email').fill(user.email);
+           await page.getByLabel('Name').pressSequentially(user.name);
+           await page.getByLabel('Email').pressSequentially(user.email);
            await page.getByLabel('Role').selectOption(user.role);
            await page.getByRole('button', { name: /add user/i }).click();
 
