@@ -43,6 +43,9 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+# von exercise-05 erzeugte Demo-Trace
+trace-news-search.zip
+**/*-snapshots/
 
 # Environment variables
 .env
