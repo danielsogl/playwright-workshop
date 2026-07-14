@@ -11,6 +11,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+const userAuthState = path.join(__dirname, 'playwright/.auth/user.json');
+
 /**
  * Standardmäßig laufen die Teilnehmer-Tests aus `e2e/`.
  * Mit E2E_SOLUTIONS=1 (npm run e2e:solutions) laufen stattdessen die
@@ -51,26 +53,23 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      // Auth-Setup für die Musterlösungen: erzeugt storageState.
-      // Läuft nur, wenn solutions/ im Testlauf enthalten ist.
       name: 'setup',
-      testMatch: /07-authentifizierung\.spec\.ts/,
-      grep: /authenticate as/,
+      testMatch: /.*\.setup\.ts/
     },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], storageState: userAuthState },
       dependencies: ['setup'],
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      dependencies: ['setup'],
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'], storageState: userAuthState },
+    //   dependencies: ['setup'],
+    // },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { ...devices['Desktop Safari'], storageState: userAuthState },
       dependencies: ['setup'],
     },
 

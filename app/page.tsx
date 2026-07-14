@@ -115,7 +115,9 @@ export default function Home() {
 
           <div className="inline-block max-w-3xl text-center">
             <h1 id="hero-title" className="text-pretty">
-              <span className={title({ size: 'lg' })}>Welcome to the&nbsp;</span>
+              <span className={title({ size: 'lg' })}>
+                Welcome to the&nbsp;
+              </span>
               <br />
               <span className={title({ color: 'violet', size: 'lg' })}>
                 Playwright Demo App
@@ -129,20 +131,30 @@ export default function Home() {
 
           <div className="flex flex-wrap justify-center gap-4 mt-2">
             <NextLink
-              className={buttonVariants({ variant: 'primary', size: 'lg' }) + ' rounded-full'}
+              className={
+                buttonVariants({ variant: 'primary', size: 'lg' }) +
+                ' rounded-full'
+              }
               href="/news/public"
+              data-testid="navigate-to-public-news"
             >
               View Public News
               <ArrowRight className="w-4 h-4 ml-1" aria-hidden="true" />
             </NextLink>
             <NextLink
-              className={buttonVariants({ variant: 'tertiary', size: 'lg' }) + ' rounded-full'}
+              className={
+                buttonVariants({ variant: 'tertiary', size: 'lg' }) +
+                ' rounded-full'
+              }
               href="/news/private"
             >
               View Private News
             </NextLink>
             <NextLink
-              className={buttonVariants({ variant: 'tertiary', size: 'lg' }) + ' rounded-full'}
+              className={
+                buttonVariants({ variant: 'tertiary', size: 'lg' }) +
+                ' rounded-full'
+              }
               href="/auth/signin"
             >
               Sign In
@@ -178,10 +190,7 @@ export default function Home() {
           <Chip variant="soft" size="sm" className="mb-4">
             Explore
           </Chip>
-          <h2
-            className={title({ size: 'sm' })}
-            id="features-title"
-          >
+          <h2 className={title({ size: 'sm' })} id="features-title">
             Key Features
           </h2>
           <p className="text-muted mt-3 text-lg max-w-lg mx-auto">
