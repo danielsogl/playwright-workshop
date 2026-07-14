@@ -2,20 +2,19 @@
 import { test as setup } from './fixtures/base.fixture';
 import path from 'path';
 
-const authFile = path.join(path.dirname(new URL(import.meta.url).pathname), '../playwright/.auth/user.json');
+const authDir = path.join(import.meta.dirname, '../../playwright/.auth');
 
-setup('authenticate', { tag: ['@fixture'] }, async ({ page, testUser, loginPage, sharedDB }) => {
+setup('authenticate user', { tag: ['@fixture'] }, async ({ page, testUser, loginPage }) => {
   const { email, password } = testUser;
   await loginPage.login(email, password);
-
-  console.log(`Shared database is ready: ${sharedDB}`);
-
-  await page.context().storageState({ path: authFile });
+  await page.context().storageState({ path: path.join(authDir, 'user.json') });
 });
 
-setup('authenticate again', { tag: ['@fixture'] }, async ({ testUser, loginPage, sharedDB }) => {
-  const { email, password } = testUser;
+setup('authenticate admin', { tag: ['@fixture'] }, async ({ page, loginPage }) => {
+  const email = process.env.TEST_ADMIN_EMAIL || '';
+  const password = process.env.TEST_ADMIN_PASSWORD || '';
+
   await loginPage.login(email, password);
-  console.log(`Shared database is ready: ${sharedDB}`);
-  // await page.context().storageState({ path: authFile });
+  await page.context().storageState({ path: path.join(authDir, 'admin.json') });
+
 });

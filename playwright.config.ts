@@ -12,8 +12,6 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const userAuthState = path.join(__dirname, 'playwright/.auth/user.json');
-
 /**
  * Standardmäßig laufen die Teilnehmer-Tests aus `e2e/`.
  * Mit E2E_SOLUTIONS=1 (npm run e2e:solutions) laufen stattdessen die
@@ -55,23 +53,25 @@ export default defineConfig<FixtureOptions>({
   projects: [
     {
       name: 'setup',
-      use: { ...devices['Desktop Chrome'], user: 'admin' },
+      use: { ...devices['Desktop Chrome'], user: 'user' },
       testMatch: /.*\.setup\.ts/
     },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], storageState: userAuthState },
+      // Kein storageState: der Default-`page` ist nicht eingeloggt.
+      // Rollen via Fixtures aus e2e/fixtures/auth.ts (userPage/adminPage).
+      use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
     },
     // {
     //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'], storageState: userAuthState },
+    //   use: { ...devices['Desktop Firefox'] },
     //   dependencies: ['setup'],
     // },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'], storageState: userAuthState },
+      use: { ...devices['Desktop Safari'] },
       dependencies: ['setup'],
     },
 
