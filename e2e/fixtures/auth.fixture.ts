@@ -1,11 +1,11 @@
 import { test as base, expect } from '@playwright/test';
 
 export const authFixture = base.extend<{
-  loginPage: {
+  loginPageOld: {
     login: (email: string, password: string) => Promise<void>
   }
 }>({
-  loginPage: async ({ page }, use) => {
+  loginPageOld: async ({ page }, use) => {
     await use({
       login: async (email: string, password: string) => {
         await page.goto('/auth/signin');

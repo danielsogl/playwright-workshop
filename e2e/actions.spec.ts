@@ -1,9 +1,21 @@
-import test from "@playwright/test";
+import { test, expect } from "./fixtures/base.fixture"
 
 
 test.describe("Actions", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/news/public');
+  test.beforeEach(async ({ publicNewsPage }) => {
+    await publicNewsPage.navigateTo();
+  });
+
+  test('should filter news by text "Trump"', async ({ publicNewsPage }) => {
+    await publicNewsPage.search("Trump");
+    const resultsText = await publicNewsPage.resultsText();
+
+    const newsItemsCount = await publicNewsPage.items().count();
+    const newsItemWithTrump = await publicNewsPage.item(0).title();
+
+    expect(resultsText).toContain("articles found");
+    expect(newsItemsCount).toBeGreaterThan(0);
+    expect(newsItemWithTrump).toContain("Trump");
   });
 
   test("should filter news by text", async ({ page }) => {
