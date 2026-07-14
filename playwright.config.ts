@@ -1,3 +1,4 @@
+import type { FixtureOptions } from '@/e2e/fixtures/base.fixture';
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -23,7 +24,7 @@ const withSolutions = process.env.E2E_SOLUTIONS === '1';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<FixtureOptions>({
   testDir: '.',
   testMatch: withSolutions
     ? 'solutions/e2e/**/*.spec.ts'
@@ -54,6 +55,7 @@ export default defineConfig({
   projects: [
     {
       name: 'setup',
+      use: { ...devices['Desktop Chrome'], user: 'admin' },
       testMatch: /.*\.setup\.ts/
     },
     {
