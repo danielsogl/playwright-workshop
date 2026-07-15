@@ -1,5 +1,6 @@
 import type { FixtureOptions } from '@/e2e/fixtures/base.fixture';
 import { defineConfig, devices } from '@playwright/test';
+import { defineBddConfig } from 'playwright-bdd';
 
 /**
  * Read environment variables from file.
@@ -18,6 +19,15 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
  * Musterlösungen aus `solutions/e2e/` inkl. Auth-Setup.
  */
 const withSolutions = process.env.E2E_SOLUTIONS === '1';
+
+/**
+ * bddgen kompiliert die .feature-Dateien nach .features-gen/.
+ * Nur das `bdd`-Projekt zeigt dorthin; die übrigen Projekte bleiben unverändert.
+ */
+const bddTestDir = defineBddConfig({
+  features: 'e2e/bdd/features/**/*.feature',
+  steps: ['e2e/bdd/steps/**/*.ts', 'e2e/bdd/fixtures.ts'],
+});
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -58,6 +68,13 @@ export default defineConfig<FixtureOptions>({
       name: 'setup',
       use: { ...devices['Desktop Chrome'], user: 'user' },
       testMatch: /.*\.setup\.ts/
+    },
+    {
+      name: 'bdd',
+      testDir: bddTestDir,
+      // Überschreibt das globale testMatch: bddgen erzeugt .js, nicht .spec.ts.
+      testMatch: '**/*.feature.spec.js',
+      use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'chromium',

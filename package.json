@@ -8,10 +8,11 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint . --fix",
-    "e2e": "playwright test",
-    "e2e:solutions": "E2E_SOLUTIONS=1 playwright test",
-    "e2e:ui": "playwright test --ui",
-    "e2e:debug": "playwright test --debug",
+    "e2e": "bddgen && playwright test",
+    "e2e:bdd": "bddgen && playwright test --project=bdd",
+    "e2e:solutions": "E2E_SOLUTIONS=1 bddgen && playwright test",
+    "e2e:ui": "bddgen && playwright test --ui",
+    "e2e:debug": "bddgen && playwright test --debug",
     "e2e:report": "playwright show-report"
   },
   "dependencies": {
@@ -59,6 +60,7 @@
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
     "lint-staged": "^17.0.8",
+    "playwright-bdd": "^9.2.0",
     "postcss": "^8.5.16",
     "prettier": "^3.9.5",
     "tailwind-variants": "3.2.2",
