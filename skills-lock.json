@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "bdd": {
+      "source": "danielsogl/skills",
+      "sourceType": "github",
+      "skillPath": "skills/bdd/SKILL.md",
+      "computedHash": "e57026b50c0293378bb1a2d7898f546d54c298ee1dd3ac0a199b706eef8ea78f"
+    },
     "dev": {
       "source": "microsoft/playwright-cli",
       "sourceType": "github",

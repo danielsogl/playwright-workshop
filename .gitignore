@@ -55,3 +55,4 @@ trace-news-search.zip
 .env.test
 
 /downloads
+.playwright-mcp
