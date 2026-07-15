@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@axe-core/playwright": "^4.12.1",
+    "@faker-js/faker": "^10.5.0",
     "@heroui/react": "^3.2.2",
     "@heroui/styles": "^3.2.2",
     "@react-aria/ssr": "^3.10.1",

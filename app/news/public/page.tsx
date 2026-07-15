@@ -47,7 +47,7 @@ export default function PublicNewsPage() {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
-        <div className="text-danger" role="alert">
+        <div className="text-danger" role="alert" aria-label="Failed to load RSS feeds">
           Failed to load RSS feeds
         </div>
       </div>

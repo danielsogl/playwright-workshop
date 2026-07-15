@@ -8,8 +8,8 @@ export class PublicNewsPage {
   private readonly categorySelect: Locator;
   private readonly resultsCount: Locator;
   private readonly feed: Locator;
-  private readonly loading: Locator;
-  private readonly errorAlert: Locator;
+  readonly loading: Locator;
+  readonly errorAlert: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -18,13 +18,13 @@ export class PublicNewsPage {
     this.resultsCount = page.getByText(/articles found/);
     this.feed = page.getByRole('feed', { name: 'News articles' });
     this.loading = page.getByRole('status', { name: 'Loading news feed' });
-    this.errorAlert = page.getByRole('alert');
+    this.errorAlert = page.getByRole('alert', { name: 'Failed to load RSS feeds' });
   }
 
   async navigateTo(): Promise<void> {
     await this.page.goto('/news/public');
     await this.page.waitForURL('/news/public');
-    await this.loading.waitFor({ state: 'hidden' });
+    // await this.loading.waitFor({ state: 'hidden' });
   }
 
   async search(query: string): Promise<void> {

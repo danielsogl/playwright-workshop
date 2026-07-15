@@ -125,7 +125,7 @@ export default function Home() {
             </h1>
             <p className={subtitle({ class: 'mt-6 mx-auto' })}>
               Explore various features and testing scenarios for the Playwright
-              testing framework. From authentication flows to file downloads.
+              testing framework. From authentication flows to file downloads
             </p>
           </div>
 

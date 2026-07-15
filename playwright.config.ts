@@ -47,7 +47,10 @@ export default defineConfig<FixtureOptions>({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    video: { mode: 'on', size: { width: 1920, height: 1080 } },
   },
+
 
   /* Configure projects for major browsers */
   projects: [
@@ -76,14 +79,15 @@ export default defineConfig<FixtureOptions>({
     },
 
     /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+    {
+      name: 'Mobile iPhone',
+      use: { ...devices['iPhone 17 Pro'] },
+    },
+
+    {
+      name: 'Mobile Android',
+      use: { ...devices['Pixel 10 Pro XL'] },
+    },
 
     /* Test against branded browsers. */
     // {

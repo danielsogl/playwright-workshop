@@ -52,9 +52,7 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/.next": true,
-    "next-env.d.ts": true,
-    "**/playwright-report": true,
-    "**/test-results": true
+    "next-env.d.ts": true
   },
   // Playwright
   "playwright.reuseBrowser": false,
