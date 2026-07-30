@@ -22,7 +22,7 @@
     "@react-aria/visually-hidden": "^3.9.1",
     "bcryptjs": "^3.0.2",
     "clsx": "2.1.1",
-    "framer-motion": "^12.42.2",
+    "motion": "^12.42.2",
     "intl-messageformat": "^11.2.10",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.24.0",
