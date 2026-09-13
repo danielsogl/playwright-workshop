@@ -1,26 +1,28 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 
 export class NewsPage {
   readonly page: Page;
   readonly searchInput: Locator;
-  readonly newsItems: Locator;
   readonly newsFeed: Locator;
+  readonly newsItems: Locator;
+  readonly newsTitles: Locator;
   readonly categoryFilter: Locator;
   readonly resultsCount: Locator;
-  readonly loadMoreButton: Locator;
-  readonly noResultsMessage: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
-    // Zentrale Locator-Definitionen - use exact selectors
+    // Zentrale Locator-Definitionen: aufgelöst wird erst bei der Aktion/Assertion
     this.searchInput = page.getByRole('textbox', {
       name: 'Search news articles',
     });
 
-    this.newsItems = page.getByRole('article');
-
     this.newsFeed = page.getByRole('feed', { name: 'News articles' });
+
+    this.newsItems = this.newsFeed.getByRole('article');
+
+    // Für Assertions: expect(newsPage.newsTitles.first()).toHaveText(...)
+    this.newsTitles = this.newsItems.getByRole('heading', { level: 2 });
 
     // Kategorie-Filter ist ein <select> → als combobox ansprechbar.
     this.categoryFilter = page.getByRole('combobox', {
@@ -29,114 +31,42 @@ export class NewsPage {
 
     // Ergebniszähler „{n} articles found"
     this.resultsCount = page.getByText(/\d+ articles found/);
-
-    this.loadMoreButton = page.getByRole('button', {
-      name: /load more|mehr laden/i,
-    });
-
-    this.noResultsMessage = page.getByText(
-      /no results|keine ergebnisse|nothing found/i,
-    );
   }
 
   // Navigation
   async goto() {
-    await this.page.goto('/news/public'); // Fixed: use correct URL
+    await this.page.goto('/news/public');
     await this.waitForNewsItems();
   }
 
-  // Warte-Funktionen
+  // Web-First-Assertion statt networkidle. Live-RSS-Feeds laden teils
+  // mehrere Sekunden, daher mehr als die 5s Standard-Timeout.
   async waitForNewsItems() {
-    // Wait for at least one news item to be visible
-    await this.newsItems.first().waitFor({
-      state: 'visible',
-      timeout: 10000,
-    });
+    await expect(this.newsItems.first()).toBeVisible({ timeout: 10_000 });
   }
 
-  // Such-Aktionen
+  // Such-Aktionen: gefiltert wird clientseitig bei jeder Eingabe.
+  // Kein networkidle/waitForTimeout: der Test wartet per toHaveCount/toHaveText.
   async searchNews(searchTerm: string) {
     await this.searchInput.fill(searchTerm);
-    await this.searchInput.press('Enter');
-    await this.page.waitForLoadState('networkidle');
-    await this.page.waitForTimeout(500);
   }
 
   async clearSearch() {
     await this.searchInput.clear();
-    await this.searchInput.press('Enter');
-    await this.page.waitForLoadState('networkidle');
-    await this.page.waitForTimeout(500);
-  }
-
-  // Daten-Extraktion
-  async getNewsCount(): Promise<number> {
-    return await this.newsItems.count();
-  }
-
-  async getNewsTitles(): Promise<string[]> {
-    const titles: string[] = [];
-    const count = await this.newsItems.count();
-
-    for (let i = 0; i < count; i++) {
-      const item = this.newsItems.nth(i);
-      const titleElement = item
-        .locator('h2, h3, [role="heading"], .title')
-        .first();
-
-      if ((await titleElement.count()) > 0) {
-        const text = await titleElement.textContent();
-        if (text) titles.push(text.trim());
-      }
-    }
-
-    return titles;
-  }
-
-  async getFirstNewsItem(): Promise<Locator> {
-    return this.newsItems.first();
-  }
-
-  // Status-Prüfungen
-  async hasNoResults(): Promise<boolean> {
-    const hasNoItems = (await this.newsItems.count()) === 0;
-    const hasMessage = await this.noResultsMessage
-      .isVisible({ timeout: 1000 })
-      .catch(() => false);
-    return hasNoItems || hasMessage;
-  }
-
-  async canLoadMore(): Promise<boolean> {
-    return await this.loadMoreButton
-      .isVisible({ timeout: 1000 })
-      .catch(() => false);
-  }
-
-  // Interaktionen
-  async loadMoreNews() {
-    if (await this.canLoadMore()) {
-      await this.loadMoreButton.click();
-      await this.page.waitForLoadState('networkidle');
-    }
-  }
-
-  async clickFirstNewsItem() {
-    const firstItem = await this.getFirstNewsItem();
-    const link = firstItem.locator('a').first();
-    if ((await link.count()) > 0) {
-      await link.click();
-    }
   }
 
   // Filter-Aktionen: der Kategorie-Filter ist ein <select> (combobox).
   async filterByCategory(category: string) {
     await this.categoryFilter.selectOption(category);
-    await this.page.waitForLoadState('networkidle');
   }
 
-  // Liest die Zahl aus „{n} articles found".
-  async getResultsCount(): Promise<number> {
-    const text = (await this.resultsCount.textContent()) ?? '';
-    return parseInt(text.match(/(\d+)/)?.[1] ?? '0', 10);
+  // Helper-Methoden für Daten. Für Assertions lieber die Locators
+  // mit toHaveCount/toHaveText nutzen, die warten automatisch.
+  async getNewsCount(): Promise<number> {
+    return await this.newsItems.count();
+  }
+
+  async getFirstNewsTitle(): Promise<string | null> {
+    return await this.newsTitles.first().textContent();
   }
 }

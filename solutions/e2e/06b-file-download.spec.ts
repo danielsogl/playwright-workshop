@@ -17,8 +17,8 @@ test.describe('File Download Demo Tests', () => {
     // Zur File Download Seite navigieren
     await page.goto('/file-download');
 
-    // Warten bis die Seite vollständig geladen ist
-    await page.waitForLoadState('networkidle');
+    // Warten bis die Download-Buttons bereit sind
+    await expect(page.getByTestId('download-pdf-button')).toBeVisible();
   });
 
   test('PDF Download Test', async ({ page }) => {
@@ -37,6 +37,9 @@ test.describe('File Download Demo Tests', () => {
 
     console.log('Dateiname:', filename);
     console.log('Download URL:', download.url());
+
+    // Erst Fehler prüfen: path()/saveAs() werfen bei fehlgeschlagenem Download
+    expect(await download.failure()).toBeNull();
 
     // Download im Test-Verzeichnis speichern
     const filePath = path.join(downloadsDir, filename);
@@ -184,8 +187,8 @@ test.describe('File Download Demo Tests', () => {
     const pdfFilename = pdfDownload.suggestedFilename();
     expect(pdfFilename).toBe('playwright-demo.pdf');
 
-    // Kurz warten bevor nächster Download
-    await page.waitForTimeout(500);
+    // Warten, bis der erste Download fertig ist (null = kein Fehler)
+    expect(await pdfDownload.failure()).toBeNull();
 
     // Zweiten Download (JSON) starten
     const jsonDownloadPromise = page.waitForEvent('download');
@@ -226,18 +229,18 @@ test.describe('File Download Demo Tests', () => {
   test('Download-Status-Anzeige überprüfen', async ({ page }) => {
     // Status-Nachricht sollte zunächst nicht sichtbar sein
     await expect(
-      page.locator('text=PDF wird vorbereitet'),
+      page.getByText('PDF wird vorbereitet'),
     ).not.toBeVisible();
 
     // Download-Button klicken
     await page.getByTestId('download-pdf-button').click();
 
     // Status-Nachricht sollte nach dem Klick erscheinen
-    await expect(page.locator('text=PDF wird vorbereitet')).toBeVisible();
+    await expect(page.getByText('PDF wird vorbereitet')).toBeVisible();
 
     // Nach erfolgreichem Download sollte Erfolgsmeldung erscheinen
     await expect(
-      page.locator('text=PDF erfolgreich heruntergeladen!'),
+      page.getByText('PDF erfolgreich heruntergeladen!'),
     ).toBeVisible({ timeout: 5000 });
   });
 

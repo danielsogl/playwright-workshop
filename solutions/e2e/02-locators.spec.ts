@@ -12,7 +12,8 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
 
     // Navigation zur News-Seite für weitere Tests
     await publicNewsLink.click();
-    await page.waitForLoadState('networkidle');
+    // Warten bis die Artikel geladen sind (Locator-Wait statt networkidle)
+    await page.getByRole('article').first().waitFor();
 
     // 2. Die Überschrift "News Feed" mit getByText() finden
     const heading = page.getByText('News Feed');
@@ -22,8 +23,11 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
     const searchBox = page.getByPlaceholder('Search news');
     console.log('Suchfeld gefunden:', await searchBox.isVisible());
 
-    // 4. Den Theme-Toggle Button mit getByRole() finden
-    const themeToggle = page.getByRole('switch').first(); // Theme toggle is a switch
+    // 4. Den Theme-Toggle mit getByLabel() finden
+    // Den Toggle gibt es für Desktop und Mobile, visible() nimmt nur den sichtbaren
+    const themeToggle = page
+      .getByLabel(/switch to (dark|light) mode/i)
+      .visible();
     console.log('Theme Toggle gefunden:', await themeToggle.isVisible());
 
     // 5. News-Artikel mit getByRole() finden
@@ -50,7 +54,7 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
     await page.goto('http://localhost:3000/news/public');
 
     // Warte auf Inhalte
-    await page.waitForLoadState('networkidle');
+    await page.getByRole('article').first().waitFor();
 
     // Locators können verkettet werden für präzisere Auswahl
     const mainContent = page.getByRole('main').first(); // Es gibt zwei main Elemente, nimm das erste

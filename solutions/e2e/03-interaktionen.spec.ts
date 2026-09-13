@@ -11,16 +11,16 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
     await publicNewsLink.click();
     console.log('Public News Link wurde geklickt');
 
-    // Kurz warten um die Navigation zu sehen
-    await page.waitForTimeout(1000);
+    // Auf die Navigation warten statt fester Wartezeit
+    await page.waitForURL('**/news/public');
 
     // 2. Theme Toggle Button klicken
-    const themeToggle = page.getByRole('switch').first();
+    // Den Toggle gibt es für Desktop und Mobile, visible() nimmt nur den sichtbaren
+    const themeToggle = page.getByRole('switch').visible();
     await themeToggle.click();
     console.log('Theme Toggle wurde geklickt');
 
-    // Visuell beobachten was passiert
-    await page.waitForTimeout(1000);
+    // Zum Beobachten mit --headed oder im UI-Mode ausführen, feste Wartezeiten sind nicht nötig
 
     // Nochmal klicken um zurückzuschalten
     await themeToggle.click();
@@ -30,9 +30,8 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
   test('Tastatur-Eingaben üben', async ({ page }) => {
     // Navigiere zur News-Seite für Suche
     await page.goto('http://localhost:3000/news/public');
-    await page.waitForLoadState('networkidle');
 
-    // 1. Suchfeld finden und Text eingeben
+    // 1. Suchfeld finden und Text eingeben (click() wartet automatisch, bis das Feld da ist)
     const searchBox = page.getByPlaceholder('Search news');
     await searchBox.click();
     console.log('Suchfeld wurde angeklickt');
@@ -42,22 +41,20 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
     console.log('Text "Playwright" wurde eingegeben');
 
     // 3. Enter drücken
-    await page.keyboard.press('Enter');
+    await searchBox.press('Enter');
     console.log('Enter wurde gedrückt');
 
-    // Beobachten wie sich die Liste ändert
-    await page.waitForTimeout(2000);
+    // Die Liste filtert direkt beim Tippen, kein Warten nötig
 
     // 4. Suchfeld leeren
     await searchBox.clear();
     console.log('Suchfeld wurde geleert');
 
-    // 5. Anderen Suchbegriff eingeben
-    await searchBox.type('Testing', { delay: 100 }); // Mit Verzögerung tippen
+    // 5. Anderen Suchbegriff Zeichen für Zeichen eingeben
+    await searchBox.pressSequentially('Testing', { delay: 100 }); // Mit Verzögerung tippen
     console.log('Text "Testing" wurde langsam getippt');
 
-    await page.keyboard.press('Enter');
-    await page.waitForTimeout(1000);
+    await searchBox.press('Enter');
   });
 
   test('Formular-Interaktionen (optional)', async ({ page }) => {
@@ -87,9 +84,6 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
       const submitButton = page.getByRole('button', { name: /submit|login/i });
       await submitButton.click();
       console.log('Formular wurde abgeschickt');
-
-      // Beobachten was passiert
-      await page.waitForTimeout(2000);
     } else {
       console.log('Kein Login-Link gefunden - überspringe Formular-Test');
     }
@@ -98,13 +92,11 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
   test('Verschiedene Interaktionsmethoden', async ({ page }) => {
     // Navigiere zur News-Seite für Artikel
     await page.goto('http://localhost:3000/news/public');
-    await page.waitForLoadState('networkidle');
 
-    // Hover über Elemente
+    // Hover über Elemente (hover() wartet automatisch auf den Artikel)
     const firstArticle = page.getByRole('article').first();
     await firstArticle.hover();
     console.log('Hover über ersten Artikel');
-    await page.waitForTimeout(500);
 
     // Doppelklick (falls relevant)
     const heading = page.getByRole('heading', { level: 1 }).first();

@@ -22,7 +22,8 @@ export async function loginViaApi(page: Page): Promise<void> {
       json: 'true',
     },
   });
-  expect([200, 302]).toContain(login.status());
+  // Redirects werden gefolgt, am Ende steht ein 2xx.
+  await expect(login).toBeOK();
 
   // Session verifizieren, damit die Fixture früh und deutlich fehlschlägt.
   const session = await api.get('/api/auth/session');
@@ -43,6 +44,7 @@ interface AuthFixtures {
 export const test = base.extend<AuthFixtures>({
   authenticatedPage: async ({ page }, use) => {
     await loginViaApi(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- Playwrights `use` ist kein React-Hook
     await use(page);
   },
 });

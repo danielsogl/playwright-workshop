@@ -12,10 +12,10 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
   });
 
   test('zeigt initiale News-Artikel an', async ({ page }) => {
-    // Finde alle News-Items über role=listitem
+    // Finde alle News-Items über role=article
     const newsItems = page.getByRole('article');
 
-    // Zähle Artikel
+    // Zähle Artikel (beforeEach hat bereits auf den ersten Artikel gewartet)
     const count = await newsItems.count();
     console.log(`Gefundene Artikel: ${count}`);
 
@@ -26,13 +26,10 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
     const firstItem = newsItems.first();
     await expect(firstItem).toBeVisible();
 
-    // Artikel sollte Titel haben
+    // Artikel sollte einen nicht-leeren Titel haben
     const title = firstItem.getByRole('heading', { level: 2 }).first();
-    if ((await title.count()) > 0) {
-      await expect(title).toBeVisible();
-      const titleText = await title.textContent();
-      expect(titleText).toBeTruthy();
-    }
+    await expect(title).toBeVisible();
+    await expect(title).not.toBeEmpty();
   });
 
   test('kann nach News suchen', async ({ page }) => {
@@ -49,15 +46,14 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
     await searchInput.fill('Technology');
     await searchInput.press('Enter');
 
-    // Warte auf Suchergebnisse
-    await page.waitForLoadState('networkidle');
-
-    // Prüfe ob gefiltert wurde
+    // Warte auf Suchergebnisse: Web-First Assertion statt networkidle
+    // (die Suche filtert clientseitig, es gibt keinen Netzwerk-Request)
     const filteredItems = page.getByRole('article');
+    await expect(filteredItems).not.toHaveCount(initialCount);
     const filteredCount = await filteredItems.count();
 
-    // Es sollten weniger oder gleich viele Artikel sein
-    expect(filteredCount).toBeLessThanOrEqual(initialCount);
+    // Es sollten weniger Artikel sein
+    expect(filteredCount).toBeLessThan(initialCount);
 
     // Wenn Artikel vorhanden, prüfe ob sie den Suchbegriff enthalten
     if (filteredCount > 0) {
@@ -77,24 +73,13 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
     await searchInput.fill('XYZ123NonExistentSearchTerm');
     await searchInput.press('Enter');
 
-    await page.waitForLoadState('networkidle');
+    // Keine Artikel mehr, toHaveCount wartet automatisch
+    await expect(page.getByRole('article')).toHaveCount(0);
 
-    // Prüfe ob keine Artikel oder eine Nachricht angezeigt wird
-    const items = page.getByRole('article');
-    const count = await items.count();
-
-    if (count === 0) {
-      // Suche nach "Keine Ergebnisse" Nachricht
-      const noResultsMessage = page.getByText(
-        /no results|keine ergebnisse|no news|nothing found|no items/i,
-      );
-      const hasMessage = await noResultsMessage
-        .isVisible({ timeout: 2000 })
-        .catch(() => false);
-
-      // Entweder keine Items oder eine Nachricht sollte sichtbar sein
-      expect(count === 0 || hasMessage).toBeTruthy();
-    }
+    // Der Trefferzähler zeigt 0 Ergebnisse an
+    await expect(
+      page.getByText('0 articles found', { exact: true }),
+    ).toBeVisible();
   });
 
   test('kann Suche zurücksetzen', async ({ page }) => {
@@ -109,19 +94,13 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
     // Suche durchführen
     await searchInput.fill('Test');
     await searchInput.press('Enter');
-    await page.waitForLoadState('networkidle');
 
     // Lösche Suche
     await searchInput.clear();
     await searchInput.press('Enter');
-    await page.waitForLoadState('networkidle');
 
-    // Anzahl sollte wieder wie initial sein
-    const resetItems = page.getByRole('article');
-    const resetCount = await resetItems.count();
-
-    // Sollte wieder alle Artikel zeigen
-    expect(resetCount).toBeGreaterThanOrEqual(initialCount - 5); // Kleine Toleranz für dynamische Inhalte
+    // Sollte wieder alle Artikel zeigen, toHaveCount wartet automatisch
+    await expect(page.getByRole('article')).toHaveCount(initialCount);
   });
 
   test('behält Sucheingabe bei Navigation', async ({ page }) => {
@@ -133,11 +112,9 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
     const searchTerm = 'Playwright';
     await searchInput.fill(searchTerm);
     await searchInput.press('Enter');
-    await page.waitForLoadState('networkidle');
 
     // Prüfe ob Suchbegriff noch im Input ist
-    const inputValue = await searchInput.inputValue();
-    expect(inputValue).toBe(searchTerm);
+    await expect(searchInput).toHaveValue(searchTerm);
 
     // Da alle Links extern sind (https://), testen wir Navigation zu einer anderen Seite
     // und zurück zur News-Seite - use more flexible navigation approach
@@ -161,19 +138,11 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
       await page.goto('/news/public');
     }
 
-    // Warte bis Suchfeld wieder da ist
+    // Nach Navigation sollte das Suchfeld leer sein (normales Verhalten)
+    // toHaveValue wartet auch, bis das Suchfeld wieder da ist
     await expect(
       page.getByRole('textbox', { name: 'Search news articles' }),
-    ).toBeVisible();
-
-    // Prüfe ob Suche zurückgesetzt wurde (erwartetes Verhalten bei Navigation)
-    const searchAfterNav = page.getByRole('textbox', {
-      name: 'Search news articles',
-    });
-    const valueAfterNav = await searchAfterNav.inputValue();
-
-    // Nach Navigation sollte das Suchfeld leer sein (normales Verhalten)
-    expect(valueAfterNav).toBe('');
+    ).toHaveValue('', { timeout: 10000 });
   });
 
   test('kann mit verschiedenen Suchbegriffen filtern', async ({ page }) => {
@@ -188,7 +157,6 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
       await searchInput.clear();
       await searchInput.fill(term);
       await searchInput.press('Enter');
-      await page.waitForLoadState('networkidle');
 
       // Zähle Ergebnisse
       const items = page.getByRole('article');
@@ -196,8 +164,10 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
 
       console.log(`Suche nach "${term}": ${count} Ergebnisse`);
 
-      // Sollte mindestens 0 Ergebnisse haben (kann auch keine geben)
-      expect(count).toBeGreaterThanOrEqual(0);
+      // Der Trefferzähler muss zur angezeigten Artikelliste passen
+      await expect(
+        page.getByText(`${count} articles found`, { exact: true }),
+      ).toBeVisible();
     }
   });
 
@@ -216,20 +186,17 @@ test.describe('Exercise 5: News Feed Search Navigation', () => {
     // Prüfe ob Fokus gesetzt ist
     await expect(searchInput).toBeFocused();
 
-    // Tippe mit Tastatur
-    await page.keyboard.type('Keyboard Test');
+    // Tippe Zeichen für Zeichen mit echten Tastenanschlägen
+    await searchInput.pressSequentially('Keyboard Test');
 
     // Prüfe ob Text eingegeben wurde
-    const value = await searchInput.inputValue();
-    expect(value).toBe('Keyboard Test');
+    await expect(searchInput).toHaveValue('Keyboard Test');
 
     // Enter zum Suchen
     await page.keyboard.press('Enter');
-    await page.waitForLoadState('networkidle');
 
     // Prüfe ob Suchbegriff erhalten blieb
-    const valueAfterSearch = await searchInput.inputValue();
-    expect(valueAfterSearch).toBe('Keyboard Test');
+    await expect(searchInput).toHaveValue('Keyboard Test');
   });
 });
 
@@ -258,7 +225,7 @@ test('News Search mit Trace für Debugging', async ({ page }) => {
     await searchInput.fill('Debug Test');
     await searchInput.press('Enter');
 
-    await page.waitForLoadState('networkidle');
+    await expect(searchInput).toHaveValue('Debug Test');
   } finally {
     // Speichere Trace
     await page.context().tracing.stop({

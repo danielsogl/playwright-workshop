@@ -7,11 +7,7 @@ test.describe('API Mocking mit waitForResponse', () => {
   test('empfängt und verarbeitet gemockte Response', async ({ page }) => {
     // 1. API mocken
     await page.route('**/api/news/public', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockFeed),
-      });
+      await route.fulfill({ json: mockFeed });
     });
 
     // 2. Response abfangen (vor der Navigation!)

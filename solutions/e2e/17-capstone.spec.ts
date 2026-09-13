@@ -16,103 +16,116 @@ import { test, expect } from './fixtures/auth.fixture';
 import { NewsPage } from '../pages/NewsPage';
 
 test.describe('Exercise 17: Capstone – kompletter User-Flow', () => {
-  test('Login → Public-News → Private-Feeds → Settings → Logout', async ({
-    authenticatedPage: page,
-  }) => {
-    // 1) Bereits eingeloggt über die authenticatedPage-Fixture (Übung 8).
+  // Feeds und Profil liegen serverseitig pro User. Läuft der Test parallel in
+  // mehreren Projekten (chromium, webkit) mit demselben Account, verfälschen
+  // sich die Feed-Counts gegenseitig. Test Lock (seit 1.63): Tests mit gleichem
+  // Lock-Namen laufen nie gleichzeitig – auch nicht über Projekte hinweg.
+  test(
+    'Login → Public-News → Private-Feeds → Settings → Logout',
+    {
+      lock: 'test-user-account',
+    },
+    async ({ authenticatedPage: page }) => {
+      // 1) Bereits eingeloggt über die authenticatedPage-Fixture (Übung 8).
 
-    // 2) Public-News: Suche + Kategorie-Filter über die NewsPage-POM (Übung 9).
-    const newsPage = new NewsPage(page);
-    await newsPage.goto();
+      // 2) Public-News: Suche + Kategorie-Filter über die NewsPage-POM (Übung 9).
+      // Feste Testdaten per Mock (Übung 11): derselbe Offline-Feed, den die App
+      // mit RSS_OFFLINE_MODE=true ausliefert – unabhängig von Live-RSS-Feeds.
+      await page.route('**/api/news/public', (route) =>
+        route.fulfill({ path: 'app/api/feed.json' }),
+      );
+      const newsPage = new NewsPage(page);
+      await newsPage.goto();
 
-    // Offline-Feed: 20 Artikel (Technology 10, Business 5, World News 5).
-    await expect(newsPage.resultsCount).toContainText('20 articles found');
-    await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(20);
+      // Offline-Feed: 20 Artikel (Technology 10, Business 5, World News 5).
+      await expect(newsPage.resultsCount).toContainText('20 articles found');
+      await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(20);
 
-    // Suche ohne Treffer → deterministisch 0, danach Reset auf 20.
-    await newsPage.searchNews('zzz-kein-treffer-xyz');
-    await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(0);
-    await newsPage.clearSearch();
-    await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(20);
+      // Suche ohne Treffer → deterministisch 0, danach Reset auf 20.
+      await newsPage.searchNews('zzz-kein-treffer-xyz');
+      await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(0);
+      await newsPage.clearSearch();
+      await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(20);
 
-    // Kategorie-Filter → deterministisch 5 (Business).
-    await newsPage.filterByCategory('Business');
-    await expect(newsPage.resultsCount).toContainText('5 articles found');
-    await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(5);
+      // Kategorie-Filter → deterministisch 5 (Business).
+      await newsPage.filterByCategory('Business');
+      await expect(newsPage.resultsCount).toContainText('5 articles found');
+      await expect(newsPage.newsFeed.getByRole('article')).toHaveCount(5);
 
-    // 3) Private-Feeds: anlegen → auswählen → Count prüfen → löschen.
-    await page.goto('/news/private');
-    await expect(
-      page.getByRole('heading', { name: 'Your Private News Feeds' }),
-    ).toBeVisible();
+      // 3) Private-Feeds: anlegen → auswählen → Count prüfen → löschen.
+      await page.goto('/news/private');
+      await expect(
+        page.getByRole('heading', { name: 'Your Private News Feeds' }),
+      ).toBeVisible();
 
-    // Eindeutiger Name, damit parallele/wiederholte Läufe nicht kollidieren.
-    const feedName = `Capstone Feed ${Date.now()}`;
+      // Eindeutiger Name, damit parallele/wiederholte Läufe nicht kollidieren.
+      const feedName = `Capstone Feed ${Date.now()}`;
 
-    // pressSequentially statt fill – react-aria-Felder setzen den State in
-    // WebKit sonst nicht zuverlässig (siehe Übung 8).
-    await page
-      .getByRole('textbox', { name: 'Name for the new feed' })
-      .pressSequentially(feedName);
-    await page
-      .getByRole('textbox', { name: 'URL for the new feed' })
-      .pressSequentially('https://example.com/rss.xml');
-    await page
-      .getByRole('textbox', { name: 'Optional category for the new feed' })
-      .pressSequentially('Tech');
-    await page.getByRole('button', { name: 'Add new feed' }).click();
+      // pressSequentially statt fill – react-aria-Felder setzen den State in
+      // WebKit sonst nicht zuverlässig (siehe Übung 8).
+      await page
+        .getByRole('textbox', { name: 'Name for the new feed' })
+        .pressSequentially(feedName);
+      await page
+        .getByRole('textbox', { name: 'URL for the new feed' })
+        .pressSequentially('https://example.com/rss.xml');
+      await page
+        .getByRole('textbox', { name: 'Optional category for the new feed' })
+        .pressSequentially('Tech');
+      await page.getByRole('button', { name: 'Add new feed' }).click();
 
-    const selectFeedButton = page.getByRole('button', {
-      name: `Select feed: ${feedName}`,
-    });
-    await expect(selectFeedButton).toBeVisible();
+      const selectFeedButton = page.getByRole('button', {
+        name: `Select feed: ${feedName}`,
+      });
+      await expect(selectFeedButton).toBeVisible();
 
-    // Der Count-Chip im Feed-Header spiegelt die Anzahl der Feed-Einträge.
-    const feedsRegion = page.getByRole('list', { name: 'Your RSS feeds' });
-    const feedItems = feedsRegion.getByRole('listitem');
-    const countAfterAdd = await feedItems.count();
-    expect(countAfterAdd).toBeGreaterThan(0);
+      // Der Count-Chip im Feed-Header spiegelt die Anzahl der Feed-Einträge.
+      const feedsRegion = page.getByRole('list', { name: 'Your RSS feeds' });
+      const feedItems = feedsRegion.getByRole('listitem');
+      await expect(feedItems).not.toHaveCount(0);
+      const countAfterAdd = await feedItems.count();
 
-    // Feed auswählen …
-    await selectFeedButton.click();
+      // Feed auswählen …
+      await selectFeedButton.click();
 
-    // … und wieder löschen.
-    await page
-      .getByRole('button', { name: `Delete feed: ${feedName}` })
-      .click();
-    await expect(selectFeedButton).toBeHidden();
-    await expect(feedItems).toHaveCount(countAfterAdd - 1);
+      // … und wieder löschen.
+      await page
+        .getByRole('button', { name: `Delete feed: ${feedName}` })
+        .click();
+      await expect(selectFeedButton).toBeHidden();
+      await expect(feedItems).toHaveCount(countAfterAdd - 1);
 
-    // 4) Settings: Name ändern → Success-Banner UND Navbar-Initialen prüfen
-    //    (Session-`update`, cross-component).
-    await page.goto('/settings');
-    const nameInput = page.getByRole('textbox', { name: 'Your name' });
-    await expect(nameInput).toBeVisible();
+      // 4) Settings: Name ändern → Success-Banner UND Navbar-Initialen prüfen
+      //    (Session-`update`, cross-component).
+      await page.goto('/settings');
+      const nameInput = page.getByRole('textbox', { name: 'Your name' });
+      await expect(nameInput).toBeVisible();
 
-    await nameInput.click();
-    await nameInput.press('ControlOrMeta+a');
-    await nameInput.press('Delete');
-    await nameInput.pressSequentially('Capstone Tester');
+      await nameInput.click();
+      await nameInput.press('ControlOrMeta+a');
+      await nameInput.press('Delete');
+      await nameInput.pressSequentially('Capstone Tester');
 
-    await page.getByRole('button', { name: 'Submit profile update' }).click();
+      await page.getByRole('button', { name: 'Submit profile update' }).click();
 
-    // Success-Banner …
-    await expect(
-      page.getByText('Profile updated successfully!'),
-    ).toBeVisible();
+      // Success-Banner …
+      await expect(
+        page.getByText('Profile updated successfully!'),
+      ).toBeVisible();
 
-    // … und die Navbar-Initialen aktualisieren sich über das Session-Update.
-    const userMenu = page.getByRole('button', {
-      name: 'User profile actions menu',
-    });
-    await expect(userMenu).toContainText('CT');
+      // … und die Navbar-Initialen aktualisieren sich über das Session-Update.
+      const userMenu = page.getByRole('button', {
+        name: 'User profile actions menu',
+      });
+      await expect(userMenu).toContainText('CT');
 
-    // 5) Logout über das Navbar-Dropdown → Login-Zustand ist weg.
-    await userMenu.click();
-    await page.getByRole('menuitem', { name: /log out/i }).click();
+      // 5) Logout über das Navbar-Dropdown → Login-Zustand ist weg.
+      await userMenu.click();
+      await page.getByRole('menuitem', { name: /log out/i }).click();
 
-    await expect(
-      page.getByRole('link', { name: 'Sign in to your account' }),
-    ).toBeVisible();
-  });
+      await expect(
+        page.getByRole('link', { name: 'Sign in to your account' }),
+      ).toBeVisible();
+    },
+  );
 });

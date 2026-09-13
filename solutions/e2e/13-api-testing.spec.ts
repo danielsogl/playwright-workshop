@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('API Login Test', () => {
+  test('public news feed returns articles', async ({ request }) => {
+    // The type parameter types json() (since 1.63)
+    const response = await request.get<{ items: unknown[] }>(
+      '/api/news/public',
+    );
+
+    await expect(response).toBeOK();
+    const body = await response.json();
+    expect(body.items.length).toBeGreaterThan(0);
+  });
+
   test('should login via API and test authenticated endpoints', async ({
     page,
   }) => {
@@ -9,8 +20,8 @@ test.describe('API Login Test', () => {
     const api = page.request;
 
     // Step 1: Get CSRF token from Auth.js
-    const csrfResponse = await api.get('/api/auth/csrf');
-    expect(csrfResponse.status()).toBe(200);
+    const csrfResponse = await api.get<{ csrfToken: string }>('/api/auth/csrf');
+    await expect(csrfResponse).toBeOK();
     const { csrfToken } = await csrfResponse.json();
 
     // Step 2: API-Login. Auth.js v5 signs in via the credentials *callback*
@@ -26,19 +37,22 @@ test.describe('API Login Test', () => {
       },
     });
 
-    expect([200, 302]).toContain(loginResponse.status());
+    await expect(loginResponse).toBeOK();
 
     // Step 3: Verify session contains user data
-    const sessionResponse = await api.get('/api/auth/session');
-    expect(sessionResponse.status()).toBe(200);
+    const sessionResponse = await api.get<{ user?: { email: string } }>(
+      '/api/auth/session',
+    );
+    await expect(sessionResponse).toBeOK();
 
     const sessionData = await sessionResponse.json();
-    expect(sessionData.user).toBeDefined();
-    expect(sessionData.user.email).toBe('test@example.com');
+    expect(sessionData.user?.email).toBe('test@example.com');
 
     // Step 4: Test protected API route with authentication
-    const userResponse = await api.get('/api/user');
-    expect(userResponse.status()).toBe(200);
+    const userResponse = await api.get<{ email: string; name: string }>(
+      '/api/user',
+    );
+    await expect(userResponse).toBeOK();
 
     const userData = await userResponse.json();
     expect(userData.email).toBe('test@example.com');

@@ -95,8 +95,9 @@ test.describe('Dialog Handling API Demo', () => {
 
   test('should handle beforeunload dialog', async ({ page }) => {
     // Dialog-Handler für beforeunload einrichten
-    page.on('dialog', async (dialog) => {
-      expect(dialog.type()).toBe('beforeunload');
+    let dialogType = '';
+    page.once('dialog', async (dialog) => {
+      dialogType = dialog.type();
       await dialog.accept();
     });
 
@@ -110,11 +111,9 @@ test.describe('Dialog Handling API Demo', () => {
       'Beforeunload event listener added',
     );
 
-    // Versuchen, wegzunavigieren, um beforeunload auszulösen
-    await page.goto('/');
-
-    // Zurückgehen, um zu überprüfen, dass der Dialog behandelt wurde
-    await page.goto('/dialog-demo');
+    // page.close() führt Unload-Handler nur mit runBeforeUnload aus
+    await page.close({ runBeforeUnload: true });
+    await expect.poll(() => dialogType).toBe('beforeunload');
   });
 
   test('should handle custom modal dialog - OK button', async ({ page }) => {
@@ -173,7 +172,7 @@ test.describe('Dialog Handling API Demo', () => {
     ).toBeVisible();
 
     // Außerhalb des Dialogs klicken (auf den Hintergrund) - Koordinaten-Klick versuchen
-    await page.click('body', { position: { x: 10, y: 10 } });
+    await page.locator('body').click({ position: { x: 10, y: 10 } });
 
     // Ergebnis überprüfen
     await expect(page.getByRole('status')).toContainText(
@@ -184,18 +183,25 @@ test.describe('Dialog Handling API Demo', () => {
   test('should handle multiple dialogs in sequence', async ({ page }) => {
     let dialogCount = 0;
 
-    // Dialog-Handler für mehrere Dialoge einrichten
+    // Dialog-Handler für mehrere Dialoge einrichten.
+    // Jeder Dialog bekommt genau einmal accept() oder dismiss(),
+    // sonst hängt die auslösende Aktion.
     page.on('dialog', async (dialog) => {
       dialogCount++;
 
-      if (dialog.type() === 'alert') {
-        expect(dialog.message()).toBe('This is a simple alert dialog!');
-        await dialog.accept();
-      } else if (dialog.type() === 'confirm') {
-        expect(dialog.message()).toBe(
-          'Do you want to proceed with this action?',
-        );
-        await dialog.accept();
+      switch (dialog.type()) {
+        case 'alert':
+          expect(dialog.message()).toBe('This is a simple alert dialog!');
+          await dialog.accept();
+          break;
+        case 'confirm':
+          expect(dialog.message()).toBe(
+            'Do you want to proceed with this action?',
+          );
+          await dialog.accept();
+          break;
+        default:
+          await dialog.dismiss();
       }
     });
 

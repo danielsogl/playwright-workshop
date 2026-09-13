@@ -20,7 +20,6 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: testTime });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // Zeit sollte in der Uhrzeitanzeige erscheinen
     await expect(page.getByTestId('current-time')).toContainText('14:30');
@@ -30,7 +29,6 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: new Date('2024-01-15 10:00:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // Initial: 10:00
     await expect(page.getByTestId('current-time')).toContainText('10:00');
@@ -46,54 +44,43 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: new Date('2024-01-15 09:00:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
+
+    // Erst wenn die Uhr die installierte Zeit zeigt, ist die Seite hydriert und die Session gestartet
+    await expect(page.getByTestId('current-time')).toContainText('09:00');
 
     // Initial session duration sollte 0:00 sein
-    await expect(page.getByTestId('session-duration')).toContainText('0:00');
+    await expect(page.getByTestId('session-duration')).toHaveText(/^0:\d\d$/); // Sekunden laufen in Echtzeit, geprüft wird die Minute
 
     // 5 Minuten vorspulen
     await page.clock.fastForward('05:00');
 
     // Session duration sollte 5:00 anzeigen
-    await expect(page.getByTestId('session-duration')).toContainText('5:00');
+    await expect(page.getByTestId('session-duration')).toHaveText(/^5:\d\d$/);
 
     // Weitere 10 Minuten vorspulen
     await page.clock.fastForward('10:00');
 
     // Session duration sollte 15:00 anzeigen
-    await expect(page.getByTestId('session-duration')).toContainText('15:00');
+    await expect(page.getByTestId('session-duration')).toHaveText(/^15:\d\d$/);
   });
 
   test('Countdown timer functionality', async ({ page }) => {
     await page.clock.install({ time: new Date('2024-01-15 12:00:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // 1-Minuten Timer starten
     await page.getByTestId('start-1min-timer').click();
 
-    // Warten bis Countdown-Timer erscheint (könnte leicht unter 1:00 starten)
-    await expect(page.getByTestId('countdown-display')).toBeVisible();
-
-    // Countdown sollte bei ungefähr 1:00 oder etwas darunter sein
-    const initialCountdown = await page
-      .getByTestId('countdown-display')
-      .textContent();
-    expect(initialCountdown).toMatch(/0:(5[0-9]|[0-5][0-9])/); // Zwischen 0:00 und 0:59
+    // Der Countdown erscheint nach dem ersten Tick knapp unter 1:00
+    const countdown = page.getByTestId('countdown-display');
+    await expect(countdown).toHaveText(/^0:5\d$/);
 
     // 30 Sekunden vorspulen
     await page.clock.fastForward('00:30');
 
-    // Countdown sollte sich um ~30 Sekunden reduziert haben
-    const afterThirtySeconds = await page
-      .getByTestId('countdown-display')
-      .textContent();
-    const initialSeconds = parseInt(initialCountdown?.split(':')[1] || '0');
-    const newSeconds = parseInt(afterThirtySeconds?.split(':')[1] || '0');
-
-    // Sollte um ca. 30 Sekunden weniger sein (mit etwas Toleranz)
-    expect(Math.abs(initialSeconds - newSeconds - 30)).toBeLessThan(5);
+    // Countdown sollte sich um ~30 Sekunden reduziert haben (mit etwas Toleranz)
+    await expect(countdown).toHaveText(/^0:2\d$/);
   });
 
   test('Christmas message appears on December 25th', async ({ page }) => {
@@ -101,7 +88,6 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: new Date('2024-12-25 10:00:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // Christmas message should be visible
     await expect(page.getByTestId('christmas-message')).toBeVisible();
@@ -115,7 +101,6 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: new Date('2024-12-31 23:00:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // New Year message should be visible
     await expect(page.getByTestId('newyear-message')).toBeVisible();
@@ -128,7 +113,6 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: new Date('2024-01-15 15:00:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // Initial Zeit prüfen
     await expect(page.getByTestId('current-time')).toContainText('15:00');
@@ -140,9 +124,8 @@ test.describe('Exercise 14: Clock API Testing', () => {
     // Zeit bei 16:15 pausieren
     await page.clock.pauseAt(new Date('2024-01-15 16:15:00'));
 
-    // Zeit sollte bei 16:15 pausiert bleiben
-    await page.waitForTimeout(2000);
-    await expect(page.getByTestId('current-time')).toContainText('16:15');
+    // Zeit bleibt bei 16:15:00 stehen, die Sekunden laufen nicht weiter
+    await expect(page.getByTestId('current-time')).toHaveText('16:15:00');
 
     // Zeit fortsetzen und nochmal vorspulen
     await page.clock.resume();
@@ -156,7 +139,6 @@ test.describe('Exercise 14: Clock API Testing', () => {
     await page.clock.install({ time: new Date('2024-01-15 11:45:00') });
 
     await page.goto('/clock');
-    await page.waitForLoadState('networkidle');
 
     // "Zuletzt aktualisiert" sollte aktuelle Zeit zeigen
     await expect(page.getByTestId('last-updated')).toContainText('11:45');

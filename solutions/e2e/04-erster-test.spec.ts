@@ -31,12 +31,13 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
 
     // News-Artikel Anzahl prüfen
     const articles = page.getByRole('article');
+
+    // count() wartet nicht, daher erst auf den ersten Artikel warten
+    await expect(articles.first()).toBeVisible();
+
     const count = await articles.count();
     expect(count).toBeGreaterThan(0);
     console.log(`Gefundene Artikel: ${count}`);
-
-    // Erster Artikel sollte sichtbar sein
-    await expect(articles.first()).toBeVisible();
   });
 
   test('Suchfeld Interaktion mit Assertions', async ({ page }) => {
@@ -58,16 +59,18 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
     await searchBox.fill('Playwright');
     await expect(searchBox).toHaveValue('Playwright');
 
-    // Enter drücken und warten
-    await page.keyboard.press('Enter');
-
-    // Warten bis Suche abgeschlossen ist
-    await page.waitForTimeout(1000);
+    // Enter drücken (die Suche filtert bereits beim Tippen)
+    await searchBox.press('Enter');
 
     // Prüfen ob Ergebnisse gefiltert wurden
     const articles = page.getByRole('article');
     const afterSearchCount = await articles.count();
     console.log(`Artikel nach Suche: ${afterSearchCount}`);
+
+    // Trefferzähler passt zur Artikelliste (Web-First statt waitForTimeout)
+    await expect(
+      page.getByText(`${afterSearchCount} articles found`, { exact: true }),
+    ).toBeVisible();
 
     // Suchfeld leeren
     await searchBox.clear();
@@ -75,64 +78,27 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   });
 
   test('Theme Toggle mit Assertions', async ({ page }) => {
-    // Theme Toggle Button finden - use more flexible selector approach
-    const possibleToggleSelectors = [
-      page.getByRole('switch', { name: /theme|dark mode|light mode/i }),
-      page.getByRole('button', { name: /theme|dark|light/i }),
-      page.locator('[data-testid="theme-toggle"]'),
-      page.locator('button[aria-label*="theme" i]'),
-      page.locator('.theme-toggle'),
-    ];
+    // Theme Toggle ist ein Switch; es gibt ihn für Desktop und Mobile,
+    // visible() nimmt nur den sichtbaren
+    const themeToggle = page
+      .getByRole('switch', { name: /switch to (dark|light) mode/i })
+      .visible();
+    await expect(themeToggle).toBeVisible();
 
-    let themeToggle = null;
-    for (const selector of possibleToggleSelectors) {
-      const count = await selector.count();
-      if (count > 0) {
-        themeToggle = selector.first();
-        break;
-      }
-    }
+    // Initial State merken (next-themes setzt "light" oder "dark" als Klasse auf <html>)
+    const htmlElement = page.locator('html');
+    const initialClass = (await htmlElement.getAttribute('class')) ?? '';
+    console.log('Initial theme class:', initialClass);
 
-    if (themeToggle && (await themeToggle.isVisible())) {
-      await expect(themeToggle).toBeVisible();
+    // Theme umschalten
+    await themeToggle.click();
 
-      // Initial State prüfen (kann light oder dark sein)
-      const bodyElement = page.locator('body');
-      const initialClass = await bodyElement.getAttribute('class');
-      console.log('Initial theme class:', initialClass);
+    // Web-First Assertion statt waitForTimeout: wartet bis sich die Klasse ändert
+    await expect(htmlElement).not.toHaveClass(initialClass);
 
-      // Theme umschalten
-      await themeToggle.click();
-
-      // Warten auf Theme-Änderung
-      await page.waitForTimeout(1000);
-
-      // Prüfen ob sich die Klasse geändert hat oder andere Indikatoren
-      const newClass = await bodyElement.getAttribute('class');
-      const htmlClass = await page.locator('html').getAttribute('class');
-      const hasThemeChange =
-        newClass !== initialClass || (htmlClass && htmlClass.includes('dark'));
-
-      // If theme change detection is not working reliably, just log it
-      console.log('Initial theme class:', initialClass);
-      console.log('New theme class:', newClass, 'HTML class:', htmlClass);
-
-      // More flexible theme change detection
-      const themeChanged =
-        newClass !== initialClass ||
-        (htmlClass !== null && htmlClass.includes('dark')) ||
-        newClass?.includes('dark') ||
-        newClass?.includes('theme');
-
-      // If we can't detect theme change reliably, just pass the test with a warning
-      if (!themeChanged) {
-        console.log(
-          'Theme change not detected - this might be due to app implementation',
-        );
-      }
-    } else {
-      console.log('Theme toggle not found or not visible, skipping theme test');
-    }
+    // Zurückschalten
+    await themeToggle.click();
+    await expect(htmlElement).toHaveClass(initialClass);
   });
 
   test('Element Sichtbarkeit und State prüfen', async ({ page }) => {
@@ -229,11 +195,8 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
     await expect(searchBox).toBeVisible();
     await expect(searchBox).toBeEnabled();
     await expect(searchBox).toBeEditable();
-    await expect(searchBox)
-      .toBeFocused({ timeout: 5000 })
-      .catch(() => {
-        console.log('Searchbox ist nicht fokussiert - das ist OK');
-      });
+    await searchBox.focus();
+    await expect(searchBox).toBeFocused();
 
     // Soft Assertions (Fehler sammeln, nicht sofort abbrechen)
     await expect.soft(searchBox).toBeVisible();

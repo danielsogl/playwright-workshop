@@ -1,179 +1,67 @@
 import { Locator } from '@playwright/test';
 
 export class NewsItemComponent {
-  constructor(private readonly locator: Locator) {}
+  // Sub-Elemente als readonly Locators: für Assertions wie
+  // expect(item.title).toHaveText(...) statt textContent()-Getter
+  readonly title: Locator;
+  readonly link: Locator;
+  readonly description: Locator;
+  readonly author: Locator;
+  readonly date: Locator;
+  readonly category: Locator;
 
-  // Getter for sub-elements
-  get title() {
-    // News items have the heading with the link text
-    return this.locator.getByRole('heading', { level: 2 }).first();
+  constructor(readonly root: Locator) {
+    this.title = root.getByRole('heading', { level: 2 });
+    // Link liegt in der Überschrift
+    this.link = this.title.getByRole('link');
+    this.description = root.locator('p');
+    // Quelle wird als Chip mit exaktem Namen gerendert
+    this.author = root.getByText(
+      /^(TechCrunch|Reuters Financial News|BBC World|Hacker News)$/,
+    );
+    // Datum im deutschen Langformat, z. B. "4. Oktober 2025"
+    this.date = root.getByText(/^(\d{1,2}\.\s\S+\s\d{4}|Date unavailable)$/);
+    this.category = root.getByText(/^(Technology|Business|World News)$/);
   }
 
-  get description() {
-    // Description is in a paragraph element
-    return this.locator.locator('p').first();
-  }
-
-  get link() {
-    // Link is within the heading
-    return this.locator.getByRole('link').first();
-  }
-
-  get author() {
-    // Source text - look for the first element that contains only the source name
-    return this.locator
-      .locator(
-        ':text-matches("^(TechCrunch|Reuters Financial News|BBC World|Hacker News)$")',
-      )
-      .first();
-  }
-
-  get date() {
-    // Datum wird als deutsches Langformat gerendert, z. B. "4. Oktober 2025"
-    return this.locator
-      .locator('text=/^\\d{1,2}\\.\\s\\S+\\s\\d{4}$/')
-      .first();
-  }
-
-  get image() {
-    return this.locator.getByRole('img').first();
-  }
-
-  get category() {
-    // Category appears as exact text like "Technology", "Business", "World News"
-    return this.locator
-      .locator('text=/^(Technology|Business|World News)$/')
-      .first();
-  }
-
-  // Actions with fluent interface
+  // Aktionen geben this zurück (Promise<this>)
   async hover(): Promise<this> {
-    await this.locator.hover();
+    await this.root.hover();
     return this;
   }
 
-  async click(): Promise<this> {
-    await this.locator.click();
-    return this;
-  }
-
+  // Öffnet den Artikel in einem neuen Tab (target="_blank")
   async clickLink(): Promise<this> {
     await this.link.click();
     return this;
   }
 
-  // Data extraction methods
+  // Helper für Werte, die im Test weiterverwendet werden
   async getTitle(): Promise<string> {
-    try {
-      // First try to get text from heading element
-      const heading = this.locator.getByRole('heading', { level: 2 }).first();
-      const headingText = await heading.textContent();
-      if (headingText && headingText.trim()) return headingText.trim();
-
-      // If heading is empty, try link text
-      const link = this.locator.getByRole('link').first();
-      const linkText = await link.textContent();
-      if (linkText && linkText.trim()) return linkText.trim();
-
-      // Fallback to any text content in the item
-      const anyText = await this.locator.textContent();
-      return anyText?.split('\n')[0]?.trim() || '';
-    } catch {
-      return '';
-    }
+    return (await this.title.textContent())?.trim() ?? '';
   }
 
   async getDescription(): Promise<string> {
-    try {
-      return (await this.description.textContent()) || '';
-    } catch {
-      return '';
-    }
+    return (await this.description.textContent())?.trim() ?? '';
   }
 
   async getAuthor(): Promise<string> {
-    try {
-      const sourceText = (await this.author.textContent()) || '';
-      return sourceText.trim();
-    } catch {
-      return '';
-    }
+    return (await this.author.textContent())?.trim() ?? '';
   }
 
   async getDate(): Promise<string> {
-    try {
-      const dateText = (await this.date.textContent()) || '';
-      return dateText.trim();
-    } catch {
-      return '';
-    }
+    return (await this.date.textContent())?.trim() ?? '';
   }
 
   async getCategory(): Promise<string> {
-    try {
-      const categoryText = (await this.category.textContent()) || '';
-      return categoryText.trim();
-    } catch {
-      return '';
-    }
-  }
-
-  async getImageUrl(): Promise<string | null> {
-    try {
-      const hasImg = await this.hasImage();
-      if (!hasImg) return null;
-      return await this.image.getAttribute('src');
-    } catch {
-      return null;
-    }
+    return (await this.category.textContent())?.trim() ?? '';
   }
 
   async getLinkUrl(): Promise<string | null> {
-    try {
-      return await this.link.getAttribute('href');
-    } catch {
-      return null;
-    }
+    return await this.link.getAttribute('href');
   }
 
-  // Status checks
-  async isVisible(): Promise<boolean> {
-    return await this.locator.isVisible();
-  }
-
-  async hasImage(): Promise<boolean> {
-    return await this.image.isVisible().catch(() => false);
-  }
-
-  async hasCategory(category: string): Promise<boolean> {
-    const categoryText = await this.getCategory();
-    return categoryText.toLowerCase().includes(category.toLowerCase());
-  }
-
-  // Complex interactions with chaining
-  async expandAndRead(): Promise<this> {
-    await this.hover();
-    const expandButton = this.locator.getByRole('button', {
-      name: /expand|more|read/i,
-    });
-    if (await expandButton.isVisible().catch(() => false)) {
-      await expandButton.click();
-    }
-    return this;
-  }
-
-  async shareVia(platform: 'twitter' | 'facebook' | 'linkedin'): Promise<this> {
-    await this.hover();
-    const shareButton = this.locator.getByRole('button', {
-      name: new RegExp(platform, 'i'),
-    });
-    if (await shareButton.isVisible().catch(() => false)) {
-      await shareButton.click();
-    }
-    return this;
-  }
-
-  // Get all data as object
+  // Alle Daten als Objekt
   async getData() {
     return {
       title: await this.getTitle(),
@@ -181,7 +69,6 @@ export class NewsItemComponent {
       author: await this.getAuthor(),
       date: await this.getDate(),
       category: await this.getCategory(),
-      imageUrl: await this.getImageUrl(),
       linkUrl: await this.getLinkUrl(),
     };
   }

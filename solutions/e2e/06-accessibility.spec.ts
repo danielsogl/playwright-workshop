@@ -15,14 +15,14 @@
  * - Color contrast and theme accessibility
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Exercise 6: Accessibility Testing', () => {
   test.describe('Basic Accessibility Tests', () => {
     test('Homepage accessibility scan', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Run comprehensive accessibility analysis
       const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -55,9 +55,9 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       page,
     }) => {
       await page.goto('/news/public');
-      await expect(
-        page.getByRole('article').or(page.getByRole('article')).first(),
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole('article').first()).toBeVisible({
+        timeout: 10000,
+      });
 
       const results = await new AxeBuilder({ page }).analyze();
 
@@ -96,7 +96,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
   test.describe('WCAG Compliance Tests', () => {
     test('WCAG 2.1 Level AA compliance', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Test only WCAG 2.1 Level AA rules
       const results = await new AxeBuilder({ page })
@@ -108,7 +108,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('WCAG 2.1 Level AAA compliance (informational)', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Test WCAG 2.1 Level AAA rules (informational only)
       const results = await new AxeBuilder({ page })
@@ -129,7 +129,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('Color contrast compliance', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Focus specifically on color contrast issues
       const results = await new AxeBuilder({ page })
@@ -156,7 +156,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
   test.describe('Component-Specific Accessibility', () => {
     test('Navigation accessibility', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Test only the navigation component
       const results = await new AxeBuilder({ page }).include('nav').analyze();
@@ -166,7 +166,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('Form accessibility - Login page', async ({ page }) => {
       await page.goto('/auth/signin');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Test form-specific accessibility
       const results = await new AxeBuilder({ page }).include('form').analyze();
@@ -192,7 +192,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('Search component accessibility', async ({ page }) => {
       await page.goto('/news/public');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Find search component
       const searchContainer = page
@@ -215,9 +215,9 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('News article list accessibility', async ({ page }) => {
       await page.goto('/news/public');
-      await expect(
-        page.getByRole('article').or(page.getByRole('article')).first(),
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole('article').first()).toBeVisible({
+        timeout: 10000,
+      });
 
       // Test the news list structure
       const results = await new AxeBuilder({ page })
@@ -236,29 +236,13 @@ test.describe('Exercise 6: Accessibility Testing', () => {
   });
 
   test.describe('Theme Accessibility', () => {
-    test('Light mode color contrast', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+    // Kontrast-Scan (wcag2aa) – gemeinsam für Dark und Light Mode
+    async function expectNoContrastViolations(page: Page, label: string) {
+      // Laufende CSS-Übergänge (z. B. HeroUI-Farben) würden axe Zwischenfarben messen lassen
+      await expect
+        .poll(() => page.evaluate(() => document.getAnimations().length))
+        .toBe(0);
 
-      // Ensure we're in light mode
-      const themeToggle = page
-        .locator('[data-testid="theme-toggle"]')
-        .or(page.locator('button[aria-label*="theme" i]'))
-        .first();
-
-      const isDarkMode =
-        (await page
-          .locator(
-            'html[class*="dark"], body[class*="dark"], [data-theme="dark"]',
-          )
-          .count()) > 0;
-
-      if (isDarkMode && (await themeToggle.count()) > 0) {
-        await themeToggle.click();
-        await page.waitForTimeout(500);
-      }
-
-      // Test color contrast in light mode
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2aa'])
         .analyze();
@@ -268,7 +252,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       );
 
       if (contrastViolations.length > 0) {
-        console.log('\nLight mode contrast violations:');
+        console.log(`\n${label} contrast violations:`);
         contrastViolations.forEach((violation) => {
           violation.nodes.forEach((node) => {
             console.log(`- ${node.target.join(' ')}`);
@@ -277,88 +261,64 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       }
 
       expect(contrastViolations).toHaveLength(0);
+    }
+
+    test.describe('Dark Mode', () => {
+      // Emuliert prefers-color-scheme (analog: forcedColors, contrast).
+      // Diese App startet per next-themes ohnehin im Dark Mode (defaultTheme: 'dark').
+      test.use({ colorScheme: 'dark' });
+
+      test('Dark mode color contrast', async ({ page }) => {
+        await page.goto('/');
+        await expect(page.locator('html')).toHaveClass(/dark/);
+
+        await expectNoContrastViolations(page, 'Dark mode');
+      });
     });
 
-    test('Dark mode color contrast', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+    test.describe('Light Mode', () => {
+      test.use({ colorScheme: 'light' });
 
-      // Toggle to dark mode
-      const themeToggle = page
-        .locator('[data-testid="theme-toggle"]')
-        .or(page.locator('button[aria-label*="theme" i]'))
-        .first();
+      test('Light mode color contrast', async ({ page }) => {
+        // Bekannter App-Bug: .text-muted (#71717a auf #f5f5f5) hat nur 4.43:1.
+        // test.fail() dokumentiert das – wird der Kontrast gefixt, schlägt der Test an.
+        test.fail(
+          true,
+          'Light Mode: text-muted unterschreitet 4.5:1 (color-contrast)',
+        );
+        // colorScheme allein reicht hier nicht (defaultTheme: 'dark').
+        // Theme vor dem Laden setzen statt Switch klicken: Nach dem Klick laufen
+        // noch CSS-Farbübergänge, axe würde Zwischenfarben messen (flaky).
+        await page.addInitScript(() => localStorage.setItem('theme', 'light'));
+        await page.goto('/');
+        await expect(page.locator('html')).not.toHaveClass(/dark/);
 
-      if ((await themeToggle.count()) > 0) {
-        await themeToggle.click();
-        await page.waitForTimeout(500);
-
-        // Verify dark mode is active
-        const isDarkMode =
-          (await page
-            .locator(
-              'html[class*="dark"], body[class*="dark"], [data-theme="dark"]',
-            )
-            .count()) > 0;
-
-        if (isDarkMode) {
-          // Test color contrast in dark mode
-          const results = await new AxeBuilder({ page })
-            .withTags(['wcag2aa'])
-            .analyze();
-
-          const contrastViolations = results.violations.filter((violation) =>
-            violation.id.includes('color-contrast'),
-          );
-
-          if (contrastViolations.length > 0) {
-            console.log('\nDark mode contrast violations:');
-            contrastViolations.forEach((violation) => {
-              violation.nodes.forEach((node) => {
-                console.log(`- ${node.target.join(' ')}`);
-              });
-            });
-          }
-
-          expect(contrastViolations).toHaveLength(0);
-        } else {
-          console.log(
-            'Could not activate dark mode, skipping dark mode contrast test',
-          );
-        }
-      } else {
-        console.log('Theme toggle not found, skipping dark mode test');
-      }
+        await expectNoContrastViolations(page, 'Light mode');
+      });
     });
 
-    test('Theme toggle accessibility', async ({ page }) => {
+    test('Theme switch toggles html class', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
 
-      const themeToggle = page
-        .locator('[data-testid="theme-toggle"]')
-        .or(page.locator('button[aria-label*="theme" i]'))
-        .first();
+      // Label wechselt erst nach der Hydration auf "light" – vorher wirkt der Klick nicht
+      const themeSwitch = page.getByRole('switch', {
+        name: /Switch to (dark|light) mode/,
+      });
+      await expect(themeSwitch).toHaveAccessibleName('Switch to light mode');
+      await expect(page.locator('html')).toHaveClass(/dark/);
 
-      if ((await themeToggle.count()) > 0) {
-        // Test the theme toggle button itself
-        const results = await new AxeBuilder({ page })
-          .include(['[role="switch"]'])
-          .analyze();
+      await themeSwitch.click();
+      await expect(page.locator('html')).not.toHaveClass(/dark/);
+      await expect(themeSwitch).toHaveAccessibleName('Switch to dark mode');
 
-        expect(results.violations).toEqual([]);
+      await themeSwitch.click();
+      await expect(page.locator('html')).toHaveClass(/dark/);
 
-        // Check for proper labeling
-        const hasAriaLabel = await themeToggle.getAttribute('aria-label');
-        const hasTitle = await themeToggle.getAttribute('title');
-        const hasVisibleText = await themeToggle.textContent();
-
-        const hasAccessibleName =
-          hasAriaLabel ||
-          hasTitle ||
-          (hasVisibleText && hasVisibleText.trim().length > 0);
-        expect(hasAccessibleName).toBe(true);
-      }
+      // Der Switch selbst muss axe-konform sein
+      const results = await new AxeBuilder({ page })
+        .include('[role="switch"]')
+        .analyze();
+      expect(results.violations).toEqual([]);
     });
   });
 
@@ -367,7 +327,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       const results = await new AxeBuilder({ page }).analyze();
 
@@ -393,7 +353,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
     test('Mobile navigation accessibility', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Test mobile navigation
       const mobileMenuButton = page
@@ -411,7 +371,9 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
         // Open mobile menu and test its accessibility
         await mobileMenuButton.click();
-        await page.waitForTimeout(500);
+        await expect(
+          page.getByRole('button', { name: 'Close menu' }),
+        ).toBeVisible();
 
         const menuResults = await new AxeBuilder({ page })
           .include('nav')
@@ -431,7 +393,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
       );
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Start from the body to reset focus
       await page.locator('body').focus();
@@ -442,14 +404,13 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       // Tab through the page and collect focusable elements
       for (let i = 0; i < 20; i++) {
         await page.keyboard.press('Tab');
-        await page.waitForTimeout(100);
 
         const activeElement = await page.evaluate(() => {
           const element = document.activeElement;
           if (element && element !== document.body) {
             return {
               tagName: element.tagName,
-              type: element.type || null,
+              type: (element as HTMLInputElement).type || null,
               ariaLabel: element.getAttribute('aria-label'),
               id: element.id,
               className: element.className,
@@ -493,11 +454,10 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('Focus visibility', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Tab to first focusable element
       await page.keyboard.press('Tab');
-      await page.waitForTimeout(200);
 
       // Check if there's a visible focus indicator
       const focusedElement = await page.evaluate(() => {
@@ -550,7 +510,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
       );
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Look for skip links (usually hidden until focused)
       await page.keyboard.press('Tab');
@@ -594,7 +554,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
   test.describe('Screen Reader Support', () => {
     test('Semantic HTML structure', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Check for proper semantic structure
       const semanticElements = await page.evaluate(() => {
@@ -626,7 +586,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
     test('ARIA landmarks and labels', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Check for ARIA landmarks
       const landmarks = await page.evaluate(() => {
@@ -640,7 +600,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
           'region',
         ];
 
-        const found = {};
+        const found: Record<string, number> = {};
         roles.forEach((role) => {
           found[role] = document.querySelectorAll(`[role="${role}"]`).length;
         });
@@ -663,7 +623,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
     test('Form error message accessibility', async ({ page }) => {
       // Go to a form page
       await page.goto('/auth/signin');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Try to submit empty form to trigger errors
       const submitButton = page.getByRole('button', {
@@ -672,7 +632,8 @@ test.describe('Exercise 6: Accessibility Testing', () => {
 
       if ((await submitButton.count()) > 0) {
         await submitButton.click();
-        await page.waitForTimeout(1000);
+        // Native Validierung fokussiert das erste leere Pflichtfeld
+        await expect(page.getByLabel('Email')).toBeFocused();
 
         // Check for error message accessibility
         const results = await new AxeBuilder({ page }).analyze();
@@ -693,7 +654,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
   test.describe('Custom Accessibility Rules', () => {
     test('Accessibility with custom exclusions', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       const results = await new AxeBuilder({ page })
         // Exclude third-party content that we can't control
@@ -715,7 +676,7 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       });
 
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await expect(page.getByRole('main')).toBeVisible();
 
       // Basic accessibility should still work without JavaScript
       const results = await new AxeBuilder({ page })

@@ -249,55 +249,6 @@ export const mockNewsData = {
   empty: {
     items: [],
   },
-  filtered: {
-    items: [
-      {
-        title: 'Workshop Test Article - AI Development Trends',
-        link: 'https://example.com/ai-trends-2024',
-        description:
-          'Comprehensive overview of artificial intelligence developments in 2024, including machine learning advances and their impact on various industries.',
-        pubDate: 'Sat, 04 Oct 2025 20:00:00 +0000',
-        category: 'Technology',
-        source: 'TechCrunch',
-        snippet:
-          'Comprehensive overview of artificial intelligence developments in 2024',
-        isoDate: '2025-10-04T20:00:00.000Z',
-      },
-      {
-        title: 'Workshop Test Article - Innovation in Web Development',
-        link: 'https://example.com/web-dev-innovation',
-        description:
-          'Exploring the latest trends in web development, including new frameworks, tools, and best practices for modern applications.',
-        pubDate: 'Sat, 04 Oct 2025 18:30:00 +0000',
-        category: 'Technology',
-        source: 'TechCrunch',
-        snippet: 'Exploring the latest trends in web development',
-        isoDate: '2025-10-04T18:30:00.000Z',
-      },
-      {
-        title: 'Workshop Test Article - Cybersecurity Advances',
-        link: 'https://example.com/cybersecurity-advances',
-        description:
-          'Recent breakthroughs in cybersecurity technology and their role in protecting digital infrastructure from emerging threats.',
-        pubDate: 'Sat, 04 Oct 2025 18:00:00 +0000',
-        category: 'Technology',
-        source: 'Hacker News',
-        snippet: 'Recent breakthroughs in cybersecurity technology',
-        isoDate: '2025-10-04T18:00:00.000Z',
-      },
-      {
-        title: 'Workshop Test Article - Climate Technology Solutions',
-        link: 'https://example.com/climate-tech-solutions',
-        description:
-          'Innovative technological solutions being developed to address climate change challenges and promote sustainable development.',
-        pubDate: 'Sat, 04 Oct 2025 17:00:00 +0000',
-        category: 'Technology',
-        source: 'TechCrunch',
-        snippet: 'Innovative technological solutions being developed',
-        isoDate: '2025-10-04T17:00:00.000Z',
-      },
-    ],
-  },
 };
 
 export const mockErrorResponse = {

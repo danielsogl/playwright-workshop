@@ -4,11 +4,15 @@ import path from 'path';
 const authFile = path.join(import.meta.dirname, '../../playwright/.auth/user.json');
 
 // Setup-Test für Authentifizierung
-setup.describe('Exercise 7: Authentication Setup', () => {
+// Lock (seit 1.63): Setup und Consumer teilen sich user.json und laufen
+// daher nie gleichzeitig – auch nicht über Worker hinweg.
+setup.describe('Exercise 7: Authentication Setup', { lock: 'user-auth-state' }, () => {
   setup('authenticate as user', async ({ page }) => {
-    // Use UI-Login for reliable authentication
+    // Use UI-Login for reliable authentication.
+    // Auth.js setzt das CSRF-Cookie beim Laden der Session – erst danach einloggen.
+    const sessionLoaded = page.waitForResponse('**/api/auth/session');
     await page.goto('/auth/signin');
-    await page.waitForLoadState('networkidle');
+    await sessionLoaded;
 
     // Fülle Login-Formular aus
     const emailInput = page.getByRole('textbox', {
@@ -29,7 +33,6 @@ setup.describe('Exercise 7: Authentication Setup', () => {
     await page.waitForURL((url) => !url.pathname.includes('/auth/signin'), {
       timeout: 10000,
     });
-    await page.waitForLoadState('networkidle');
 
     // Prüfe ob angemeldet - User Profile Menu sollte sichtbar sein
     const userMenu = page.getByRole('button', {
@@ -46,13 +49,12 @@ setup.describe('Exercise 7: Authentication Setup', () => {
 // Tests die Authentifizierung benötigen
 import { test } from '@playwright/test';
 
-test.describe('Exercise 7: Authenticated Tests', () => {
+test.describe('Exercise 7: Authenticated Tests', { lock: 'user-auth-state' }, () => {
   // Use-Klausel lädt den gespeicherten Auth-State
   test.use({ storageState: authFile });
 
   test('kann auf private Inhalte zugreifen', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
 
     // Prüfe ob angemeldet - User Profile Menu sollte sichtbar sein
     const userMenu = page.getByRole('button', {
@@ -62,18 +64,16 @@ test.describe('Exercise 7: Authenticated Tests', () => {
 
     // Navigiere zu geschütztem Bereich (Settings)
     await page.goto('/settings');
-    await page.waitForLoadState('networkidle');
 
     // Sollte nicht zur Login-Seite umgeleitet werden
     await expect(page).not.toHaveURL(/auth\/signin/);
 
     // Settings-Seite sollte sichtbar sein - prüfe URL da Settings-Seite existiert
-    expect(page.url()).toContain('/settings');
+    await expect(page).toHaveURL(/\/settings/);
   });
 
   test('zeigt Benutzerinformationen an', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
 
     // Öffne User-Menü
     const userMenuButton = page.getByRole('button', {
@@ -91,7 +91,6 @@ test.describe('Exercise 7: Authenticated Tests', () => {
 
   test('kann sich abmelden', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
 
     // Öffne User-Menü
     const userMenuButton = page.getByRole('button', {
@@ -119,8 +118,10 @@ test.describe('Exercise 7: Authenticated Tests', () => {
 // Multi-Role Testing
 const adminAuthFile = path.join(import.meta.dirname, '../../playwright/.auth/admin.json');
 
-setup('authenticate as admin', async ({ page }) => {
+setup('authenticate as admin', { lock: 'admin-auth-state' }, async ({ page }) => {
+  const sessionLoaded = page.waitForResponse('**/api/auth/session');
   await page.goto('/auth/signin');
+  await sessionLoaded;
 
   const emailInput = page.getByRole('textbox', {
     name: 'Email address for sign in',
@@ -150,7 +151,7 @@ setup('authenticate as admin', async ({ page }) => {
   await page.context().storageState({ path: adminAuthFile });
 });
 
-test.describe('Admin-specific Tests', () => {
+test.describe('Admin-specific Tests', { lock: 'admin-auth-state' }, () => {
   test.use({ storageState: adminAuthFile });
 
   test('Admin kann auf Admin-Bereich zugreifen', async ({ page }) => {

@@ -9,90 +9,65 @@
  * - Handle dynamic content with masking
  * - Test across different themes and responsive breakpoints
  * - Configure screenshot options for consistent results
+ *
+ * toHaveScreenshot stabilisiert selbst: Animationen sind standardmäßig
+ * deaktiviert und es wird gewartet, bis zwei Screenshots identisch sind.
+ * Daher keine networkidle-/Timeout-Wartezeiten, sondern Web-First-Assertions
+ * auf den erwarteten Inhalt vor dem Screenshot.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 // Reuse aus Übung 9: NewsPage-POM zum Navigieren (Fallback wäre page.goto('/news/public')).
 import { NewsPage } from '../pages/NewsPage';
 
+// Die Navbar zeigt „Loading…", bis die Session geladen ist. Screenshots mit
+// Navbar erst danach – sonst ist die Baseline mal „Loading…", mal „Sign In".
+async function gotoWithSession(page: Page, url: string) {
+  await page.goto(url);
+  await expect(
+    page.getByRole('button', { name: 'Loading authentication status' }),
+  ).toBeHidden();
+}
+
 test.describe('Exercise 15: Visual Regression Testing', () => {
-  // Global test configuration for consistent screenshots
+  // Feste Testdaten statt Live-RSS: derselbe Offline-Feed, den die App mit
+  // RSS_OFFLINE_MODE=true ausliefert (Mocking aus Übung 11). Tests mit eigenem
+  // page.route() überschreiben ihn – spätere Routen haben Vorrang.
   test.beforeEach(async ({ page }) => {
-    // Disable animations for consistent screenshots
-    await page.addInitScript(() => {
-      // Disable CSS animations and transitions
-      const style = document.createElement('style');
-      style.innerHTML = `
-        *, *::before, *::after {
-          animation-duration: 0s !important;
-          animation-delay: 0s !important;
-          transition-duration: 0s !important;
-          transition-delay: 0s !important;
-        }
-      `;
-      document.head.appendChild(style);
-    });
+    await page.route('**/api/news/public', (route) =>
+      route.fulfill({ path: 'app/api/feed.json' }),
+    );
   });
 
   test.describe('Homepage Visual Tests', () => {
     test('Homepage full page screenshot', async ({ page }) => {
-      await page.goto('/');
-
-      // Wait for content to load completely
-      await page.waitForLoadState('networkidle');
-
-      // Wait a bit more for any remaining content
-      await page.waitForTimeout(1000);
+      await gotoWithSession(page, '/');
 
       // Take full-page screenshot
       await expect(page).toHaveScreenshot('homepage-full.png', {
         fullPage: true,
         animations: 'disabled',
-        // Threshold for pixel differences (0-1, where 1 means identical)
+        // Toleranz pro Pixel im YIQ-Farbraum (0 = strikt, 1 = tolerant)
         threshold: 0.3,
       });
     });
 
     test('Homepage hero section', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await gotoWithSession(page, '/');
 
-      // Screenshot of just the hero/header section
-      const heroSelectors = [
-        'header',
-        '.hero',
-        '[data-testid="hero"]',
-        'main > section:first-child',
-        '.header-section',
-      ];
-
-      let heroElement = null;
-      for (const selector of heroSelectors) {
-        const element = page.locator(selector);
-        if ((await element.count()) > 0) {
-          heroElement = element.first();
-          break;
-        }
-      }
-
-      if (heroElement) {
-        await expect(heroElement).toHaveScreenshot('homepage-hero.png', {
-          animations: 'disabled',
-        });
-      } else {
-        // Fallback: screenshot of the top portion of the page
-        await expect(page).toHaveScreenshot('homepage-header-fallback.png', {
-          clip: { x: 0, y: 0, width: 1280, height: 400 },
-          animations: 'disabled',
-        });
-      }
+      // Screenshot of just the header section (<header> = role "banner")
+      await expect(page.getByRole('banner')).toHaveScreenshot(
+        'homepage-hero.png',
+        { animations: 'disabled' },
+      );
     });
 
     test('Navigation bar visual consistency', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await gotoWithSession(page, '/');
 
-      const navigation = page.locator('nav').first();
+      const navigation = page.getByRole('navigation', {
+        name: 'Main navigation bar',
+      });
       await expect(navigation).toHaveScreenshot('navigation-bar.png', {
         animations: 'disabled',
       });
@@ -105,54 +80,26 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
       // Fallback ohne POM: await page.goto('/news/public');
       const newsPage = new NewsPage(page);
       await newsPage.goto();
-      await page.waitForLoadState('networkidle');
 
-      // Take screenshot of the news grid/list
-      const newsContainer = page
-        .locator('.grid, .news-grid, [data-testid="news-grid"]')
-        .first();
-
-      if ((await newsContainer.count()) > 0) {
-        await expect(newsContainer).toHaveScreenshot('news-grid.png', {
-          animations: 'disabled',
-        });
-      } else {
-        // Fallback to main content area
-        const mainContent = page.locator('main, [role="main"]').first();
-        await expect(mainContent).toHaveScreenshot('news-content.png', {
-          animations: 'disabled',
-        });
-      }
+      // Take screenshot of the news grid
+      await expect(newsPage.newsFeed).toHaveScreenshot('news-grid.png', {
+        animations: 'disabled',
+      });
     });
 
     test('Individual news card with masked dynamic content', async ({
       page,
     }) => {
       await page.goto('/news/public');
-      await expect(page.getByRole('article').first()).toBeVisible();
 
       const firstNewsCard = page.getByRole('article').first();
+      await expect(firstNewsCard).toBeVisible();
 
-      // Mask dynamic content like timestamps
-      const maskSelectors = [
-        'time',
-        '.timestamp',
-        '[data-testid="publish-date"]',
-        '.date',
-        '.relative-time',
-      ];
-
-      const maskedElements = [];
-      for (const selector of maskSelectors) {
-        const elements = page.locator(selector);
-        const count = await elements.count();
-        for (let i = 0; i < count; i++) {
-          maskedElements.push(elements.nth(i));
-        }
-      }
-
+      // Mask dynamic content like the publish date ("13. September 2026")
       await expect(firstNewsCard).toHaveScreenshot('news-card.png', {
-        mask: maskedElements,
+        mask: [
+          firstNewsCard.getByText(/^\d{1,2}\. \S+ \d{4}$|^Date unavailable$/),
+        ],
         maskColor: '#FF00FF', // Magenta mask color
         animations: 'disabled',
       });
@@ -160,19 +107,12 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
 
     test('Empty state visual test', async ({ page }) => {
       // Mock empty response
-      await page.route('**/api/news/public', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ items: [] }),
-        });
-      });
+      await page.route('**/api/news/public', (route) =>
+        route.fulfill({ json: { items: [] } }),
+      );
 
-      await page.goto('/news/public');
-      await page.waitForLoadState('networkidle');
-
-      // Wait for empty state to render
-      await page.waitForTimeout(1000);
+      await gotoWithSession(page, '/news/public');
+      await expect(page.getByText('0 articles found')).toBeVisible();
 
       await expect(page).toHaveScreenshot('news-empty-state.png', {
         fullPage: true,
@@ -182,19 +122,17 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
 
     test('Error state visual test', async ({ page }) => {
       // Mock error response
-      await page.route('**/api/news/public', async (route) => {
-        await route.fulfill({
+      await page.route('**/api/news/public', (route) =>
+        route.fulfill({
           status: 500,
-          contentType: 'application/json',
-          body: JSON.stringify({ error: 'Internal Server Error' }),
-        });
-      });
+          json: { error: 'Internal Server Error' },
+        }),
+      );
 
-      await page.goto('/news/public');
-      await page.waitForLoadState('networkidle');
-
-      // Wait for error state to render
-      await page.waitForTimeout(2000);
+      await gotoWithSession(page, '/news/public');
+      await expect(
+        page.getByRole('alert').filter({ hasText: 'Failed to load RSS feeds' }),
+      ).toBeVisible();
 
       await expect(page).toHaveScreenshot('news-error-state.png', {
         fullPage: true,
@@ -204,40 +142,14 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
   });
 
   test.describe('Theme Visual Tests', () => {
+    // Die App startet im Dark Mode (defaultTheme: 'dark'). Der Switch-Name
+    // wechselt erst nach der Hydration auf „Switch to light mode" – darauf
+    // warten die Web-First-Locators automatisch.
     test('Light mode visual consistency', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await gotoWithSession(page, '/');
 
-      // Ensure light mode is active
-      const themeToggleSelectors = [
-        '[data-testid="theme-toggle"]',
-        'button[aria-label*="theme" i]',
-        '.theme-toggle',
-        'button:has-text("🌙")',
-        'button:has-text("🌞")',
-      ];
-
-      let themeToggle = null;
-      for (const selector of themeToggleSelectors) {
-        const element = page.locator(selector);
-        if ((await element.count()) > 0) {
-          themeToggle = element.first();
-          break;
-        }
-      }
-
-      // Check if we're in dark mode and switch to light if needed
-      const isDarkMode =
-        (await page
-          .locator(
-            'html[class*="dark"], body[class*="dark"], [data-theme="dark"]',
-          )
-          .count()) > 0;
-
-      if (isDarkMode && themeToggle) {
-        await themeToggle.click();
-        await page.waitForTimeout(500);
-      }
+      await page.getByRole('switch', { name: 'Switch to light mode' }).click();
+      await expect(page.locator('html')).toHaveClass(/light/);
 
       await expect(page).toHaveScreenshot('light-mode.png', {
         fullPage: true,
@@ -246,18 +158,13 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
     });
 
     test('Dark mode visual consistency', async ({ page }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await gotoWithSession(page, '/');
 
-      // Find theme toggle switch
-      const themeToggle = page.getByRole('switch', {
-        name: /switch to (light|dark) mode/i,
-      });
-
-      // Toggle to dark mode
-      await expect(themeToggle).toBeVisible();
-      await themeToggle.click();
-      await page.waitForTimeout(500);
+      // Dark Mode ist Default: auf den hydrierten Switch warten
+      await expect(
+        page.getByRole('switch', { name: 'Switch to light mode' }),
+      ).toBeVisible();
+      await expect(page.locator('html')).toHaveClass(/dark/);
 
       // Take screenshot in dark mode
       await expect(page).toHaveScreenshot('dark-mode.png', {
@@ -268,25 +175,20 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
 
     test('Theme toggle button states', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
 
-      const themeToggle = page
-        .locator('[data-testid="theme-toggle"]')
-        .or(page.locator('button[aria-label*="theme" i]'))
-        .or(page.locator('.theme-toggle'))
-        .first();
+      // Screenshot before toggle
+      const toLight = page.getByRole('switch', {
+        name: 'Switch to light mode',
+      });
+      await expect(toLight).toHaveScreenshot('theme-toggle-before.png');
 
-      if ((await themeToggle.count()) > 0) {
-        // Screenshot before toggle
-        await expect(themeToggle).toHaveScreenshot('theme-toggle-before.png');
+      // Click toggle
+      await toLight.click();
 
-        // Click toggle
-        await themeToggle.click();
-        await page.waitForTimeout(300);
-
-        // Screenshot after toggle
-        await expect(themeToggle).toHaveScreenshot('theme-toggle-after.png');
-      }
+      // Screenshot after toggle
+      await expect(
+        page.getByRole('switch', { name: 'Switch to dark mode' }),
+      ).toHaveScreenshot('theme-toggle-after.png');
     });
   });
 
@@ -304,9 +206,12 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
           width: viewport.width,
           height: viewport.height,
         });
-        await page.goto('/');
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(1000);
+        await gotoWithSession(page, '/');
+
+        // Next-Dev-Overlay (z. B. "Compiling…"-Badge) ausblenden
+        await page.addStyleTag({
+          content: 'nextjs-portal { display: none !important; }',
+        });
 
         await expect(page).toHaveScreenshot(`homepage-${viewport.name}.png`, {
           fullPage: true,
@@ -319,9 +224,8 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
           width: viewport.width,
           height: viewport.height,
         });
-        await page.goto('/news/public');
+        await gotoWithSession(page, '/news/public');
         await expect(page.getByRole('article').first()).toBeVisible();
-        await page.waitForLoadState('networkidle');
 
         await expect(page).toHaveScreenshot(`news-page-${viewport.name}.png`, {
           fullPage: true,
@@ -333,9 +237,8 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
 
   test.describe('Cross-Browser Visual Tests', () => {
     test('Cross-browser consistency', async ({ page, browserName }) => {
-      await page.goto('/news/public');
+      await gotoWithSession(page, '/news/public');
       await expect(page.getByRole('article').first()).toBeVisible();
-      await page.waitForLoadState('networkidle');
 
       await expect(page).toHaveScreenshot(`news-page-${browserName}.png`, {
         fullPage: true,
@@ -349,10 +252,11 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
       page,
       browserName,
     }) => {
-      await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await gotoWithSession(page, '/');
 
-      const navigation = page.locator('nav').first();
+      const navigation = page.getByRole('navigation', {
+        name: 'Main navigation bar',
+      });
       await expect(navigation).toHaveScreenshot(
         `navigation-${browserName}.png`,
         {
@@ -366,84 +270,48 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
   test.describe('Interactive State Visual Tests', () => {
     test('Button hover states', async ({ page }) => {
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
 
-      // Find primary buttons
-      const buttonSelectors = [
-        'button[type="submit"]',
-        '.btn-primary',
-        '[data-testid="cta-button"]',
-        'button:has-text("Sign in")',
-        'button:has-text("Login")',
-      ];
+      // Primärer Call-to-Action auf der Startseite (Link im Button-Stil)
+      const button = page.getByRole('link', { name: 'View Public News' });
 
-      let button = null;
-      for (const selector of buttonSelectors) {
-        const element = page.locator(selector);
-        if ((await element.count()) > 0) {
-          button = element.first();
-          break;
-        }
-      }
+      // Screenshot before hover
+      await expect(button).toHaveScreenshot('button-normal.png');
 
-      if (button) {
-        // Screenshot before hover
-        await expect(button).toHaveScreenshot('button-normal.png');
-
-        // Hover and screenshot
-        await button.hover();
-        await page.waitForTimeout(200);
-        await expect(button).toHaveScreenshot('button-hover.png');
-      }
+      // Hover and screenshot (Transitions spult toHaveScreenshot vor)
+      await button.hover();
+      await expect(button).toHaveScreenshot('button-hover.png');
     });
 
     test('Form input focus states', async ({ page }) => {
-      // Try to find a page with forms
-      const formPages = ['/auth/signin', '/contact', '/'];
+      await page.goto('/auth/signin');
 
-      for (const pagePath of formPages) {
-        await page.goto(pagePath);
-        await page.waitForLoadState('networkidle');
+      const input = page.getByRole('textbox', {
+        name: 'Email address for sign in',
+      });
 
-        const inputSelectors = [
-          'input[type="email"]',
-          'input[type="text"]',
-          'input[type="password"]',
-          'textarea',
-        ];
+      // Screenshot before focus
+      await expect(input).toHaveScreenshot('input-normal.png');
 
-        let input = null;
-        for (const selector of inputSelectors) {
-          const element = page.locator(selector);
-          if ((await element.count()) > 0) {
-            input = element.first();
-            break;
-          }
-        }
-
-        if (input) {
-          // Screenshot before focus
-          await expect(input).toHaveScreenshot('input-normal.png');
-
-          // Focus and screenshot
-          await input.focus();
-          await page.waitForTimeout(200);
-          await expect(input).toHaveScreenshot('input-focus.png');
-          break;
-        }
-      }
+      // Focus and screenshot
+      await input.focus();
+      await expect(input).toBeFocused();
+      await expect(input).toHaveScreenshot('input-focus.png');
     });
   });
 
   test.describe('Loading State Visual Tests', () => {
     test('Loading state visual appearance', async ({ page }) => {
-      // Mock delayed response to capture loading state
+      // Response zurückhalten, bis der Loading-Screenshot gemacht ist –
+      // deterministisch statt eines festen Delays.
+      let releaseResponse!: () => void;
+      const responseReleased = new Promise<void>((resolve) => {
+        releaseResponse = resolve;
+      });
+
       await page.route('**/api/news/public', async (route) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await responseReleased;
         await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
+          json: {
             items: [
               {
                 title: 'Test News',
@@ -452,65 +320,44 @@ test.describe('Exercise 15: Visual Regression Testing', () => {
                 pubDate: new Date().toISOString(),
               },
             ],
-          }),
+          },
         });
       });
 
-      // Start navigation without waiting
-      const navigationPromise = page.goto('/news/public');
+      await gotoWithSession(page, '/news/public');
 
-      // Try to capture loading state
-      try {
-        await expect(
-          page
-            .getByTestId('loading')
-            .or(page.locator('.loading'))
-            .or(page.locator('.spinner'))
-            .first(),
-        ).toBeVisible();
-        await expect(page).toHaveScreenshot('loading-state.png', {
-          animations: 'disabled',
-        });
-      } catch {
-        console.log('Loading state not captured - might be too fast');
-      }
+      await expect(
+        page.getByRole('status', { name: 'Loading news feed' }),
+      ).toBeVisible();
+      await expect(page).toHaveScreenshot('loading-state.png', {
+        animations: 'disabled',
+      });
 
-      // Wait for navigation to complete
-      await navigationPromise;
-      await page.waitForLoadState('networkidle');
+      releaseResponse();
+      await expect(page.getByRole('article')).toHaveCount(1);
     });
   });
 
   test.describe('Component-Specific Visual Tests', () => {
     test('Search component visual states', async ({ page }) => {
       await page.goto('/news/public');
-      await page.waitForLoadState('networkidle');
 
-      const searchInput = page
-        .locator('input[placeholder*="search" i]')
-        .or(page.locator('[role="searchbox"]'))
-        .first();
+      const searchInput = page.getByRole('textbox', {
+        name: 'Search news articles',
+      });
 
-      if ((await searchInput.count()) > 0) {
-        // Empty search state
-        await expect(searchInput).toHaveScreenshot('search-empty.png');
+      // Empty search state
+      await expect(searchInput).toHaveScreenshot('search-empty.png');
 
-        // With text
-        await searchInput.fill('technology');
-        await expect(searchInput).toHaveScreenshot('search-with-text.png');
+      // With text
+      await searchInput.fill('technology');
+      await expect(searchInput).toHaveValue('technology');
+      await expect(searchInput).toHaveScreenshot('search-with-text.png');
 
-        // After search (if results change)
-        await page.keyboard.press('Enter');
-        await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(500);
-
-        const searchContainer = searchInput
-          .locator('..')
-          .or(page.locator('.search-container'));
-        await expect(searchContainer).toHaveScreenshot(
-          'search-results-context.png',
-        );
-      }
+      // Suche + Kategorie-Filter als Ganzes
+      await expect(
+        page.getByRole('search', { name: 'News filter options' }),
+      ).toHaveScreenshot('search-results-context.png');
     });
   });
 });

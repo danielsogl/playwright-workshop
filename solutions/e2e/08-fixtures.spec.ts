@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks, no-empty-pattern -- Playwright-Fixtures: `use` ist kein React-Hook, `{}` heißt "keine Abhängigkeiten" */
 import { test as base, expect } from '@playwright/test';
 // Auth-Fixture (siehe ./fixtures/auth.fixture.ts) – kapselt den API-Login aus
 // Übung 7. Wird u. a. vom Capstone (Übung 17) importiert.
