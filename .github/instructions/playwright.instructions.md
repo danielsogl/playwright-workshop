@@ -119,8 +119,7 @@ await slowExpect(page.locator('.loading')).toBeHidden();
 await page.route('**/api/users', async (route) => {
   await route.fulfill({
     status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify([{ id: 1, name: 'John' }]),
+    json: [{ id: 1, name: 'John' }],
   });
 });
 
@@ -227,5 +226,5 @@ export const test = base.extend({
 - Run tests in parallel with `fullyParallel: true`
 - Use `reuseExistingServer: true` during development
 - Share authentication state across tests
-- Use `test.describe.parallel()` for independent test groups
+- Use `test.describe.configure({ mode: 'parallel' })` for independent test groups
 - Minimize unnecessary navigation between tests
