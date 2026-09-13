@@ -7,7 +7,9 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
 
   test('Klick-Interaktionen üben', async ({ page }) => {
     // 1. Auf den "Public News" Link klicken
-    const publicNewsLink = page.getByRole('link', { name: /view public news/i });
+    const publicNewsLink = page.getByRole('link', {
+      name: /view public news/i,
+    });
     await publicNewsLink.click();
     console.log('Public News Link wurde geklickt');
 
@@ -58,35 +60,28 @@ test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
   });
 
   test('Formular-Interaktionen (optional)', async ({ page }) => {
-    // Zum Login navigieren (falls vorhanden)
-    const loginLink = page.getByRole('link', { name: /login/i });
-    const loginExists = (await loginLink.count()) > 0;
+    // Zum Login navigieren
+    await page.getByRole('link', { name: 'Sign in to your account' }).click();
+    console.log('Login-Seite wurde geöffnet');
 
-    if (loginExists) {
-      await loginLink.click();
-      console.log('Login-Seite wurde geöffnet');
+    // Email eingeben (Test-User aus der .env)
+    await page
+      .getByLabel('Email')
+      .fill(process.env.TEST_USER_EMAIL ?? 'test@example.com');
+    console.log('Email wurde eingegeben');
 
-      // Username eingeben
-      const usernameField = page
-        .getByLabel(/username/i)
-        .or(page.getByPlaceholder(/username/i));
-      await usernameField.fill('testuser');
-      console.log('Username wurde eingegeben');
+    // Password eingeben
+    await page
+      .getByLabel('Password')
+      .fill(process.env.TEST_USER_PASSWORD ?? 'password');
+    console.log('Password wurde eingegeben');
 
-      // Password eingeben
-      const passwordField = page
-        .getByLabel(/password/i)
-        .or(page.getByPlaceholder(/password/i));
-      await passwordField.fill('testpass123');
-      console.log('Password wurde eingegeben');
+    // Submit Button klicken
+    await page.getByRole('button', { name: 'Submit sign in form' }).click();
+    console.log('Formular wurde abgeschickt');
 
-      // Submit Button klicken
-      const submitButton = page.getByRole('button', { name: /submit|login/i });
-      await submitButton.click();
-      console.log('Formular wurde abgeschickt');
-    } else {
-      console.log('Kein Login-Link gefunden - überspringe Formular-Test');
-    }
+    // Nach erfolgreichem Login leitet die App zur Startseite weiter
+    await page.waitForURL('/');
   });
 
   test('Verschiedene Interaktionsmethoden', async ({ page }) => {

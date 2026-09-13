@@ -61,12 +61,15 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      await expect(results.first()).toBeVisible();
      const initialCount = await results.count();
 
-     // Tab zur Suchleiste
+     // Vom Seitenanfang aus liegen Skip-Link und Navbar vor dem Suchfeld (ca. 10× Tab).
+     // Klick auf die Überschrift setzt den Startpunkt der Tab-Navigation direkt davor.
+     await page.getByRole('heading', { name: 'News Feed' }).click();
      await page.keyboard.press('Tab');
-     await page.keyboard.press('Tab'); // Je nach Layout mehrmals
 
      // Prüfe ob Suchfeld fokussiert ist
-     const searchInput = page.getByPlaceholder(/search|suche/i);
+     const searchInput = page.getByRole('textbox', {
+       name: 'Search news articles',
+     });
      await expect(searchInput).toBeFocused();
 
      // Tippe Suchbegriff Zeichen für Zeichen (echte Tastenanschläge)
@@ -118,9 +121,11 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    test('Login Formular Validierung', async ({ page }) => {
      await page.goto('/auth/signin');
 
-     const emailInput = page.getByLabel(/email/i);
-     const passwordInput = page.getByLabel(/password/i);
-     const submitButton = page.getByRole('button', { name: /sign in/i });
+     const emailInput = page.getByLabel('Email');
+     const passwordInput = page.getByLabel('Password');
+     const submitButton = page.getByRole('button', {
+       name: 'Submit sign in form',
+     });
 
      // Teste leeres Formular
      await submitButton.click();
@@ -140,14 +145,14 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      await passwordInput.fill('wrongpassword');
      await submitButton.click();
 
-     // Prüfe auf Fehlermeldung
-     await expect(page.getByRole('alert')).toContainText(/invalid/i);
+     // Prüfe auf Fehlermeldung (per Text, denn auch der Next.js Route Announcer hat role="alert")
+     await expect(
+       page.getByRole('alert').filter({ hasText: 'Invalid email or password' }),
+     ).toBeVisible();
 
-     // Teste mit korrekten Daten
-     await emailInput.clear();
-     await emailInput.fill('admin@example.com');
-     await passwordInput.clear();
-     await passwordInput.fill('admin123');
+     // Teste mit korrekten Daten des Test-Users aus der .env
+     await emailInput.fill(process.env.TEST_USER_EMAIL ?? 'test@example.com');
+     await passwordInput.fill(process.env.TEST_USER_PASSWORD ?? 'password');
      await submitButton.click();
 
      // Sollte weitergeleitet werden
