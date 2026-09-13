@@ -16,11 +16,11 @@ Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights 
    import { test, expect } from '@playwright/test';
 
    test('öffentlicher News-Feed liefert Artikel', async ({ request }) => {
-     const response = await request.get('/api/news/public');
+     // Der Typparameter typisiert json() (seit Playwright 1.63)
+     const response = await request.get<{ items: unknown[] }>('/api/news/public');
 
-     expect(response.status()).toBe(200);
+     await expect(response).toBeOK();
      const body = await response.json();
-     expect(Array.isArray(body.items)).toBe(true);
      expect(body.items.length).toBeGreaterThan(0);
    });
    ```
@@ -45,7 +45,8 @@ Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights 
          json: 'true',
        },
      });
-     expect([200, 302]).toContain(login.status());
+     // Redirects werden automatisch verfolgt, daher reicht toBeOK()
+     await expect(login).toBeOK();
 
      // Session prüfen
      const session = await api.get('/api/auth/session');
@@ -54,7 +55,7 @@ Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights 
 
      // Geschützte Route mit der Session abrufen
      const user = await api.get('/api/user');
-     expect(user.status()).toBe(200);
+     await expect(user).toBeOK();
      expect((await user.json()).email).toBe('test@example.com');
    });
    ```
@@ -81,7 +82,7 @@ Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights 
 
 - `request`-Fixture vs. `page.request` (getrennter vs. geteilter Cookie-Jar)
 - GET/POST mit `form` (URL-encoded) und `data` (JSON)
-- Statuscodes und JSON-Responses asserten
+- Statuscodes und JSON-Responses asserten: `await expect(response).toBeOK()` für 2xx, `status()` für konkrete Codes wie 201/409
 - API-Tests als schnelle Ergänzung zu UI-Tests
 
 **Zeit:** 20 Minuten

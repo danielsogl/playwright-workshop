@@ -38,11 +38,7 @@ Du kombinierst Request-Interception (`page.route`) mit `page.waitForResponse`, u
    test('empfängt und verarbeitet gemockte Response', async ({ page }) => {
      // 1. API mocken
      await page.route('**/api/news/public', async (route) => {
-       await route.fulfill({
-         status: 200,
-         contentType: 'application/json',
-         body: JSON.stringify(mockFeed),
-       });
+       await route.fulfill({ status: 200, json: mockFeed });
      });
 
      // 2. Response abfangen (vor der Navigation!)
@@ -67,8 +63,8 @@ Du kombinierst Request-Interception (`page.route`) mit `page.waitForResponse`, u
 
 **Was du lernst:**
 
-- `page.route` + `route.fulfill` zum Mocken
-- `page.waitForResponse` zum gezielten Abfangen einer Antwort
+- `page.route` + `route.fulfill({ json })` zum Mocken (setzt den Content-Type automatisch)
+- `page.waitForResponse` zum gezielten Abfangen einer Antwort – das Promise **vor** der auslösenden Aktion anlegen
 - Response-Daten (`response.json()`) gegen die UI-Darstellung abgleichen
 
 **Zeit:** 20 Minuten

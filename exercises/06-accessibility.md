@@ -51,7 +51,7 @@ npm install --save-dev @axe-core/playwright
    ```typescript
    test('News Feed Accessibility mit Details', async ({ page }) => {
      await page.goto('/news/public');
-     await page.waitForSelector('[role="article"]');
+     await expect(page.getByRole('article').first()).toBeVisible();
 
      const results = await new AxeBuilder({ page }).analyze();
 
@@ -119,23 +119,29 @@ npm install --save-dev @axe-core/playwright
 5. **Dark Mode Accessibility:**
 
    ```typescript
-   test('Dark Mode Contrast Ratios', async ({ page }) => {
-     await page.goto('/');
+   test.describe('Dark Mode', () => {
+     // Dark Mode per Emulation statt Theme-Toggle
+     // (analog: test.use({ forcedColors: 'active' }) oder { contrast: 'more' })
+     // Achtung: colorScheme setzt nur prefers-color-scheme. Die Feed App startet
+     // per next-themes immer dunkel (defaultTheme: 'dark'). Light Mode vor dem Laden setzen:
+     // await page.addInitScript(() => localStorage.setItem('theme', 'light'));
+     // (Nach einem Klick auf den Theme-Switch laufen noch Farbübergänge – axe misst dann Zwischenwerte.)
+     test.use({ colorScheme: 'dark' });
 
-     // Toggle Dark Mode
-     const themeToggle = page.getByRole('button', { name: /theme/i });
-     await themeToggle.click();
+     test('Dark Mode Contrast Ratios', async ({ page }) => {
+       await page.goto('/');
 
-     // Prüfe Kontrastverhältnisse im Dark Mode
-     const results = await new AxeBuilder({ page })
-       .withTags(['wcag2aa']) // Fokus auf Kontrast
-       .analyze();
+       // Prüfe Kontrastverhältnisse im Dark Mode
+       const results = await new AxeBuilder({ page })
+         .withTags(['wcag2aa']) // Fokus auf Kontrast
+         .analyze();
 
-     const contrastViolations = results.violations.filter((v) =>
-       v.id.includes('color-contrast'),
-     );
+       const contrastViolations = results.violations.filter((v) =>
+         v.id.includes('color-contrast'),
+       );
 
-     expect(contrastViolations).toHaveLength(0);
+       expect(contrastViolations).toHaveLength(0);
+     });
    });
    ```
 
@@ -167,11 +173,8 @@ npm install --save-dev @axe-core/playwright
      // Tab durch die Seite
      await page.keyboard.press('Tab');
 
-     // Prüfe Focus-Indicator
-     const focusedElement = await page.evaluate(
-       () => document.activeElement?.tagName,
-     );
-     expect(focusedElement).toBeTruthy();
+     // Prüfe, dass ein Element den Fokus hat
+     await expect(page.locator(':focus')).toHaveCount(1);
 
      // Accessibility Check mit Fokus
      const results = await new AxeBuilder({ page })

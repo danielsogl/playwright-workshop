@@ -27,26 +27,25 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      test('Theme umschalten', async ({ page }) => {
        await page.goto('/');
 
-       // Finde den Theme Toggle Button
+       // Finde den Theme-Toggle (role="switch", gibt es für Desktop und Mobile)
+       // visible() nimmt nur den sichtbaren
        const themeToggle = page
-         .getByRole('button', { name: /theme|dark|light/i })
-         .first();
+         .getByRole('switch', { name: /dark|light/i })
+         .visible();
 
-       // Prüfe initialen Zustand
+       // Merke initialen Zustand
        const htmlElement = page.locator('html');
        const initialTheme = (await htmlElement.getAttribute('class')) || '';
 
        // Klicke auf Theme Toggle
        await themeToggle.click();
 
-       // Prüfe ob Theme gewechselt hat
-       const newTheme = (await htmlElement.getAttribute('class')) || '';
-       expect(newTheme).not.toBe(initialTheme);
+       // Prüfe ob Theme gewechselt hat (wartet automatisch)
+       await expect(htmlElement).not.toHaveClass(initialTheme);
 
        // Toggle zurück
        await themeToggle.click();
-       const finalTheme = (await htmlElement.getAttribute('class')) || '';
-       expect(finalTheme).toBe(initialTheme);
+       await expect(htmlElement).toHaveClass(initialTheme);
      });
    });
    ```
@@ -57,6 +56,11 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    test('Suche mit Tastatur bedienen', async ({ page }) => {
      await page.goto('/news/public');
 
+     // Warte bis die Artikel geladen sind und merke die Anzahl
+     const results = page.getByRole('article');
+     await expect(results.first()).toBeVisible();
+     const initialCount = await results.count();
+
      // Tab zur Suchleiste
      await page.keyboard.press('Tab');
      await page.keyboard.press('Tab'); // Je nach Layout mehrmals
@@ -65,19 +69,14 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      const searchInput = page.getByPlaceholder(/search|suche/i);
      await expect(searchInput).toBeFocused();
 
-     // Tippe Suchbegriff
-     await page.keyboard.type('Playwright');
+     // Tippe Suchbegriff Zeichen für Zeichen (echte Tastenanschläge)
+     await searchInput.pressSequentially('Playwright');
 
      // Enter zum Suchen
      await page.keyboard.press('Enter');
 
-     // Warte auf Ergebnisse
-     await page.waitForLoadState('networkidle');
-
-     // Prüfe ob gefiltert wurde
-     const results = page.getByRole('article');
-     const count = await results.count();
-     expect(count).toBeLessThan(65); // Weniger als alle Items
+     // Prüfe ob gefiltert wurde: weniger als alle Items (wartet automatisch)
+     await expect(results).not.toHaveCount(initialCount);
    });
    ```
 
@@ -86,9 +85,9 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    ```typescript
    test('News Card Hover zeigt zusätzliche Optionen', async ({ page }) => {
      await page.goto('/news/public');
-     await page.waitForSelector('[role="article"]');
 
      const firstCard = page.getByRole('article').first();
+     await expect(firstCard).toBeVisible();
 
      // Hover über die Karte
      await firstCard.hover();
@@ -103,8 +102,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
 
      // Klicke auf Link in der Karte
      const cardLink = firstCard.getByRole('link').first();
-     const href = await cardLink.getAttribute('href');
-     expect(href).toBeTruthy();
+     await expect(cardLink).toHaveAttribute('href', /.+/);
 
      // Rechtsklick für Kontext-Menü
      await cardLink.click({ button: 'right' });
@@ -143,13 +141,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      await submitButton.click();
 
      // Prüfe auf Fehlermeldung
-     const errorMessage = page.getByText(/invalid|incorrect|falsch/i);
-     await expect(errorMessage)
-       .toBeVisible({ timeout: 5000 })
-       .catch(() => {
-         // Falls keine Fehlermeldung, prüfe URL
-         expect(page.url()).toContain('/auth/signin');
-       });
+     await expect(page.getByRole('alert')).toContainText(/invalid/i);
 
      // Teste mit korrekten Daten
      await emailInput.clear();
@@ -169,11 +161,13 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    test('Infinite Scroll oder Pagination', async ({ page }) => {
      await page.goto('/news/public');
 
+     // Warte bis die Artikel geladen sind und merke die Anzahl
+     const articles = page.getByRole('article');
+     await expect(articles.first()).toBeVisible();
+     const initialCount = await articles.count();
+
      // Scrolle zum Ende der Seite
      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-
-     // Warte kurz
-     await page.waitForTimeout(500);
 
      // Prüfe ob mehr Items geladen wurden oder Pagination sichtbar ist
      const loadMoreButton = page.getByRole('button', {
@@ -181,12 +175,14 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      });
      const paginationNext = page.getByRole('link', { name: /next|weiter/i });
 
+     // isVisible() wartet nicht, hier gewollt, da die Elemente optional sind
      if (await loadMoreButton.isVisible()) {
        await loadMoreButton.click();
-       await page.waitForLoadState('networkidle');
+       // Web-First Assertion statt networkidle: warte auf neue Items
+       await expect(articles).not.toHaveCount(initialCount);
      } else if (await paginationNext.isVisible()) {
        await paginationNext.click();
-       await page.waitForLoadState('networkidle');
+       await expect(articles.first()).toBeVisible();
      }
 
      // Scrolle zurück nach oben
@@ -196,9 +192,10 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
      const scrollTopButton = page.getByRole('button', { name: /top|up/i });
      if (await scrollTopButton.isVisible()) {
        await scrollTopButton.click();
-       // Prüfe ob wir oben sind
-       const scrollY = await page.evaluate(() => window.scrollY);
-       expect(scrollY).toBeLessThanOrEqual(100);
+       // Prüfe ob wir oben sind: expect.poll wiederholt, bis das Scrollen fertig ist
+       await expect
+         .poll(() => page.evaluate(() => window.scrollY))
+         .toBeLessThanOrEqual(100);
      }
    });
    ```
@@ -223,8 +220,8 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
        const bulkActions = page.getByText(/selected|ausgewählt/i);
        await expect(bulkActions).toBeVisible();
 
-       // Wähle alle ab mit Strg+Klick
-       await checkboxes.first().click({ modifiers: ['Control'] });
+       // Wähle ab mit Strg+Klick (ControlOrMeta = Cmd unter macOS)
+       await checkboxes.first().click({ modifiers: ['ControlOrMeta'] });
      }
 
      // Alternative: Mehrfachauswahl mit Shift
@@ -243,7 +240,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
 - ✅ Prüfe Hover-States und Fokus-Indikatoren
 - ✅ Validiere Formular-Verhalten vollständig
 - ✅ Berücksichtige verschiedene Eingabe-Methoden
-- ❌ Vermeide zu schnelle Aktionen ohne Wartezeiten
+- ❌ Vermeide feste Wartezeiten (`waitForTimeout`, `networkidle`), nutze Auto-Waiting und Web-First Assertions
 
 **Zeit:** 25 Minuten
 

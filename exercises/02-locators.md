@@ -26,8 +26,9 @@ Du wendest verschiedene Locator-Strategien praktisch an. Fokus: Elemente **finde
      const welcome = page.getByText('Welcome to');
      console.log('Welcome-Text sichtbar:', await welcome.isVisible());
 
-     // Der Theme-Umschalter hat die Rolle "switch"
-     const themeToggle = page.getByRole('switch').first();
+     // Theme-Umschalter über sein Label ("Switch to dark mode" / "Switch to light mode")
+     // Den Toggle gibt es für Desktop und Mobile, visible() nimmt nur den sichtbaren
+     const themeToggle = page.getByLabel(/switch to (dark|light) mode/i).visible();
      console.log('Theme-Toggle gefunden:', await themeToggle.count());
    });
    ```

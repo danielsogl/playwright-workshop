@@ -21,15 +21,15 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
 
    ```typescript
    // e2e/pages/NewsPage.ts
-   import { Page, Locator } from '@playwright/test';
+   import { Page, expect } from '@playwright/test';
 
    export class NewsPage {
      // Speichere Page-Referenz
      constructor(private page: Page) {}
 
-     // Definiere Locators als Getter (lazy loading)
+     // Definiere Locators als Getter (aufgelöst wird erst bei der Aktion)
      get searchInput() {
-       return this.page.getByRole('textbox', { name: 'Search news' });
+       return this.page.getByRole('textbox', { name: 'Search news articles' });
      }
 
      get newsList() {
@@ -40,6 +40,10 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
        return this.newsList.getByRole('article');
      }
 
+     get newsTitles() {
+       return this.newsItems.getByRole('heading', { level: 2 });
+     }
+
      get loadingIndicator() {
        return this.page.getByRole('status', { name: /loading/i });
      }
@@ -47,29 +51,27 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
      // Navigations-Methode
      async goto() {
        await this.page.goto('/news/public');
-       // Warte bis Seite geladen ist
-       await this.newsList.waitFor();
+       // Web-First-Assertion statt waitForLoadState('networkidle')
+       await expect(this.newsItems.first()).toBeVisible();
      }
 
-     // Aktions-Methoden
+     // Aktions-Methoden: die Suche filtert clientseitig, kein Warten nötig
      async searchNews(searchTerm: string) {
        await this.searchInput.fill(searchTerm);
-       // Warte bis Suche angewendet wurde
-       await this.page.waitForLoadState('networkidle');
      }
 
      async clearSearch() {
        await this.searchInput.clear();
      }
 
-     // Helper-Methoden für Daten
+     // Helper-Methoden für Werte, die du im Test weiterverwenden willst.
+     // Für Assertions lieber die Locators mit toHaveCount/toHaveText nutzen.
      async getNewsCount(): Promise<number> {
        return await this.newsItems.count();
      }
 
      async getFirstNewsTitle(): Promise<string | null> {
-       const firstItem = this.newsItems.first();
-       return await firstItem.textContent();
+       return await this.newsTitles.first().textContent();
      }
    }
    ```
@@ -90,39 +92,33 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
      });
 
      test('zeigt alle News initial', async () => {
-       // Verwende Page Object Methoden
-       const count = await newsPage.getNewsCount();
-       expect(count).toBeGreaterThan(0);
-
-       // Verwende Page Object Locators
+       // Verwende Page Object Locators für Assertions
        await expect(newsPage.newsItems.first()).toBeVisible();
+
+       // Helper-Methode, wenn du den Wert weiterverwenden willst
+       expect(await newsPage.getNewsCount()).toBeGreaterThan(0);
      });
 
      test('kann nach News suchen', async () => {
        // Initiale Anzahl merken
        const initialCount = await newsPage.getNewsCount();
-       expect(initialCount).toBeGreaterThan(0);
 
        // Suche durchführen
        await newsPage.searchNews('Technology');
 
-       // Ergebnisse prüfen
-       const count = await newsPage.getNewsCount();
-       expect(count).toBeLessThan(initialCount);
-       expect(count).toBeGreaterThan(0);
+       // Ergebnisse prüfen: toHaveCount wartet, bis die Liste gefiltert ist
+       await expect(newsPage.newsItems).not.toHaveCount(initialCount);
 
        // Suche zurücksetzen
        await newsPage.clearSearch();
-       expect(await newsPage.getNewsCount()).toBe(initialCount);
+       await expect(newsPage.newsItems).toHaveCount(initialCount);
      });
 
      test('findet spezifischen Artikel', async () => {
        await newsPage.searchNews('Cybersecurity');
 
-       expect(await newsPage.getNewsCount()).toBe(1);
-
-       const title = await newsPage.getFirstNewsTitle();
-       expect(title).toContain('Cybersecurity');
+       await expect(newsPage.newsItems).toHaveCount(1);
+       await expect(newsPage.newsTitles.first()).toContainText('Cybersecurity');
      });
    });
    ```
@@ -140,21 +136,16 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
 
      async filterByCategory(category: string) {
        await this.categoryFilter.selectOption(category);
-       await this.page.waitForLoadState('networkidle');
      }
 
-     async waitForNewsToLoad() {
-       await this.loadingIndicator.waitFor({ state: 'hidden' });
-       await this.newsList.waitFor({ state: 'visible' });
+     // Assertions im Page Object (optional, Konvention im Team festlegen)
+     async expectNewsLoaded() {
+       await expect(this.loadingIndicator).toBeHidden();
+       await expect(this.newsList).toBeVisible();
      }
 
-     // Assertions im Page Object (optional)
      async expectNewsCount(count: number) {
        await expect(this.newsItems).toHaveCount(count);
-     }
-
-     async expectSearchInputValue(value: string) {
-       await expect(this.searchInput).toHaveValue(value);
      }
    }
    ```
@@ -162,8 +153,11 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
 4. **Best Practices für Page Objects:**
    - ✅ Ein Page Object pro Seite/Komponente
    - ✅ Klare, beschreibende Methoden-Namen
-   - ✅ Locators als Getter oder readonly Properties
-   - ✅ Keine Test-Assertions in Page Objects (außer wait-Conditions)
+   - ✅ Locators als Getter oder `readonly` Properties
+   - ✅ Locators für Assertions freigeben (`toHaveCount`, `toHaveText`) statt `count()`/`textContent()` zu prüfen
+   - ✅ Methoden, die navigieren, können das nächste Page Object zurückgeben
+   - ✅ Assertions: Konvention im Team festlegen (die offizielle Doku nutzt `expect` im Page Object, etwa zum Warten auf die Zielseite)
+   - ❌ Kein `waitForLoadState('networkidle')` oder `waitForTimeout()`, Bereitschaft per `expect(...)` prüfen
    - ❌ Keine test-spezifische Logik
    - ❌ Nicht zu viele Details verstecken
 
@@ -176,7 +170,7 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
 
 ```typescript
 // Ohne POM:
-await page.getByRole('textbox', { name: 'Search news' }).fill('Tech');
+await page.getByRole('textbox', { name: 'Search news articles' }).fill('Tech');
 
 // Mit POM:
 await newsPage.searchNews('Tech');

@@ -17,19 +17,22 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    - Füge `playwright/.auth` zu deiner `.gitignore` hinzu
    - Erstelle eine Datei `e2e/auth.setup.ts` für den Login-Prozess
 
-   > **Hinweis zur Musterlösung:** Die Lösung bündelt den Setup-Test aus Kürze im selben Spec (`solutions/e2e/07-authentifizierung.spec.ts`); das `setup`-Projekt in der Config matcht ihn über `grep: /authenticate as/`. In deinem eigenen Projekt ist eine separate `*.setup.ts`-Datei mit `testMatch: /.*\.setup\.ts/` die sauberere Variante.
+   > **Hinweis zur Musterlösung:** Die Lösung bündelt die Setup-Tests aus Kürze im selben Spec (`solutions/e2e/07-authentifizierung.spec.ts`); das `setup`-Projekt in der Config matcht sie über `grep: /authenticate as/`. Weil sie im `chromium`-Projekt zusätzlich mitlaufen, verhindert ein Test-Lock (`{ lock: 'user-auth-state' }`, seit 1.63), dass sie `user.json` überschreiben, während andere Tests die Datei lesen. In deinem eigenen Projekt ist eine separate `*.setup.ts`-Datei mit `testMatch: /.*\.setup\.ts/` die sauberere Variante.
 
 2. **UI-Login implementieren:**
 
    ```typescript
    import { test as setup, expect } from '@playwright/test';
-   import path from 'path';
 
-   const authFile = path.join(__dirname, '../playwright/.auth/user.json');
+   // Relativ zum Projekt-Root (dort startet Playwright)
+   const authFile = 'playwright/.auth/user.json';
 
    setup('authenticate via UI', async ({ page }) => {
-     // Navigiere zur Login-Seite
+     // Navigiere zur Login-Seite. Auth.js setzt das CSRF-Cookie beim Laden
+     // der Session – wer vorher absendet, bekommt auf kaltem Dev-Server MissingCSRF.
+     const sessionLoaded = page.waitForResponse('**/api/auth/session');
      await page.goto('/auth/signin');
+     await sessionLoaded;
 
      // Fülle das Login-Formular aus
      await page
@@ -40,7 +43,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
        .fill(process.env.TEST_USER_PASSWORD || 'password');
 
      // Klicke auf den Login-Button
-     await page.getByRole('button', { name: 'Sign in' }).click();
+     await page.getByRole('button', { name: 'Submit sign in form' }).click();
 
      // Warte auf erfolgreiche Navigation
      await page.waitForURL('/');
@@ -78,7 +81,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
      );
 
      // Überprüfe erfolgreichen Login
-     expect(loginResponse.ok()).toBeTruthy();
+     await expect(loginResponse).toBeOK();
 
      // Speichere den authentifizierten State
      await request.storageState({ path: authFile });
@@ -109,6 +112,8 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
      ],
    });
    ```
+
+   > **UI Mode:** Der UI Mode (`npx playwright test --ui`) startet das `setup`-Projekt nicht automatisch. Führe es dort einmal manuell aus, sonst fehlt `playwright/.auth/user.json`.
 
 5. **Test mit Authentifizierung schreiben:**
 
@@ -168,6 +173,8 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
 - Wiederverwendbare Auth-States für alle Tests
 - Sichere Credential-Verwaltung über Umgebungsvariablen
 - Unterstützung für Multi-Role-Testing
+
+> **Geteilter Account?** Ändern einzelne Tests Serverzustand desselben Test-Users (z. B. Settings), markiere sie mit einem Test-Lock (seit 1.63): `test('Profil umbenennen', { lock: 'user-settings' }, async ({ page }) => { … })`. Tests mit gleichem Lock-Namen laufen nie gleichzeitig, auch nicht über Dateien, Worker und Projekte hinweg.
 
 ---
 

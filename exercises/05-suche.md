@@ -127,7 +127,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 
 - Test-Organisation mit `describe` und `beforeEach`
 - Formular-Interaktionen (fill, clear, press)
-- Dynamische Assertions mit count()
+- Dynamische Assertions mit `toHaveCount()` (wartet automatisch) und `count()`
 - Arbeiten mit Listen von Elementen
 - Trace-Viewer für Debugging
 

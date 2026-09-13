@@ -50,6 +50,21 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
        items: [],
      },
    };
+
+   // Ein-Artikel-Feed, den Übung 12 direkt importiert
+   export const mockSearchFeed = {
+     items: [
+       {
+         title: 'Gemockte News',
+         description: 'Beschreibung der gemockten News',
+         link: 'https://example.com/mock-1',
+         category: 'Technology',
+         source: 'Mock Source',
+         pubDate: '2026-01-01T10:00:00.000Z',
+         isoDate: '2026-01-01T10:00:00.000Z',
+       },
+     ],
+   };
    ```
 
 2. **Erfolgreiche API-Antwort mocken:**
@@ -60,12 +75,9 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
 
    test('zeigt gemockte News-Daten', async ({ page }) => {
      // Mock API bevor die Seite geladen wird
+     // `json` serialisiert den Body und setzt den Content-Type automatisch
      await page.route('**/api/news/public', async (route) => {
-       await route.fulfill({
-         status: 200,
-         contentType: 'application/json',
-         body: JSON.stringify(mockNewsData.success),
-       });
+       await route.fulfill({ json: mockNewsData.success });
      });
 
      // Navigiere zur Seite
@@ -76,8 +88,8 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      await expect(newsItems).toHaveCount(2);
 
      // Prüfe spezifische Inhalte
-     await expect(page.getByText('Test News 1')).toBeVisible();
-     await expect(page.getByText('Test News 2')).toBeVisible();
+     await expect(page.getByText('Test Technology News')).toBeVisible();
+     await expect(page.getByText('Test Business News')).toBeVisible();
    });
    ```
 
@@ -89,21 +101,21 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      await page.route('**/api/news/public', async (route) => {
        await route.fulfill({
          status: 500,
-         contentType: 'application/json',
-         body: JSON.stringify({ error: 'Internal Server Error' }),
+         json: { error: 'Internal Server Error' },
        });
      });
 
      await page.goto('/news/public');
 
      // Prüfe Fehler-UI
-     await expect(page.getByRole('alert')).toBeVisible();
-     await expect(page.getByText(/error|fehler/i)).toBeVisible();
+     await expect(
+       page.getByRole('alert').filter({ hasText: 'Failed to load RSS feeds' }),
+     ).toBeVisible();
 
      // News-Liste sollte nicht angezeigt werden
      await expect(
        page.getByRole('feed', { name: 'News articles' }),
-     ).not.toBeVisible();
+     ).toBeHidden();
    });
    ```
 
@@ -113,17 +125,13 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
    test('zeigt Empty State bei leeren Daten', async ({ page }) => {
      // Mock leere Antwort
      await page.route('**/api/news/public', async (route) => {
-       await route.fulfill({
-         status: 200,
-         contentType: 'application/json',
-         body: JSON.stringify(mockNewsData.empty),
-       });
+       await route.fulfill({ json: mockNewsData.empty });
      });
 
      await page.goto('/news/public');
 
-     // Prüfe Empty State
-     await expect(page.getByText(/keine news|no news/i)).toBeVisible();
+     // Prüfe Empty State (die App zeigt nur den Zähler)
+     await expect(page.getByText('0 articles found')).toBeVisible();
      await expect(page.getByRole('article')).toHaveCount(0);
    });
    ```
@@ -136,57 +144,38 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      await page.route('**/api/news/public', async (route) => {
        // 2 Sekunden warten
        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-       await route.fulfill({
-         status: 200,
-         contentType: 'application/json',
-         body: JSON.stringify(mockNewsData.success),
-       });
+       await route.fulfill({ json: mockNewsData.success });
      });
 
-     // Starte Navigation (nicht await!)
-     const navigationPromise = page.goto('/news/public');
+     // goto() wartet auf das load-Event, nicht auf den API-Call
+     await page.goto('/news/public');
 
      // Prüfe Loading State
-     await expect(
-       page.getByRole('status', { name: /loading|lädt/i }),
-     ).toBeVisible();
+     const loading = page.getByRole('status', { name: 'Loading news feed' });
+     await expect(loading).toBeVisible();
 
-     // Warte auf Navigation
-     await navigationPromise;
-
-     // Loading sollte verschwunden sein
-     await expect(
-       page.getByRole('status', { name: /loading|lädt/i }),
-     ).not.toBeVisible();
+     // Loading sollte verschwinden
+     await expect(loading).toBeHidden();
 
      // Daten sollten angezeigt werden
      await expect(page.getByRole('article')).toHaveCount(2);
    });
    ```
 
-6. **Dynamisches Mocking (basierend auf Request):**
+6. **Dynamisches Mocking (Verhalten zur Laufzeit umschalten):**
 
    ```typescript
-   test('mockt basierend auf Suchparametern', async ({ page }) => {
-     await page.route('**/api/news/public*', async (route, request) => {
-       const url = new URL(request.url());
-       const search = url.searchParams.get('search');
+   test('mockt Rate Limiting nach dem ersten Laden', async ({ page }) => {
+     let rateLimited = false;
 
-       if (search === 'test') {
-         // Gebe gefilterte Ergebnisse zurück
-         await route.fulfill({
-           status: 200,
-           body: JSON.stringify({
-             items: [mockNewsData.success.items[0]],
-           }),
-         });
+     await page.route('**/api/news/public', async (route) => {
+       if (route.request().method() !== 'GET') {
+         // Alles andere an weitere Handler oder ans Netzwerk weitergeben
+         await route.fallback();
+       } else if (rateLimited) {
+         await route.fulfill({ status: 429, json: { error: 'Too Many Requests' } });
        } else {
-         // Gebe alle Daten zurück
-         await route.fulfill({
-           status: 200,
-           body: JSON.stringify(mockNewsData.success),
-         });
+         await route.fulfill({ json: mockNewsData.success });
        }
      });
 
@@ -195,21 +184,26 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
      // Initiale Daten
      await expect(page.getByRole('article')).toHaveCount(2);
 
-     // Suche durchführen
-     await page.getByRole('textbox', { name: 'Search news' }).fill('test');
-     await page.waitForLoadState('networkidle');
+     // Ab jetzt antwortet die API mit 429
+     rateLimited = true;
+     await page.reload();
 
-     // Gefilterte Daten
-     await expect(page.getByRole('article')).toHaveCount(1);
+     await expect(
+       page.getByRole('alert').filter({ hasText: 'Failed to load RSS feeds' }),
+     ).toBeVisible();
    });
    ```
+
+   > **Hinweis:** Die Suche auf `/news/public` filtert clientseitig – sie löst **keinen** neuen API-Call aus. Mit gemockten Daten kannst du sie trotzdem deterministisch testen: `getByRole('textbox', { name: 'Search news articles' })` befüllen und `toHaveCount` prüfen.
 
 **Best Practices:**
 
 - ✅ Mocke APIs vor dem Navigieren zur Seite
 - ✅ Teste Success, Error und Loading States
 - ✅ Verwende realistische Mock-Daten
-- ✅ Nutze `waitForLoadState()` nach dynamischen Aktionen
+- ✅ `route.fulfill({ json })` statt `body: JSON.stringify(...)` + `contentType`
+- ✅ Route-Handler `async` schreiben und `route.fulfill/continue/fallback/abort` immer `await`en
+- ✅ Web-first Assertions (`toHaveCount`, `toBeVisible`) statt `waitForLoadState('networkidle')`
 - ❌ Mocke nicht zu viel - manchmal sind echte API-Calls besser
 
 **Zeit:** 25 Minuten

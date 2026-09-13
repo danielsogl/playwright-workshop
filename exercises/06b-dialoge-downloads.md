@@ -23,13 +23,15 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
      });
 
      await page.getByRole('button', { name: 'Show alert dialog' }).click();
-     await expect(page.getByRole('status')).toContainText('accepted');
+     await expect(page.getByRole('status')).toContainText('Alert dialog was shown');
    });
    ```
 
 2. **Confirm ablehnen / Prompt beantworten:**
    - `confirm`: mit `dialog.dismiss()` ablehnen und prüfen, dass die App das „Abbrechen" registriert.
    - `prompt`: mit `dialog.accept('mein Text')` bestätigen und den zurückgegebenen Text verifizieren.
+   - Jeder Dialog braucht **genau ein** `accept()` oder `dismiss()`, sonst hängt die auslösende Aktion. Ein Handler für mehrere Typen: `switch (dialog.type())` mit `default: await dialog.accept()`.
+   - **Bonus `beforeunload`:** „Add BeforeUnload" klicken, dann `await page.close({ runBeforeUnload: true })`. Ohne die Option führt Playwright keine Unload-Handler aus.
 
 ## Teil B: Datei-Downloads (`/file-download`)
 
@@ -44,6 +46,9 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
      const download = await downloadPromise;
 
      expect(download.suggestedFilename()).toMatch(/\.pdf$/);
+
+     // Erst Fehler prüfen: path() wirft bei fehlgeschlagenem Download
+     expect(await download.failure()).toBeNull();
      const filePath = await download.path();
      expect(filePath).toBeTruthy();
    });
@@ -52,6 +57,7 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
 **Was du lernst:**
 
 - `page.on('dialog', …)` + `accept()` / `dismiss()` / `accept(text)`
-- `page.waitForEvent('download')`, `download.suggestedFilename()` und `download.path()`
+- `page.close({ runBeforeUnload: true })` für `beforeunload`-Dialoge
+- `page.waitForEvent('download')`, `download.suggestedFilename()` (synchron), `download.failure()` und `download.path()`
 
 **Zeit:** 15 Minuten

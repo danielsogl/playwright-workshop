@@ -7,11 +7,13 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 > **Baut auf (weich):** Übung 9 – optionaler `NewsPage`-POM-Reuse zum Navigieren von `/` und dem Feed.
 > **Zurückgefallen?** `page.goto()` reicht; die POM ist hier nur Komfort.
 
+**Breakpoints der App (Tailwind):** Hamburger-Menü unter `sm` (640px), Desktop-Navigation ab `lg` (1024px), News-Grid mit 2 Spalten ab `md` (768px) und 3 Spalten ab `lg`.
+
 **Aufgaben:**
 
-1. **Mobile Projekte in der Konfiguration definieren:**
+1. **Mobile Projekte in der Konfiguration prüfen:**
    - Öffne `playwright.config.ts`
-   - Aktiviere die auskommentierten Mobile-Projekte:
+   - Die Mobile-Projekte sind bereits aktiv – **ein Projekt pro Gerät**. Mehrere `devices` in ein `use` zu spreaden überschreibt sich gegenseitig:
 
    ```typescript
    projects: [
@@ -22,12 +24,12 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
      },
      // Mobile Devices
      {
-       name: 'Mobile Chrome',
-       use: { ...devices['Pixel 5'] },
+       name: 'Mobile iPhone',
+       use: { ...devices['iPhone 17 Pro'] },
      },
      {
-       name: 'Mobile Safari',
-       use: { ...devices['iPhone 13'] },
+       name: 'Mobile Android',
+       use: { ...devices['Pixel 10 Pro XL'] },
      },
    ],
    ```
@@ -43,46 +45,51 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await page.goto('/');
 
        // Desktop Navigation sollte sichtbar sein
-       const desktopNav = page
-         .getByRole('navigation')
-         .locator('.hidden.lg\\:flex');
+       const desktopNav = page.getByRole('navigation', {
+         name: 'Main navigation',
+         exact: true,
+       });
        await expect(desktopNav).toBeVisible();
 
        // Mobile Menu Button sollte nicht sichtbar sein
-       const mobileMenuButton = page.getByRole('button', { name: /menu/i });
-       await expect(mobileMenuButton).not.toBeVisible();
+       const mobileMenuButton = page.getByRole('button', { name: 'Open menu' });
+       await expect(mobileMenuButton).toBeHidden();
      });
 
      test('Mobile: zeigt Hamburger Menu', async ({ page, isMobile }) => {
        // Dieser Test läuft nur auf mobilen Geräten
-       if (!isMobile) {
-         test.skip();
-       }
+       // (isMobile wird in Firefox nicht unterstützt)
+       test.skip(!isMobile, 'Nur auf Mobile-Projekten');
 
        await page.goto('/');
 
        // Mobile Menu Button sollte sichtbar sein
-       const mobileMenuButton = page.getByRole('button', { name: /menu/i });
+       const mobileMenuButton = page.getByRole('button', { name: 'Open menu' });
        await expect(mobileMenuButton).toBeVisible();
 
        // Desktop Navigation sollte nicht sichtbar sein
-       const desktopNav = page
-         .getByRole('navigation')
-         .locator('.hidden.lg\\:flex');
-       await expect(desktopNav).not.toBeVisible();
+       const desktopNav = page.getByRole('navigation', {
+         name: 'Main navigation',
+         exact: true,
+       });
+       await expect(desktopNav).toBeHidden();
 
        // Öffne das Mobile Menu
        await mobileMenuButton.click();
 
        // Prüfe ob Menu-Items erscheinen
+       const mobileNav = page.getByRole('navigation', {
+         name: 'Mobile navigation',
+       });
        await expect(
-         page.getByRole('link', { name: 'Public News' }),
+         mobileNav.getByRole('link', { name: 'Navigate to Public News' }),
        ).toBeVisible();
      });
    });
    ```
 
 3. **News Grid Layout auf verschiedenen Viewports testen:**
+   - `toHaveCSS` vergleicht den **berechneten** Wert – `grid-template-columns` liefert px-Werte (z.B. `"394.656px 394.672px 394.656px"`), nicht `repeat(3, …)`.
 
    ```typescript
    test.describe('News Grid Responsive Layout', () => {
@@ -90,7 +97,10 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await page.goto('/news/public');
 
        const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveCSS('grid-template-columns', /repeat\(3/);
+       await expect(newsGrid).toHaveCSS(
+         'grid-template-columns',
+         /^[\d.]+px [\d.]+px [\d.]+px$/,
+       );
      });
 
      test('Tablet: zeigt 2 Spalten', async ({ page }) => {
@@ -99,7 +109,10 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await page.goto('/news/public');
 
        const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveCSS('grid-template-columns', /repeat\(2/);
+       await expect(newsGrid).toHaveCSS(
+         'grid-template-columns',
+         /^[\d.]+px [\d.]+px$/,
+       );
      });
 
      test('Mobile: zeigt 1 Spalte', async ({ page, isMobile }) => {
@@ -109,44 +122,52 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        await page.goto('/news/public');
 
        const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveCSS('grid-template-columns', /repeat\(1/);
+       await expect(newsGrid).toHaveCSS('grid-template-columns', /^[\d.]+px$/);
      });
    });
    ```
 
 4. **Touch-Gesten testen (optional):**
+   - `tap()` braucht einen Context mit `hasTouch: true` – die Device-Emulation setzt das.
+   - `test.use({ ...devices['iPhone 13'] })` gehört an den Anfang der Datei: `defaultBrowserType` darf nicht in einem `describe` gesetzt werden.
 
    ```typescript
-   test('Mobile: Touch-Interaktionen', async ({ page, isMobile }) => {
-     if (!isMobile) {
-       test.skip();
-     }
+   // e2e/touch.spec.ts
+   import { test, expect, devices } from '@playwright/test';
 
-     await page.goto('/news/public');
+   test.use({ ...devices['iPhone 13'] }); // setzt hasTouch und isMobile
 
-     // Simuliere Swipe/Scroll
-     const newsItem = page.getByRole('article').first();
-     await newsItem.scrollIntoViewIfNeeded();
+   test('Mobile: Touch-Interaktionen', async ({ page }) => {
+     await page.goto('/');
 
-     // Simuliere Touch auf News-Item
-     await newsItem.tap();
+     // Simuliere Touch auf den Hamburger-Button
+     await page.getByRole('button', { name: 'Open menu' }).tap();
 
-     // Prüfe Navigation oder Modal
-     await expect(page).toHaveURL(/\/news\/\d+/);
+     const mobileNav = page.getByRole('navigation', {
+       name: 'Mobile navigation',
+     });
+     await mobileNav.getByRole('link', { name: 'Navigate to Public News' }).tap();
+
+     // Prüfe Navigation
+     await expect(page).toHaveURL('/news/public');
+     await expect(page.getByRole('article').first()).toBeVisible();
    });
    ```
 
 5. **Tests ausführen:**
    - Führe Tests für Desktop aus: `npx playwright test --project=chromium`
-   - Führe Tests für Mobile aus: `npx playwright test --project="Mobile Chrome"`
+   - Führe Tests für Mobile aus: `npx playwright test --project="Mobile Android"`
    - Führe alle Tests aus: `npx playwright test`
 
 **Best Practices:**
 
-- Nutze `isMobile` Context-Variable für bedingte Tests
+- Nutze `isMobile` Context-Variable für bedingte Tests (in Firefox nicht unterstützt)
+- Ein Projekt pro Gerät – nie mehrere `devices` in ein Projekt spreaden
 - Teste kritische User Journeys auf mobilen Geräten
 - Prüfe Touch-Targets auf ausreichende Größe (min. 44x44px)
 - Teste Landscape und Portrait Orientierung bei wichtigen Features
+- Barrierefreiheits-Präferenzen emulierst du ab v1.63 direkt als Test-Optionen: `test.use({ reducedMotion: 'reduce', forcedColors: 'active', contrast: 'more' })`
+- Geolocation immer mit Namen angeben: `geolocation: { latitude: 48.8584, longitude: 2.2945 }` plus `permissions: ['geolocation']`
 
 **Zeit:** 25 Minuten
 

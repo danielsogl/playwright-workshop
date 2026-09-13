@@ -24,6 +24,7 @@ Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** 
    ```
 
 2. **Public-News: Suche + Kategorie-Filter (NewsPage-POM):**
+   - Mocke vorher `/api/news/public` mit dem Offline-Feed der App (Übung 11), damit die Zahlen unabhängig von Live-RSS-Feeds stimmen: `await page.route('**/api/news/public', (route) => route.fulfill({ path: 'app/api/feed.json' }));`
    - Navigiere mit `newsPage.goto()` zu `/news/public`.
    - Prüfe den Ergebniszähler `"{n} articles found"` **und** die Anzahl der Artikel im `role="feed"`.
    - Führe eine Suche ohne Treffer aus (`0` Artikel), setze zurück, filtere dann nach Kategorie **Business** (→ 5 Artikel).
@@ -32,6 +33,13 @@ Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** 
    - Lege über das `AddFeedForm` einen Feed mit **eindeutigem Namen** an (`Name`, gültige `URL`).
    - Nutze `pressSequentially()` statt `fill()` – die react-aria-Felder setzen ihren State in WebKit sonst nicht zuverlässig (wie in Übung 8).
    - Prüfe, dass der Feed erscheint (Count-Chip / `Select feed:`-Button), wähle ihn aus und lösche ihn wieder. Prüfe, dass die Anzahl wieder sinkt.
+   - Feeds und Profil liegen serverseitig am Test-User. Läuft der Test parallel in mehreren Projekten (z.B. chromium und webkit), verfälschen sich die Counts gegenseitig. Ein **Test Lock** (ab v1.63) verhindert das – Tests mit gleichem Lock-Namen laufen nie gleichzeitig:
+
+   ```typescript
+   test('kompletter User-Flow', { lock: 'test-user-account' }, async ({ authenticatedPage: page }) => {
+     // …
+   });
+   ```
 
 4. **Settings (`/settings`): Name ändern (cross-component Session-Update):**
    - Ändere im Profil-Formular den Namen und sende ab.
