@@ -13,6 +13,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 1. **Test-Suite mit Setup erstellen:**
 
    ```typescript
+   // e2e/suche.spec.ts
    import { test, expect } from '@playwright/test';
 
    test.describe('News Feed Suche', () => {
@@ -117,7 +118,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 
    ```bash
    # Tests ausführen
-   npx playwright test navigationstest.spec.ts
+   npx playwright test suche.spec.ts
 
    # Bei Fehler: Trace öffnen
    npx playwright show-report
