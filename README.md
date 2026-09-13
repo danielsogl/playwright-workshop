@@ -6,7 +6,7 @@ weitere Seiten, gegen die die Übungen geschrieben werden.
 
 ## Voraussetzungen
 
-- **Node.js 20 LTS oder neuer**
+- **Node.js 22.x, 24.x oder 26.x**
 - npm (im Repo enthaltenes `package-lock.json` wird genutzt)
 
 ## Setup
