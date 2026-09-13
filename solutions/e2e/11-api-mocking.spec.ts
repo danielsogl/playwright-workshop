@@ -12,11 +12,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import {
-  mockNewsData,
-  mockErrorResponse,
-  mockRateLimitResponse,
-} from './mocks/news-mocks';
+import { mockNewsData } from './mocks/news-mocks';
 
 test.describe('Exercise 11: API Mocking', () => {
   test('shows mocked news data successfully', async ({ page }) => {
@@ -34,21 +30,17 @@ test.describe('Exercise 11: API Mocking', () => {
     );
 
     // Verify specific content from our mock data
-    await expect(
-      page.getByText('Workshop Test Article - AI Development Trends'),
-    ).toBeVisible();
-    await expect(
-      page.getByText('Workshop Test Article - Global Market Analysis'),
-    ).toBeVisible();
-    await expect(
-      page.getByText('Workshop Test Article - Breaking News Update'),
-    ).toBeVisible();
+    await expect(page.getByText('Test Technology News')).toBeVisible();
+    await expect(page.getByText('Test Business News')).toBeVisible();
   });
 
   test('shows error message when API fails', async ({ page }) => {
     // Mock API error response
     await page.route('**/api/news/public', async (route) => {
-      await route.fulfill({ status: 500, json: mockErrorResponse });
+      await route.fulfill({
+        status: 500,
+        json: { error: 'Internal Server Error' },
+      });
     });
 
     await page.goto('/news/public');
@@ -115,9 +107,9 @@ test.describe('Exercise 11: API Mocking', () => {
     });
 
     // Title and description are searched
-    await searchInput.fill('cybersecurity');
+    await searchInput.fill('business');
     await expect(newsItems).toHaveCount(1);
-    await expect(newsItems).toContainText('Cybersecurity Advances');
+    await expect(newsItems).toContainText('Test Business News');
 
     // Search for something else
     await searchInput.fill('nonexistent');
@@ -145,14 +137,16 @@ test.describe('Exercise 11: API Mocking', () => {
     let rateLimited = false;
 
     await page.route('**/api/news/public', async (route) => {
-      if (!rateLimited) {
-        await route.fulfill({ json: mockNewsData.success });
-      } else {
+      if (route.request().method() !== 'GET') {
+        // Everything else goes on to other handlers or the network
+        await route.fallback();
+      } else if (rateLimited) {
         await route.fulfill({
           status: 429,
-          json: mockRateLimitResponse,
-          headers: { 'Retry-After': '60' },
+          json: { error: 'Too Many Requests' },
         });
+      } else {
+        await route.fulfill({ json: mockNewsData.success });
       }
     });
 
