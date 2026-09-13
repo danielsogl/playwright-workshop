@@ -11,9 +11,9 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 
 **Aufgaben:**
 
-1. **Mobile Projekte in der Konfiguration prüfen:**
+1. **Mobile Projekte in der Konfiguration aktivieren:**
    - Öffne `playwright.config.ts`
-   - Die Mobile-Projekte sind bereits aktiv – **ein Projekt pro Gerät**. Mehrere `devices` in ein `use` zu spreaden überschreibt sich gegenseitig:
+   - Die Projekte `Mobile Chrome` (Pixel 5) und `Mobile Safari` (iPhone 12) sind auskommentiert – einkommentieren. **Ein Projekt pro Gerät**: Mehrere `devices` in ein `use` zu spreaden überschreibt sich gegenseitig.
 
    ```typescript
    projects: [
@@ -24,15 +24,17 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
      },
      // Mobile Devices
      {
-       name: 'Mobile iPhone',
-       use: { ...devices['iPhone 17 Pro'] },
+       name: 'Mobile Chrome',
+       use: { ...devices['Pixel 5'] },
      },
      {
-       name: 'Mobile Android',
-       use: { ...devices['Pixel 10 Pro XL'] },
+       name: 'Mobile Safari',
+       use: { ...devices['iPhone 12'] },
      },
    ],
    ```
+
+   - Ohne Mobile-Projekt: `page.setViewportSize({ width: 375, height: 667 })` im Test.
 
 2. **Responsive Navigation testen:**
    - Erstelle `e2e/responsive.spec.ts`:
@@ -156,7 +158,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 
 5. **Tests ausführen:**
    - Führe Tests für Desktop aus: `npx playwright test --project=chromium`
-   - Führe Tests für Mobile aus: `npx playwright test --project="Mobile Android"`
+   - Führe Tests für Mobile aus (nach dem Einkommentieren): `npx playwright test --project="Mobile Chrome"`
    - Führe alle Tests aus: `npx playwright test`
 
 **Best Practices:**

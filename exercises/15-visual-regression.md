@@ -171,7 +171,7 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
 - ✅ Maskiere dynamische Inhalte (Datum, Zeit, User-Daten)
 - ✅ Mocke wechselnde Daten (z.B. den News-Feed) – auch die Tests aus Aufgabe 3 und 5 brauchen den `beforeEach`-Mock aus Aufgabe 1
 - ✅ Warte vor Screenshots mit Web-First-Assertions auf den erwarteten Inhalt (statt `networkidle` oder `waitForTimeout`)
-- ✅ Committe Screenshot-Baselines ins Git-Repository
+- ✅ Versioniere Screenshot-Baselines in echten Projekten im Git-Repository, damit CI gegen dieselbe Referenz vergleicht (dieses Demo-Repo ignoriert `**/*-snapshots/` per `.gitignore`, die Baselines entstehen hier nur lokal)
 - ✅ Nutze CI-spezifische Toleranzen für kleine Unterschiede
 - ✅ Endet der Name auf `.webp` (z.B. `toHaveScreenshot('home.webp')`), speichert Playwright die Baseline als verlustfreies WebP (ab v1.62)
 - ❌ Vermeide Screenshots von externen Inhalten (Ads, Social Media Embeds)
