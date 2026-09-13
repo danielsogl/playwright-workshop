@@ -35,6 +35,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# von `next dev` (ab 16.3) erzeugte Agent-Hinweise
+/AGENTS.md
+/CLAUDE.md
 
 # Playwright
 node_modules/
@@ -48,6 +51,10 @@ trace-news-search.zip
 **/*-snapshots/
 # von den Download-Übungen erzeugte Dateien
 /solutions/downloads/
+/downloads/
+# playwright-bdd und Playwright MCP
+/.features-gen/
+/.playwright-mcp/
 
 # Environment variables
 .env
