@@ -64,18 +64,34 @@ export default [
   },
   {
     ...playwrightPlugin.configs['flat/recommended'],
-    files: ['e2e/**/*.ts', 'e2e/**/*.tsx'],
+    // Teilnehmer-Tests und Musterlösungen (inkl. Page Objects und Fixtures)
+    files: ['e2e/**/*.{ts,tsx}', 'solutions/**/*.ts'],
     languageOptions: {
+      ...playwrightPlugin.configs['flat/recommended'].languageOptions,
       parserOptions: {
-        project: './tsconfig.json',
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
       ...playwrightPlugin.configs['flat/recommended'].rules,
+      // Playwrights Fixture-Funktion `use` ist kein React-Hook
       'react-hooks/rules-of-hooks': 'off',
       'react-hooks/exhaustive-deps': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
+      // Workshop-Botschaften: User-facing Locators, keine festen Zeitwerte, Skips begründen
+      // <html>/<body> haben keine semantische Alternative (Theme-Klasse, Klick auf den Hintergrund)
+      'playwright/no-raw-locators': ['warn', { allowed: ['html', 'body'] }],
+      'playwright/no-magic-timeouts': 'warn',
+      'playwright/require-annotation-reason': 'warn',
+      // test.skip(browserName === 'webkit', 'Grund') ist legitim
+      'playwright/no-skipped-test': ['warn', { allowConditional: true }],
+    },
+    settings: {
+      playwright: {
+        // Eigene test.extend()-Instanzen in der Fixtures-Lösung (Übung 8)
+        globalAliases: { test: ['testWithHelpers'] },
+      },
     },
   },
 ];
