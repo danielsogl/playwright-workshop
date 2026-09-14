@@ -1,0 +1,19 @@
+# Vorlage: GitLab CI (.gitlab-ci.yml)
+# Voraussetzung: "ci"-Script in package.json (Übung 16b, Aufgabe 5)
+# Das offizielle Image enthält Browser und Systemabhängigkeiten.
+# Die Version muss zur installierten @playwright/test-Version passen.
+e2e:
+  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  variables:
+    CI: 'true'
+  script:
+    - npm ci
+    - cp .env.example .env
+    - npm run ci
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - playwright-report/
+    reports:
+      junit: results/junit.xml

@@ -1,0 +1,31 @@
+// Vorlage: Jenkins (Jenkinsfile)
+// Voraussetzung: "ci"-Script in package.json (Übung 16b, Aufgabe 5)
+// und das Docker-Pipeline-Plugin. Die Image-Version muss zur
+// installierten @playwright/test-Version passen.
+pipeline {
+  agent {
+    docker { image 'mcr.microsoft.com/playwright:v1.63.0-noble' }
+  }
+  environment {
+    CI = 'true'
+  }
+  stages {
+    stage('Install') {
+      steps {
+        sh 'npm ci'
+        sh 'cp .env.example .env'
+      }
+    }
+    stage('E2E') {
+      steps {
+        sh 'npm run ci'
+      }
+    }
+  }
+  post {
+    always {
+      junit allowEmptyResults: true, testResults: 'results/junit.xml'
+      archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+    }
+  }
+}

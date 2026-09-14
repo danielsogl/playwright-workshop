@@ -1,0 +1,29 @@
+# Vorlage: Azure DevOps (azure-pipelines.yml)
+# Voraussetzung: "ci"-Script in package.json (Übung 16b, Aufgabe 5)
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  CI: 'true'
+
+steps:
+  - task: UseNode@1
+    inputs:
+      version: '24.x'
+  - script: npm ci
+  - script: npx playwright install --with-deps chromium
+  - script: cp .env.example .env
+  - script: npm run ci
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: results/junit.xml
+  - task: PublishPipelineArtifact@1
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: playwright-report
+      artifact: playwright-report

@@ -54,7 +54,8 @@ ist – ein grüner Startpunkt nach dem Setup.
 ## Projektstruktur
 
 ```
-exercises/    Übungsaufgaben (01 … 16, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
+exercises/    Übungsaufgaben (01 … 17 plus 06b/16b, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
+  ci-templates/  Pipeline-Vorlagen (GitHub Actions, GitLab, Azure DevOps, Jenkins) zu Übung 16b
 solutions/    Musterlösungen (e2e-Specs mit gleicher Nummerierung + Page Objects) zum Abgleich
 e2e/          Verzeichnis für die eigenen Tests der Teilnehmer
 app/          Next.js App (news, auth, settings, clock, file-download, …)
