@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+// Eigene Timeouts als benannte Konstante statt magischer Zahl
+const SLOW_UI_TIMEOUT = 5_000;
+
 test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:3000');
@@ -7,7 +10,9 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
 
   test('Navigation Links prüfen', async ({ page }) => {
     // Public News Link prüfen
-    const publicNewsLink = page.getByRole('link', { name: /view public news/i });
+    const publicNewsLink = page.getByRole('link', {
+      name: /view public news/i,
+    });
     await expect(publicNewsLink).toBeVisible();
     await expect(publicNewsLink).toHaveText('View Public News');
 
@@ -43,9 +48,7 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
   test('Suchfeld Interaktion mit Assertions', async ({ page }) => {
     // Navigate to news page first for search box
     await page.goto('/news/public');
-    await expect(page.getByRole('article').first()).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page.getByRole('article').first()).toBeVisible();
 
     // Suchfeld finden und prüfen
     const searchBox = page.getByRole('textbox', {
@@ -108,53 +111,40 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
     const navigation = page.getByRole('navigation').first();
     await expect(navigation).toBeVisible();
 
-    // 2. toBeHidden() - Element ist versteckt (wenn es eines gibt)
-    // Verwende das mobile men\u00fc als Beispiel (ist versteckt auf Desktop)
-    const mobileMenuToggle = page.getByLabel(/menu/i);
-    const mobileMenuExists = (await mobileMenuToggle.count()) > 0;
-    if (mobileMenuExists) {
-      console.log('Mobile menu element found, checking visibility');
-    }
+    // 2. toBeHidden() - auf dem Desktop ist der Button fürs mobile Menü versteckt
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
+
+    // 3. toHaveAttribute() - Attribute prüfen: der Logo-Link führt zur Startseite
+    await expect(
+      page.getByRole('link', { name: 'Go to homepage' }),
+    ).toHaveAttribute('href', '/');
 
     // Navigate to news page for search box
     await page.goto('/news/public');
-    await expect(page.getByRole('article').first()).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page.getByRole('article').first()).toBeVisible();
 
-    // 3. toBeEnabled() / toBeDisabled()
+    // 4. toBeEnabled() / toBeDisabled()
     const searchBox = page.getByRole('textbox', {
       name: 'Search news articles',
     });
     await expect(searchBox).toBeEnabled();
 
-    // 4. toContainText() - Teiltext prüfen
+    // 5. toContainText() - Teiltext prüfen
     const firstArticle = page.getByRole('article').first();
     await expect(firstArticle).toContainText(/[a-zA-Z]/); // Enthält Text
 
-    // 5. toHaveCount() - Anzahl prüfen
-    const links = page.getByRole('link');
-    const linkCount = await links.count();
-    console.log('Total links found:', linkCount);
-
-    // More flexible link count check - just ensure we have some links
-    await expect(links).toHaveCount(linkCount); // This will always pass but shows the pattern
-
-    // 6. toHaveAttribute() - Attribute prüfen
-    const logo = page.locator('img').first();
-    const logoExists = (await logo.count()) > 0;
-    if (logoExists) {
-      await expect(logo).toHaveAttribute('src', /.+/);
-      await expect(logo).toHaveAttribute('alt');
-    }
+    // 6. toHaveCount() - Anzahl prüfen: der Trefferzähler passt zur Liste
+    const articleCount = await page.getByRole('article').count();
+    await expect(
+      page.getByText(`${articleCount} articles found`, { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole('article')).toHaveCount(articleCount);
   });
 
   test('Wait-Strategien mit Assertions', async ({ page }) => {
     // Navigate to news page first
     await page.goto('/news/public');
-    await expect(page.getByRole('article').first()).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page.getByRole('article').first()).toBeVisible();
 
     // waitFor mit verschiedenen States
     const searchBox = page.getByRole('textbox', {
@@ -168,23 +158,20 @@ test.describe('Übung 4 - Erste Tests mit Assertions', () => {
     // Text eingeben und auf Reaktion warten
     await searchBox.fill('Test');
 
-    // Warten mit custom timeout
-    await expect(searchBox).toHaveValue('Test', { timeout: 5000 });
+    // Warten mit eigenem Timeout (benannte Konstante, siehe Dateianfang)
+    await expect(searchBox).toHaveValue('Test', { timeout: SLOW_UI_TIMEOUT });
 
     // Auf Text in der Seite warten
-    await expect(page.getByText('News Feed')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('News Feed')).toBeVisible();
 
-    // Negativ-Assertion mit Timeout
-    const nonExistent = page.locator('.does-not-exist');
-    await expect(nonExistent).not.toBeVisible({ timeout: 1000 });
+    // Negativ-Assertion: das mobile Menü ist auf dem Desktop nicht sichtbar
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
   });
 
   test('Assertion Chains und Kombinationen', async ({ page }) => {
     // Navigate to news page first
     await page.goto('/news/public');
-    await expect(page.getByRole('article').first()).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(page.getByRole('article').first()).toBeVisible();
 
     // Mehrere Assertions nacheinander
     const searchBox = page.getByRole('textbox', {

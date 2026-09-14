@@ -28,8 +28,8 @@ export class NewsPageAdvanced {
   // Methoden geben this zurück (Promise<this>): im Test jeden Schritt awaiten
   async goto(): Promise<this> {
     await this.page.goto('/news/public');
-    // Live-RSS-Feeds laden teils mehrere Sekunden
-    await expect(this.newsItems.first()).toBeVisible({ timeout: 10_000 });
+    // Live-RSS-Feeds laden teils mehrere Sekunden (expect.timeout in der Config)
+    await expect(this.newsItems.first()).toBeVisible();
     return this;
   }
 

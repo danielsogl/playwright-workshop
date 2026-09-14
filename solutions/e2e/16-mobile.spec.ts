@@ -51,12 +51,9 @@ test.describe('Exercise 16: Mobile and Responsive Testing', () => {
       ).toBeVisible();
     });
 
-    test('Mobile: shows hamburger menu', async ({ page, isMobile }) => {
-      // This test runs on mobile devices defined in config
-      if (!isMobile) {
-        // Force mobile viewport if not already mobile
-        await page.setViewportSize({ width: 375, height: 667 });
-      }
+    test('Mobile: shows hamburger menu', async ({ page }) => {
+      // Mobiles Viewport, auch in Desktop-Projekten
+      await page.setViewportSize({ width: 375, height: 667 });
 
       await page.goto('/');
 
@@ -118,10 +115,8 @@ test.describe('Exercise 16: Mobile and Responsive Testing', () => {
       );
     });
 
-    test('Mobile: shows single column layout', async ({ page, isMobile }) => {
-      if (!isMobile) {
-        await page.setViewportSize({ width: 375, height: 667 });
-      }
+    test('Mobile: shows single column layout', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
 
       await page.goto('/news/public');
       // Wait for news items to load
@@ -157,7 +152,11 @@ test.describe('Exercise 16: Mobile and Responsive Testing', () => {
       await expect(mobileMenu).toBeHidden();
     });
 
-    test('Mobile: scroll behavior works', async ({ page }) => {
+    test('Mobile: scroll behavior works', async ({ page, browserName }) => {
+      test.skip(
+        browserName === 'webkit',
+        'mouse.wheel wird in mobilem WebKit nicht unterstützt',
+      );
       await page.goto('/news/public');
       // Wait for news items to load
       await expect(page.getByRole('article').first()).toBeVisible();

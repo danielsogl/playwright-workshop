@@ -117,10 +117,9 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        );
      });
 
-     test('Mobile: zeigt 1 Spalte', async ({ page, isMobile }) => {
-       if (!isMobile) {
-         await page.setViewportSize({ width: 375, height: 667 });
-       }
+     test('Mobile: zeigt 1 Spalte', async ({ page }) => {
+       // Mobiles Viewport, auch in Desktop-Projekten
+       await page.setViewportSize({ width: 375, height: 667 });
        await page.goto('/news/public');
 
        const newsGrid = page.getByRole('feed', { name: 'News articles' });

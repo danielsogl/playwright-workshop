@@ -7,10 +7,8 @@ test.describe('File Download Demo Tests', () => {
   const downloadsDir = path.join(import.meta.dirname, '../downloads');
 
   test.beforeAll(async () => {
-    // Downloads-Verzeichnis erstellen falls es nicht existiert
-    if (!fs.existsSync(downloadsDir)) {
-      fs.mkdirSync(downloadsDir, { recursive: true });
-    }
+    // Downloads-Verzeichnis erstellen (recursive: kein Fehler, wenn es schon existiert)
+    fs.mkdirSync(downloadsDir, { recursive: true });
   });
 
   test.beforeEach(async ({ page }) => {
@@ -19,6 +17,11 @@ test.describe('File Download Demo Tests', () => {
 
     // Warten bis die Download-Buttons bereit sind
     await expect(page.getByTestId('download-pdf-button')).toBeVisible();
+  });
+
+  test.afterAll(async () => {
+    // Downloads-Verzeichnis nach Tests aufräumen (force: kein Fehler, wenn es fehlt)
+    fs.rmSync(downloadsDir, { recursive: true, force: true });
   });
 
   test('PDF Download Test', async ({ page }) => {
@@ -86,7 +89,7 @@ test.describe('File Download Demo Tests', () => {
         expect(jsonData).toHaveProperty('user');
         expect(jsonData).toHaveProperty('data');
         expect(Array.isArray(jsonData.data)).toBeTruthy();
-        expect(jsonData.data.length).toBe(100);
+        expect(jsonData.data).toHaveLength(100);
 
         console.log('JSON-Inhalt validiert:', {
           timestamp: jsonData.timestamp,
@@ -228,9 +231,7 @@ test.describe('File Download Demo Tests', () => {
 
   test('Download-Status-Anzeige überprüfen', async ({ page }) => {
     // Status-Nachricht sollte zunächst nicht sichtbar sein
-    await expect(
-      page.getByText('PDF wird vorbereitet'),
-    ).not.toBeVisible();
+    await expect(page.getByText('PDF wird vorbereitet')).toBeHidden();
 
     // Download-Button klicken
     await page.getByTestId('download-pdf-button').click();
@@ -241,45 +242,6 @@ test.describe('File Download Demo Tests', () => {
     // Nach erfolgreichem Download sollte Erfolgsmeldung erscheinen
     await expect(
       page.getByText('PDF erfolgreich heruntergeladen!'),
-    ).toBeVisible({ timeout: 5000 });
-  });
-
-  test.afterAll(async () => {
-    // Downloads-Verzeichnis nach Tests aufräumen
-    try {
-      if (fs.existsSync(downloadsDir)) {
-        const files = fs.readdirSync(downloadsDir);
-        files.forEach((file) => {
-          const filePath = path.join(downloadsDir, file);
-          try {
-            if (fs.existsSync(filePath)) {
-              fs.unlinkSync(filePath);
-            }
-          } catch (error) {
-            // Ignore errors when deleting individual files
-            console.log(
-              `Could not delete file ${filePath}:`,
-              error instanceof Error ? error.message : String(error),
-            );
-          }
-        });
-        try {
-          fs.rmdirSync(downloadsDir);
-          console.log('Downloads-Verzeichnis aufgeräumt');
-        } catch (error) {
-          // Ignore errors when deleting directory
-          console.log(
-            'Could not delete downloads directory:',
-            error instanceof Error ? error.message : String(error),
-          );
-        }
-      }
-    } catch (error) {
-      // Ignore cleanup errors
-      console.log(
-        'Cleanup error:',
-        error instanceof Error ? error.message : String(error),
-      );
-    }
+    ).toBeVisible();
   });
 });

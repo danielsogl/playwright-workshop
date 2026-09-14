@@ -23,9 +23,7 @@ const withSolutions = process.env.E2E_SOLUTIONS === '1';
  */
 export default defineConfig({
   testDir: '.',
-  testMatch: withSolutions
-    ? 'solutions/e2e/**/*.spec.ts'
-    : 'e2e/**/*.spec.ts',
+  testMatch: withSolutions ? 'solutions/e2e/**/*.spec.ts' : 'e2e/**/*.spec.ts',
   // Glob-Patterns sind nicht am Pfadanfang verankert; ohne dieses Ignore
   // würden im Teilnehmer-Modus auch die solutions/e2e/-Dateien matchen.
   testIgnore: withSolutions ? undefined : 'solutions/**',
@@ -41,6 +39,8 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  /* Live-RSS-Feeds laden teils mehrere Sekunden: ein globaler Wert statt { timeout } an jeder Assertion */
+  expect: { timeout: 10_000 },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

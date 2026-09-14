@@ -31,16 +31,9 @@ test.describe('Exercise 1: Project Setup', () => {
     }
   });
 
-  test.skip('Umgebungsvariablen sind geladen', async () => {
-    // Skip this test as environment variables are not set in this demo
-    // In a real scenario, these would be configured in .env file
+  test('Umgebungsvariablen sind geladen', async () => {
+    // playwright.config.ts lädt die .env per dotenv
     expect(process.env.TEST_USER_EMAIL).toBeDefined();
     expect(process.env.TEST_USER_PASSWORD).toBeDefined();
-
-    // Optional: Prüfe die Werte (nur für Demo-Zwecke)
-    console.log(
-      'Test-User Email configured:',
-      process.env.TEST_USER_EMAIL ? 'Yes' : 'No',
-    );
   });
 });

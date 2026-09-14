@@ -40,9 +40,9 @@ export class NewsPage {
   }
 
   // Web-First-Assertion statt networkidle. Live-RSS-Feeds laden teils
-  // mehrere Sekunden, daher mehr als die 5s Standard-Timeout.
+  // mehrere Sekunden, dafür ist expect.timeout in playwright.config.ts erhöht.
   async waitForNewsItems() {
-    await expect(this.newsItems.first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.newsItems.first()).toBeVisible();
   }
 
   // Such-Aktionen: gefiltert wird clientseitig bei jeder Eingabe.

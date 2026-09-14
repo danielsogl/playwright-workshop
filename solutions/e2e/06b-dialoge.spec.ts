@@ -102,9 +102,7 @@ test.describe('Dialog Handling API Demo', () => {
     });
 
     // Beforeunload-Button klicken
-    await page
-      .getByRole('button', { name: 'Add BeforeUnload' })
-      .click();
+    await page.getByRole('button', { name: 'Add BeforeUnload' }).click();
 
     // Überprüfen, dass der Handler hinzugefügt wurde
     await expect(page.getByRole('status')).toContainText(
@@ -181,23 +179,17 @@ test.describe('Dialog Handling API Demo', () => {
   });
 
   test('should handle multiple dialogs in sequence', async ({ page }) => {
-    let dialogCount = 0;
+    const dialogs: string[] = [];
 
     // Dialog-Handler für mehrere Dialoge einrichten.
     // Jeder Dialog bekommt genau einmal accept() oder dismiss(),
-    // sonst hängt die auslösende Aktion.
+    // sonst hängt die auslösende Aktion. Geprüft wird danach, nicht im Handler.
     page.on('dialog', async (dialog) => {
-      dialogCount++;
+      dialogs.push(`${dialog.type()}: ${dialog.message()}`);
 
       switch (dialog.type()) {
         case 'alert':
-          expect(dialog.message()).toBe('This is a simple alert dialog!');
-          await dialog.accept();
-          break;
         case 'confirm':
-          expect(dialog.message()).toBe(
-            'Do you want to proceed with this action?',
-          );
           await dialog.accept();
           break;
         default:
@@ -217,8 +209,11 @@ test.describe('Dialog Handling API Demo', () => {
       'Confirm dialog result: OK',
     );
 
-    // Überprüfen, dass wir 2 Dialoge behandelt haben
-    expect(dialogCount).toBe(2);
+    // Beide Dialoge in der richtigen Reihenfolge behandelt
+    expect(dialogs).toEqual([
+      'alert: This is a simple alert dialog!',
+      'confirm: Do you want to proceed with this action?',
+    ]);
   });
 
   test('should demonstrate dialog handler timing', async ({ page }) => {

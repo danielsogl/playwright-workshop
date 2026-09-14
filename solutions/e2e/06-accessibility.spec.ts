@@ -5,7 +5,7 @@
  * Tests WCAG compliance, keyboard navigation, and accessibility across different themes and viewports.
  *
  * Prerequisites:
- * npm install --save-dev @axe-core/playwright
+ * @axe-core/playwright ist im Workshop-Repo bereits installiert
  *
  * Key learning points:
  * - Automated accessibility testing with axe-core
@@ -27,25 +27,18 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       // Run comprehensive accessibility analysis
       const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
-      // Log violations for debugging
-      if (accessibilityScanResults.violations.length > 0) {
-        console.log('Accessibility Violations Found:');
-        accessibilityScanResults.violations.forEach((violation, index) => {
-          console.log(
-            `\n${index + 1}. ${violation.impact}: ${violation.description}`,
-          );
-          console.log(`   Rule: ${violation.id}`);
-          console.log(`   Help: ${violation.helpUrl}`);
-          violation.nodes.forEach((node, nodeIndex) => {
-            console.log(
-              `   Target ${nodeIndex + 1}: ${node.target.join(', ')}`,
-            );
-            if (node.failureSummary) {
-              console.log(`   Issue: ${node.failureSummary}`);
-            }
-          });
+      // Log violations for debugging (bei 0 Violations passiert nichts)
+      accessibilityScanResults.violations.forEach((violation, index) => {
+        console.log(
+          `\n${index + 1}. ${violation.impact}: ${violation.description}`,
+        );
+        console.log(`   Rule: ${violation.id}`);
+        console.log(`   Help: ${violation.helpUrl}`);
+        violation.nodes.forEach((node, nodeIndex) => {
+          console.log(`   Target ${nodeIndex + 1}: ${node.target.join(', ')}`);
+          console.log(`   Issue: ${node.failureSummary ?? '-'}`);
         });
-      }
+      });
 
       // Test should fail if there are violations
       expect(accessibilityScanResults.violations).toEqual([]);
@@ -55,39 +48,28 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       page,
     }) => {
       await page.goto('/news/public');
-      await expect(page.getByRole('article').first()).toBeVisible({
-        timeout: 10000,
-      });
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       const results = await new AxeBuilder({ page }).analyze();
 
-      // Enhanced error reporting
-      if (results.violations.length > 0) {
-        console.log('\n=== ACCESSIBILITY VIOLATIONS DETECTED ===');
+      // Enhanced error reporting (bei 0 Violations passiert nichts)
+      results.violations.forEach((violation) => {
+        console.log(
+          `\n🚨 ${violation.impact?.toUpperCase()} IMPACT: ${violation.description}`,
+        );
+        console.log(`📋 Rule ID: ${violation.id}`);
+        console.log(`🔗 Help: ${violation.helpUrl}`);
+        console.log(`📊 WCAG Tags: ${violation.tags.join(', ')}`);
 
-        results.violations.forEach((violation) => {
+        violation.nodes.forEach((node, index) => {
+          console.log(`\n   Element ${index + 1}:`);
+          console.log(`   - Selector: ${node.target.join(' ')}`);
+          console.log(`   - HTML: ${node.html.substring(0, 100)}...`);
           console.log(
-            `\n🚨 ${violation.impact?.toUpperCase()} IMPACT: ${violation.description}`,
+            `   - Failed checks: ${node.any.map((check) => check.message).join(', ')}`,
           );
-          console.log(`📋 Rule ID: ${violation.id}`);
-          console.log(`🔗 Help: ${violation.helpUrl}`);
-          console.log(`📊 WCAG Tags: ${violation.tags.join(', ')}`);
-
-          violation.nodes.forEach((node, index) => {
-            console.log(`\n   Element ${index + 1}:`);
-            console.log(`   - Selector: ${node.target.join(' ')}`);
-            console.log(`   - HTML: ${node.html.substring(0, 100)}...`);
-
-            if (node.any.length > 0) {
-              console.log(
-                `   - Failed checks: ${node.any.map((check) => check.message).join(', ')}`,
-              );
-            }
-          });
         });
-
-        console.log('\n===========================================\n');
-      }
+      });
 
       expect(results.violations).toHaveLength(0);
     });
@@ -116,14 +98,9 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         .analyze();
 
       // Log AAA violations but don't fail the test
-      if (results.violations.length > 0) {
-        console.log('\nWCAG 2.1 Level AAA violations (informational):');
-        results.violations.forEach((violation) => {
-          console.log(`- ${violation.id}: ${violation.description}`);
-        });
-      }
-
-      // Just log the count, don't fail on AAA violations
+      results.violations.forEach((violation) => {
+        console.log(`- ${violation.id}: ${violation.description}`);
+      });
       console.log(`Total WCAG AAA violations: ${results.violations.length}`);
     });
 
@@ -140,14 +117,11 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         violation.id.includes('color-contrast'),
       );
 
-      if (contrastViolations.length > 0) {
-        console.log('\nColor contrast violations:');
-        contrastViolations.forEach((violation) => {
-          violation.nodes.forEach((node) => {
-            console.log(`- ${node.target.join(' ')}: ${node.failureSummary}`);
-          });
+      contrastViolations.forEach((violation) => {
+        violation.nodes.forEach((node) => {
+          console.log(`- ${node.target.join(' ')}: ${node.failureSummary}`);
         });
-      }
+      });
 
       expect(contrastViolations).toHaveLength(0);
     });
@@ -180,44 +154,32 @@ test.describe('Exercise 6: Accessibility Testing', () => {
           violation.id.includes('aria'),
       );
 
-      if (formViolations.length > 0) {
-        console.log('\nForm accessibility violations:');
-        formViolations.forEach((violation) => {
-          console.log(`- ${violation.id}: ${violation.description}`);
-        });
-      }
+      formViolations.forEach((violation) => {
+        console.log(`- ${violation.id}: ${violation.description}`);
+      });
 
       expect(formViolations).toEqual([]);
     });
 
     test('Search component accessibility', async ({ page }) => {
       await page.goto('/news/public');
-      await expect(page.getByRole('main')).toBeVisible();
 
-      // Find search component
-      const searchContainer = page
-        .locator('.search, [role="search"], form:has(input[type="search"])')
-        .or(page.locator('div:has(input[placeholder*="search" i])'))
-        .first();
+      // Die Such- und Filterleiste ist ein search-Landmark
+      await expect(
+        page.getByRole('search', { name: 'News filter options' }),
+      ).toBeVisible();
 
-      if ((await searchContainer.count()) > 0) {
-        const results = await new AxeBuilder({ page })
-          .include(['[role="search"]'])
-          .analyze();
+      // AxeBuilder.include() erwartet einen CSS-Selektor, keinen Locator
+      const results = await new AxeBuilder({ page })
+        .include('[role="search"]')
+        .analyze();
 
-        expect(results.violations).toEqual([]);
-      } else {
-        console.log(
-          'Search component not found, skipping search accessibility test',
-        );
-      }
+      expect(results.violations).toEqual([]);
     });
 
     test('News article list accessibility', async ({ page }) => {
       await page.goto('/news/public');
-      await expect(page.getByRole('article').first()).toBeVisible({
-        timeout: 10000,
-      });
+      await expect(page.getByRole('article').first()).toBeVisible();
 
       // Test the news list structure
       const results = await new AxeBuilder({ page })
@@ -338,14 +300,11 @@ test.describe('Exercise 6: Accessibility Testing', () => {
           violation.id.includes('touch-target'),
       );
 
-      if (touchTargetViolations.length > 0) {
-        console.log('\nTouch target size violations:');
-        touchTargetViolations.forEach((violation) => {
-          violation.nodes.forEach((node) => {
-            console.log(`- ${node.target.join(' ')}: ${node.failureSummary}`);
-          });
+      touchTargetViolations.forEach((violation) => {
+        violation.nodes.forEach((node) => {
+          console.log(`- ${node.target.join(' ')}: ${node.failureSummary}`);
         });
-      }
+      });
 
       expect(touchTargetViolations).toEqual([]);
     });
@@ -355,54 +314,38 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       await page.goto('/');
       await expect(page.getByRole('main')).toBeVisible();
 
-      // Test mobile navigation
-      const mobileMenuButton = page
-        .locator('button[aria-label*="menu" i]')
-        .or(page.locator('[data-testid="mobile-menu-button"]'))
-        .first();
+      // Unter 640px zeigt die App den Menü-Button statt der Desktop-Navigation
+      const mobileMenuButton = page.getByRole('button', { name: 'Open menu' });
+      await expect(mobileMenuButton).toBeVisible();
 
-      if ((await mobileMenuButton.count()) > 0) {
-        // Test menu button accessibility
-        const buttonResults = await new AxeBuilder({ page })
-          .include(['button[aria-label*="menu"]'])
-          .analyze();
+      // Test menu button accessibility
+      const buttonResults = await new AxeBuilder({ page })
+        .include(['button[aria-label*="menu"]'])
+        .analyze();
 
-        expect(buttonResults.violations).toEqual([]);
+      expect(buttonResults.violations).toEqual([]);
 
-        // Open mobile menu and test its accessibility
-        await mobileMenuButton.click();
-        await expect(
-          page.getByRole('button', { name: 'Close menu' }),
-        ).toBeVisible();
+      // Open mobile menu and test its accessibility
+      await mobileMenuButton.click();
+      await expect(
+        page.getByRole('button', { name: 'Close menu' }),
+      ).toBeVisible();
 
-        const menuResults = await new AxeBuilder({ page })
-          .include('nav')
-          .analyze();
+      const menuResults = await new AxeBuilder({ page })
+        .include('nav')
+        .analyze();
 
-        expect(menuResults.violations).toEqual([]);
-      }
+      expect(menuResults.violations).toEqual([]);
     });
   });
 
   test.describe('Keyboard Navigation Tests', () => {
-    test('Tab navigation order', async ({ page, browserName }) => {
-      // WebKit/Safari fokussiert Links & Buttons per Tab nur, wenn macOS
-      // "Full Keyboard Access" aktiv ist – headless bleibt die Tab-Reihenfolge leer.
-      test.skip(
-        browserName === 'webkit',
-        'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
-      );
-      await page.goto('/');
-      await expect(page.getByRole('main')).toBeVisible();
-
-      // Start from the body to reset focus
-      await page.locator('body').focus();
-
+    // Tabbt durch die Seite und sammelt die fokussierten Elemente
+    async function collectTabOrder(page: Page, maxTabs = 20) {
       const focusableElements = [];
       let previousElement = null;
 
-      // Tab through the page and collect focusable elements
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < maxTabs; i++) {
         await page.keyboard.press('Tab');
 
         const activeElement = await page.evaluate(() => {
@@ -434,6 +377,24 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         }
       }
 
+      return focusableElements;
+    }
+
+    test('Tab navigation order', async ({ page, browserName }) => {
+      // WebKit/Safari fokussiert Links & Buttons per Tab nur, wenn macOS
+      // "Full Keyboard Access" aktiv ist – headless bleibt die Tab-Reihenfolge leer.
+      test.skip(
+        browserName === 'webkit',
+        'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
+      );
+      await page.goto('/');
+      await expect(page.getByRole('main')).toBeVisible();
+
+      // Start from the body to reset focus
+      await page.locator('body').focus();
+
+      const focusableElements = await collectTabOrder(page);
+
       console.log('\nTab navigation order:');
       focusableElements.forEach((element, index) => {
         console.log(
@@ -452,7 +413,12 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       expect(results.violations).toEqual([]);
     });
 
-    test('Focus visibility', async ({ page }) => {
+    test('Focus visibility', async ({ page, browserName }) => {
+      // Ohne Tab-Fokus in WebKit gäbe es kein fokussiertes Element zum Prüfen
+      test.skip(
+        browserName === 'webkit',
+        'WebKit Tab-Fokus benötigt macOS Full Keyboard Access',
+      );
       await page.goto('/');
       await expect(page.getByRole('main')).toBeVisible();
 
@@ -482,17 +448,17 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         return null;
       });
 
-      if (focusedElement) {
-        console.log('Focus styles:', focusedElement);
+      // Ein Element muss den Fokus haben, sonst sagt der Test nichts aus
+      expect(focusedElement).not.toBeNull();
+      console.log('Focus styles:', focusedElement);
 
-        const hasFocusIndicator =
-          focusedElement.hasOutline ||
-          focusedElement.hasBoxShadow ||
-          focusedElement.hasFocusOutline ||
-          focusedElement.hasFocusBoxShadow;
+      const hasFocusIndicator =
+        focusedElement?.hasOutline ||
+        focusedElement?.hasBoxShadow ||
+        focusedElement?.hasFocusOutline ||
+        focusedElement?.hasFocusBoxShadow;
 
-        expect(hasFocusIndicator).toBe(true);
-      }
+      expect(hasFocusIndicator).toBe(true);
 
       // Run accessibility check for focus-related issues
       const results = await new AxeBuilder({ page })
@@ -512,42 +478,17 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       await page.goto('/');
       await expect(page.getByRole('main')).toBeVisible();
 
-      // Look for skip links (usually hidden until focused)
+      // Der erste Tab-Stopp ist der Skip-Link, sichtbar erst mit Fokus
       await page.keyboard.press('Tab');
+      const skipLink = page.getByRole('link', { name: 'Skip to main content' });
+      await expect(skipLink).toBeFocused();
+      await expect(skipLink).toBeVisible();
 
-      const skipLink = page
-        .locator('a[href="#main"], a[href="#content"], a:has-text("Skip to")')
-        .or(page.locator('[data-testid="skip-link"]'))
-        .first();
-
-      if (await skipLink.isVisible()) {
-        console.log('Skip link found and visible');
-
-        // Test skip link functionality
-        await skipLink.click();
-
-        // Check if focus moved to main content
-        const activeElementId = await page.evaluate(
-          () =>
-            document.activeElement?.id ||
-            document.activeElement?.getAttribute('data-testid'),
-        );
-
-        console.log('Active element after skip link:', activeElementId);
-
-        // Should focus on main content area
-        const mainContentFocused =
-          activeElementId === 'main' ||
-          activeElementId === 'content' ||
-          activeElementId === 'main-content' ||
-          (await page.locator('main:focus, [role="main"]:focus').count()) > 0;
-
-        expect(mainContentFocused).toBe(true);
-      } else {
-        console.log(
-          'Skip link not found - this might be acceptable depending on the design',
-        );
-      }
+      // Aktivieren: der Fokus springt auf den Hauptinhalt (tabIndex=-1)
+      await skipLink.press('Enter');
+      await expect
+        .poll(() => page.evaluate(() => document.activeElement?.id))
+        .toBe('main-content');
     });
   });
 
@@ -625,29 +566,23 @@ test.describe('Exercise 6: Accessibility Testing', () => {
       await page.goto('/auth/signin');
       await expect(page.getByRole('main')).toBeVisible();
 
-      // Try to submit empty form to trigger errors
-      const submitButton = page.getByRole('button', {
-        name: /sign in|login|submit/i,
-      });
+      // Leeres Formular absenden, um die Validierung auszulösen
+      await page.getByRole('button', { name: 'Submit sign in form' }).click();
+      // Native Validierung fokussiert das erste leere Pflichtfeld
+      await expect(page.getByLabel('Email')).toBeFocused();
 
-      if ((await submitButton.count()) > 0) {
-        await submitButton.click();
-        // Native Validierung fokussiert das erste leere Pflichtfeld
-        await expect(page.getByLabel('Email')).toBeFocused();
+      // Check for error message accessibility
+      const results = await new AxeBuilder({ page }).analyze();
 
-        // Check for error message accessibility
-        const results = await new AxeBuilder({ page }).analyze();
+      // Filter for error-related violations
+      const errorViolations = results.violations.filter(
+        (violation) =>
+          violation.id.includes('aria-describedby') ||
+          violation.id.includes('form-field') ||
+          violation.tags.includes('forms'),
+      );
 
-        // Filter for error-related violations
-        const errorViolations = results.violations.filter(
-          (violation) =>
-            violation.id.includes('aria-describedby') ||
-            violation.id.includes('form-field') ||
-            violation.tags.includes('forms'),
-        );
-
-        expect(errorViolations).toEqual([]);
-      }
+      expect(errorViolations).toEqual([]);
     });
   });
 
@@ -684,13 +619,9 @@ test.describe('Exercise 6: Accessibility Testing', () => {
         .analyze();
 
       // Log but don't fail - this is informational for progressive enhancement
-      if (results.violations.length > 0) {
-        console.log('\nAccessibility issues without JavaScript:');
-        results.violations.forEach((violation) => {
-          console.log(`- ${violation.id}: ${violation.description}`);
-        });
-      }
-
+      results.violations.forEach((violation) => {
+        console.log(`- ${violation.id}: ${violation.description}`);
+      });
       console.log(
         `Accessibility violations without JS: ${results.violations.length}`,
       );

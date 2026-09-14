@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+/* eslint-disable playwright/expect-expect -- Übung 2 übt bewusst nur das Finden, Assertions folgen in Übung 4 */
+import { test } from '@playwright/test';
 
 test.describe('Übung 2 - Locators kennenlernen', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,7 +8,9 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
 
   test('verschiedene Locator-Strategien verwenden', async ({ page }) => {
     // 1. Den "Public News" Link mit getByRole() finden
-    const publicNewsLink = page.getByRole('link', { name: /view public news/i });
+    const publicNewsLink = page.getByRole('link', {
+      name: /view public news/i,
+    });
     console.log('Public News link gefunden:', await publicNewsLink.isVisible());
 
     // Navigation zur News-Seite für weitere Tests
@@ -39,11 +42,9 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
     const navigation = page.getByRole('navigation').first(); // Navbar hat navigation role
     console.log('Navigation gefunden:', await navigation.isVisible());
 
-    // 7. Mit getByRole() für ersten Artikel
-    if (articleCount > 0) {
-      const firstArticle = page.getByRole('article').first();
-      console.log('Erster Artikel gefunden:', await firstArticle.isVisible());
-    }
+    // 7. Ersten Artikel finden (waitFor oben garantiert, dass es ihn gibt)
+    const firstArticle = page.getByRole('article').first();
+    console.log('Erster Artikel gefunden:', await firstArticle.isVisible());
 
     // Hinweis: Dies ist nur zum Üben - normalerweise würden wir assertions verwenden
     // Aber Assertions kommen erst in Übung 4!
@@ -62,30 +63,18 @@ test.describe('Übung 2 - Locators kennenlernen', () => {
 
     // Filter und Pseudo-Selektoren mit getByRole für Artikel
     const articles = page.getByRole('article');
-    const articleCount = await articles.count();
-    console.log(`Anzahl der Artikel gefunden: ${articleCount}`);
+    console.log(`Anzahl der Artikel gefunden: ${await articles.count()}`);
 
-    if (articleCount > 0) {
-      const firstNewsItem = page.getByRole('article').first();
-      console.log(
-        'Erstes News-Item gefunden:',
-        await firstNewsItem.isVisible(),
-      );
+    const firstNewsItem = articles.first();
+    console.log('Erstes News-Item gefunden:', await firstNewsItem.isVisible());
 
-      const lastNewsItem = page.getByRole('article').last();
-      console.log(
-        'Letztes News-Item gefunden:',
-        await lastNewsItem.isVisible(),
-      );
+    const lastNewsItem = articles.last();
+    console.log('Letztes News-Item gefunden:', await lastNewsItem.isVisible());
 
-      // Mit Filter arbeiten - suche nach beliebigem Text da "Playwright" möglicherweise nicht vorhanden
-      const firstArticleText = await firstNewsItem.textContent();
-      const searchTerm = firstArticleText?.split(' ')[0] || 'News';
-      const filteredItems = page
-        .getByRole('article')
-        .filter({ hasText: searchTerm });
-      const filteredCount = await filteredItems.count();
-      console.log(`Artikel mit "${searchTerm}": ${filteredCount}`);
-    }
+    // Mit Filter arbeiten: das erste Wort des ersten Artikels als Suchtext
+    const firstArticleText = await firstNewsItem.textContent();
+    const searchTerm = firstArticleText?.split(' ')[0] || 'News';
+    const filteredItems = articles.filter({ hasText: searchTerm });
+    console.log(`Artikel mit "${searchTerm}": ${await filteredItems.count()}`);
   });
 });

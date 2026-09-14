@@ -51,17 +51,14 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
 
      const results = await new AxeBuilder({ page }).analyze();
 
-     // Bessere Fehlerausgabe
-     if (results.violations.length > 0) {
-       console.log('Accessibility Violations:');
-       results.violations.forEach((violation) => {
-         console.log(`\n${violation.impact}: ${violation.description}`);
-         console.log(`  Help: ${violation.helpUrl}`);
-         violation.nodes.forEach((node) => {
-           console.log(`  - ${node.target}`);
-         });
+     // Bessere Fehlerausgabe (ohne if: bei 0 Violations passiert nichts)
+     results.violations.forEach((violation) => {
+       console.log(`\n${violation.impact}: ${violation.description}`);
+       console.log(`  Help: ${violation.helpUrl}`);
+       violation.nodes.forEach((node) => {
+         console.log(`  - ${node.target}`);
        });
-     }
+     });
 
      expect(results.violations).toHaveLength(0);
    });
@@ -169,8 +166,11 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
      // Tab durch die Seite
      await page.keyboard.press('Tab');
 
-     // Prüfe, dass ein Element den Fokus hat
-     await expect(page.locator(':focus')).toHaveCount(1);
+     // Der erste Tab-Stopp ist der Skip-Link
+     // (WebKit fokussiert Links per Tab nur mit macOS Full Keyboard Access)
+     await expect(
+       page.getByRole('link', { name: 'Skip to main content' }),
+     ).toBeFocused();
 
      // Accessibility Check mit Fokus
      const results = await new AxeBuilder({ page })

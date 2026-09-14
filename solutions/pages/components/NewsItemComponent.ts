@@ -14,7 +14,7 @@ export class NewsItemComponent {
     this.title = root.getByRole('heading', { level: 2 });
     // Link liegt in der Überschrift
     this.link = this.title.getByRole('link');
-    this.description = root.locator('p');
+    this.description = root.getByRole('paragraph');
     // Quelle wird als Chip mit exaktem Namen gerendert
     this.author = root.getByText(
       /^(TechCrunch|Reuters Financial News|BBC World|Hacker News)$/,

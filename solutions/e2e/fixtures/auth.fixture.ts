@@ -44,7 +44,6 @@ interface AuthFixtures {
 export const test = base.extend<AuthFixtures>({
   authenticatedPage: async ({ page }, use) => {
     await loginViaApi(page);
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- Playwrights `use` ist kein React-Hook
     await use(page);
   },
 });
