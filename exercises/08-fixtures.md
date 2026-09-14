@@ -159,12 +159,65 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
    });
    ```
 
-### 4. **Tests ausführen**
+### 4. **Auth-Fixture `authenticatedPage`**
+
+Jetzt kapselst du den API-Login aus Übung 7 in eine Fixture. Jeder Test, der sie anfordert, bekommt eine bereits eingeloggte `page`.
+
+1. **Erstelle `e2e/fixtures/auth.fixture.ts`:**
+
+   ```typescript
+   import { test as base, expect, type Page } from '@playwright/test';
+
+   export const test = base.extend<{ authenticatedPage: Page }>({
+     authenticatedPage: async ({ page }, use) => {
+       // page.request teilt den Cookie-Jar mit der Page (siehe Übung 7/13)
+       const api = page.request;
+
+       const csrf = await api.get('/api/auth/csrf');
+       const { csrfToken } = await csrf.json();
+
+       const login = await api.post('/api/auth/callback/credentials', {
+         form: {
+           email: process.env.TEST_USER_EMAIL || 'test@example.com',
+           password: process.env.TEST_USER_PASSWORD || 'password',
+           csrfToken,
+           callbackUrl: '/',
+           json: 'true',
+         },
+       });
+       await expect(login).toBeOK();
+
+       await use(page);
+     },
+   });
+
+   export { expect };
+   ```
+
+2. **Nutze die Fixture in `e2e/private-news-fixture.spec.ts`:**
+
+   ```typescript
+   import { test, expect } from './fixtures/auth.fixture';
+
+   test('eingeloggt auf private News', async ({ authenticatedPage: page }) => {
+     await page.goto('/news/private');
+
+     await expect(
+       page.getByRole('heading', { name: 'Your Private News Feeds' }),
+     ).toBeVisible();
+   });
+   ```
+
+3. **Überlege:** Wann ist diese Fixture besser als der `storageState` aus Übung 7? (Tipp: Tests, die einen frischen Login oder einen anderen User brauchen.)
+
+Referenz: `solutions/e2e/fixtures/auth.fixture.ts`. Der Capstone (Übung 17) importiert genau diese Datei.
+
+### 5. **Tests ausführen**
 
 1. **Führe die Tests aus:**
 
    ```bash
-   npx playwright test fixtures-basic.spec.ts --reporter=line
+   npx playwright test fixtures-basic.spec.ts private-news-fixture.spec.ts --reporter=line
    ```
 
 2. **Beobachte die Console-Ausgaben:**
@@ -197,7 +250,7 @@ Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
 - **test-scoped**: Neue Instanz für jeden Test (Standard)
 - **worker-scoped**: Eine Instanz pro Worker (für teure Setups)
 
-**Zeit:** 20-25 Minuten
+**Zeit:** 30-35 Minuten
 
 ---
 

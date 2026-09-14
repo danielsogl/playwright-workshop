@@ -16,7 +16,8 @@ Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** 
 
    ```typescript
    import { test, expect } from './fixtures/auth.fixture';
-   import { NewsPage } from '../pages/NewsPage';
+   import { NewsPage } from './pages/NewsPage';
+   // Musterlösung: '../pages/NewsPage', dort liegen die POMs unter solutions/pages/
 
    test('kompletter User-Flow', async ({ authenticatedPage: page }) => {
      // page ist bereits eingeloggt (API-Login aus Übung 7)

@@ -1,118 +1,96 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Übung 3 - Erste Interaktionen (ohne Assertions)', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000');
-  });
+// Musterlösung zu Übung 3 – Interaktionen in der Feed App
+test.describe('Übung 3 - Interaktionen', () => {
+  test('Theme umschalten', async ({ page }) => {
+    await page.goto('/');
 
-  test('Klick-Interaktionen üben', async ({ page }) => {
-    // 1. Auf den "Public News" Link klicken
-    const publicNewsLink = page.getByRole('link', {
-      name: /view public news/i,
-    });
-    await publicNewsLink.click();
-    console.log('Public News Link wurde geklickt');
-
-    // Auf die Navigation warten statt fester Wartezeit
-    await page.waitForURL('**/news/public');
-
-    // 2. Theme Toggle Button klicken
     // Den Toggle gibt es für Desktop und Mobile, visible() nimmt nur den sichtbaren
-    const themeToggle = page.getByRole('switch').visible();
+    const themeToggle = page
+      .getByRole('switch', { name: /dark|light/i })
+      .visible();
+
+    const htmlElement = page.locator('html');
+    const initialTheme = (await htmlElement.getAttribute('class')) || '';
+
     await themeToggle.click();
-    console.log('Theme Toggle wurde geklickt');
+    await expect(htmlElement).not.toHaveClass(initialTheme);
 
-    // Zum Beobachten mit --headed oder im UI-Mode ausführen, feste Wartezeiten sind nicht nötig
-
-    // Nochmal klicken um zurückzuschalten
     await themeToggle.click();
-    console.log('Theme wurde zurückgeschaltet');
+    await expect(htmlElement).toHaveClass(initialTheme);
   });
 
-  test('Tastatur-Eingaben üben', async ({ page }) => {
-    // Navigiere zur News-Seite für Suche
-    await page.goto('http://localhost:3000/news/public');
+  test('Suche mit Tastatur bedienen', async ({ page }) => {
+    await page.goto('/news/public');
 
-    // 1. Suchfeld finden und Text eingeben (click() wartet automatisch, bis das Feld da ist)
-    const searchBox = page.getByPlaceholder('Search news');
-    await searchBox.click();
-    console.log('Suchfeld wurde angeklickt');
+    const results = page.getByRole('article');
+    await expect(results.first()).toBeVisible();
+    const initialCount = await results.count();
 
-    // 2. Text eingeben
-    await searchBox.fill('Playwright');
-    console.log('Text "Playwright" wurde eingegeben');
-
-    // 3. Enter drücken
-    await searchBox.press('Enter');
-    console.log('Enter wurde gedrückt');
-
-    // Die Liste filtert direkt beim Tippen, kein Warten nötig
-
-    // 4. Suchfeld leeren
-    await searchBox.clear();
-    console.log('Suchfeld wurde geleert');
-
-    // 5. Anderen Suchbegriff Zeichen für Zeichen eingeben
-    await searchBox.pressSequentially('Testing', { delay: 100 }); // Mit Verzögerung tippen
-    console.log('Text "Testing" wurde langsam getippt');
-
-    await searchBox.press('Enter');
-  });
-
-  test('Formular-Interaktionen (optional)', async ({ page }) => {
-    // Zum Login navigieren
-    await page.getByRole('link', { name: 'Sign in to your account' }).click();
-    console.log('Login-Seite wurde geöffnet');
-
-    // Email eingeben (Test-User aus der .env)
-    await page
-      .getByLabel('Email')
-      .fill(process.env.TEST_USER_EMAIL ?? 'test@example.com');
-    console.log('Email wurde eingegeben');
-
-    // Password eingeben
-    await page
-      .getByLabel('Password')
-      .fill(process.env.TEST_USER_PASSWORD ?? 'password');
-    console.log('Password wurde eingegeben');
-
-    // Submit Button klicken
-    await page.getByRole('button', { name: 'Submit sign in form' }).click();
-    console.log('Formular wurde abgeschickt');
-
-    // Nach erfolgreichem Login leitet die App zur Startseite weiter
-    await page.waitForURL('/');
-  });
-
-  test('Verschiedene Interaktionsmethoden', async ({ page }) => {
-    // Navigiere zur News-Seite für Artikel
-    await page.goto('http://localhost:3000/news/public');
-
-    // Hover über Elemente (hover() wartet automatisch auf den Artikel)
-    const firstArticle = page.getByRole('article').first();
-    await firstArticle.hover();
-    console.log('Hover über ersten Artikel');
-
-    // Doppelklick (falls relevant)
-    const heading = page.getByRole('heading', { level: 1 }).first();
-    await heading.dblclick();
-    console.log('Doppelklick auf Überschrift');
-
-    // Rechtsklick
-    await firstArticle.click({ button: 'right' });
-    console.log('Rechtsklick auf Artikel');
-
-    // Escape drücken um Kontextmenü zu schließen
-    await page.keyboard.press('Escape');
-
-    // Tab-Navigation
+    // Klick auf die Überschrift setzt den Startpunkt der Tab-Navigation direkt vor das Suchfeld
+    await page.getByRole('heading', { name: 'News Feed' }).click();
     await page.keyboard.press('Tab');
-    console.log('Tab gedrückt - nächstes Element fokussiert');
-    await page.keyboard.press('Tab');
-    console.log('Tab gedrückt - nächstes Element fokussiert');
 
-    // Shift+Tab zurück
-    await page.keyboard.press('Shift+Tab');
-    console.log('Shift+Tab - vorheriges Element fokussiert');
+    const searchInput = page.getByRole('textbox', {
+      name: 'Search news articles',
+    });
+    await expect(searchInput).toBeFocused();
+
+    await searchInput.pressSequentially('Playwright');
+    await page.keyboard.press('Enter');
+
+    await expect(results).not.toHaveCount(initialCount);
+  });
+
+  test('News nach Kategorie filtern', async ({ page }) => {
+    await page.goto('/news/public');
+
+    const articles = page
+      .getByRole('feed', { name: 'News articles' })
+      .getByRole('article');
+
+    // Offline-Feed (RSS_OFFLINE_MODE=true): 20 Artikel, davon 5 in "Business"
+    await expect(articles).toHaveCount(20);
+
+    await page
+      .getByRole('combobox', { name: 'Filter news by category' })
+      .selectOption('Business');
+
+    await expect(
+      page.getByText('5 articles found', { exact: true }),
+    ).toBeVisible();
+    await expect(articles).toHaveCount(5);
+  });
+
+  test('Login Formular Validierung', async ({ page }) => {
+    await page.goto('/auth/signin');
+
+    const emailInput = page.getByLabel('Email');
+    const passwordInput = page.getByLabel('Password');
+    const submitButton = page.getByRole('button', {
+      name: 'Submit sign in form',
+    });
+
+    // Leeres Formular: wir bleiben auf der Login-Seite
+    await submitButton.click();
+    await expect(page).toHaveURL('/auth/signin');
+
+    // Nur Email: Passwort fehlt, wir bleiben auf der Login-Seite
+    await emailInput.fill('test@example.com');
+    await submitButton.click();
+    await expect(page).toHaveURL('/auth/signin');
+
+    // Falsches Passwort (per Text, denn auch der Next.js Route Announcer hat role="alert")
+    await passwordInput.fill('wrongpassword');
+    await submitButton.click();
+    await expect(
+      page.getByRole('alert').filter({ hasText: 'Invalid email or password' }),
+    ).toBeVisible();
+
+    // Korrekte Daten des Test-Users aus der .env
+    await emailInput.fill(process.env.TEST_USER_EMAIL ?? 'test@example.com');
+    await passwordInput.fill(process.env.TEST_USER_PASSWORD ?? 'password');
+    await submitButton.click();
+    await expect(page).not.toHaveURL('/auth/signin');
   });
 });

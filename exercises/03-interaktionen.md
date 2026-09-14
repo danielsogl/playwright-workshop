@@ -1,7 +1,7 @@
 # Übung 3 – Interaktionen in der Feed App
 
 **Ziel:**
-Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fokus liegt auf realistischen Aktionen wie Klicks, Eingaben, Hover-Effekte und Tastatur-Navigation.
+Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fokus liegt auf realistischen Aktionen wie Klicks, Eingaben, Auswahllisten und Tastatur-Navigation.
 
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 2 – dieselben Elemente (Theme-Toggle, Suche, Login-Form), jetzt interaktiv.
@@ -83,35 +83,26 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    });
    ```
 
-3. **News Card Hover-Effekte:**
+3. **Nach Kategorie filtern (Auswahlliste):**
 
    ```typescript
-   test('News Card Hover zeigt zusätzliche Optionen', async ({ page }) => {
+   test('News nach Kategorie filtern', async ({ page }) => {
      await page.goto('/news/public');
 
-     const firstCard = page.getByRole('article').first();
-     await expect(firstCard).toBeVisible();
+     const articles = page
+       .getByRole('feed', { name: 'News articles' })
+       .getByRole('article');
 
-     // Hover über die Karte
-     await firstCard.hover();
+     // Offline-Feed (RSS_OFFLINE_MODE=true): 20 Artikel, davon 5 in "Business"
+     await expect(articles).toHaveCount(20);
 
-     // Prüfe ob Hover-Effekte sichtbar sind (z.B. Schatten, Buttons)
-     // Dies hängt vom tatsächlichen Design ab
-     const cardBox = await firstCard.boundingBox();
-     if (cardBox) {
-       // Screenshot der gehöverten Karte
-       await firstCard.screenshot({ path: 'hover-card.png' });
-     }
+     // Ein <select> hat die Rolle combobox, selectOption() wählt per Label oder Value
+     await page
+       .getByRole('combobox', { name: 'Filter news by category' })
+       .selectOption('Business');
 
-     // Klicke auf Link in der Karte
-     const cardLink = firstCard.getByRole('link').first();
-     await expect(cardLink).toHaveAttribute('href', /.+/);
-
-     // Rechtsklick für Kontext-Menü
-     await cardLink.click({ button: 'right' });
-
-     // ESC zum Schließen des Kontext-Menüs
-     await page.keyboard.press('Escape');
+     await expect(page.getByText('5 articles found', { exact: true })).toBeVisible();
+     await expect(articles).toHaveCount(5);
    });
    ```
 
@@ -160,94 +151,16 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
    });
    ```
 
-5. **Drag & Drop (falls vorhanden) oder Scroll-Verhalten:**
-
-   ```typescript
-   test('Infinite Scroll oder Pagination', async ({ page }) => {
-     await page.goto('/news/public');
-
-     // Warte bis die Artikel geladen sind und merke die Anzahl
-     const articles = page.getByRole('article');
-     await expect(articles.first()).toBeVisible();
-     const initialCount = await articles.count();
-
-     // Scrolle zum Ende der Seite
-     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-
-     // Prüfe ob mehr Items geladen wurden oder Pagination sichtbar ist
-     const loadMoreButton = page.getByRole('button', {
-       name: /load more|mehr laden/i,
-     });
-     const paginationNext = page.getByRole('link', { name: /next|weiter/i });
-
-     // isVisible() wartet nicht, hier gewollt, da die Elemente optional sind
-     if (await loadMoreButton.isVisible()) {
-       await loadMoreButton.click();
-       // Web-First Assertion statt networkidle: warte auf neue Items
-       await expect(articles).not.toHaveCount(initialCount);
-     } else if (await paginationNext.isVisible()) {
-       await paginationNext.click();
-       await expect(articles.first()).toBeVisible();
-     }
-
-     // Scrolle zurück nach oben
-     await page.evaluate(() => window.scrollTo(0, 0));
-
-     // Prüfe ob Scroll-to-Top Button erscheint
-     const scrollTopButton = page.getByRole('button', { name: /top|up/i });
-     if (await scrollTopButton.isVisible()) {
-       await scrollTopButton.click();
-       // Prüfe ob wir oben sind: expect.poll wiederholt, bis das Scrollen fertig ist
-       await expect
-         .poll(() => page.evaluate(() => window.scrollY))
-         .toBeLessThanOrEqual(100);
-     }
-   });
-   ```
-
-6. **Multi-Select und Bulk-Aktionen:**
-
-   ```typescript
-   test('Mehrere Items auswählen', async ({ page }) => {
-     await page.goto('/news/public');
-
-     // Falls Checkboxen vorhanden sind
-     const checkboxes = page.getByRole('checkbox');
-     const checkboxCount = await checkboxes.count();
-
-     if (checkboxCount > 0) {
-       // Wähle erste 3 Items
-       for (let i = 0; i < Math.min(3, checkboxCount); i++) {
-         await checkboxes.nth(i).check();
-       }
-
-       // Prüfe ob Bulk-Aktionen erscheinen
-       const bulkActions = page.getByText(/selected|ausgewählt/i);
-       await expect(bulkActions).toBeVisible();
-
-       // Wähle ab mit Strg+Klick (ControlOrMeta = Cmd unter macOS)
-       await checkboxes.first().click({ modifiers: ['ControlOrMeta'] });
-     }
-
-     // Alternative: Mehrfachauswahl mit Shift
-     const items = page.getByRole('article');
-     if ((await items.count()) > 3) {
-       await items.first().click();
-       await items.nth(2).click({ modifiers: ['Shift'] });
-     }
-   });
-   ```
-
 **Best Practices:**
 
 - ✅ Nutze realistische Benutzer-Flows
-- ✅ Teste Tastatur-Navigation für Accessibility
-- ✅ Prüfe Hover-States und Fokus-Indikatoren
+- ✅ Teste Tastatur-Navigation für Accessibility, Fokus prüfst du mit `toBeFocused()`
 - ✅ Validiere Formular-Verhalten vollständig
-- ✅ Berücksichtige verschiedene Eingabe-Methoden
+- ✅ Berücksichtige verschiedene Eingabe-Methoden (Klick, Tastatur, Auswahlliste)
+- ❌ Keine bedingten Tests wie `if (await button.isVisible())`: ein Test prüft einen festen, bekannten Zustand
 - ❌ Vermeide feste Wartezeiten (`waitForTimeout`, `networkidle`), nutze Auto-Waiting und Web-First Assertions
 
-**Zeit:** 25 Minuten
+**Zeit:** 20 Minuten
 
 ---
 

@@ -26,8 +26,8 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
 
    Sie enthält bereits Test-Zugangsdaten (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`), den Offline-Modus für die News-Feeds (`RSS_OFFLINE_MODE=true`) und ein `AUTH_SECRET`.
 
-3. **Playwright-Konfiguration mit webServer anpassen:**
-   - Öffne `playwright.config.ts` und aktiviere den webServer:
+3. **Playwright-Konfiguration lesen:**
+   - Öffne `playwright.config.ts`. Der `webServer`-Block ist bereits aktiv:
 
    ```typescript
    webServer: {
@@ -37,6 +37,14 @@ Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit au
      timeout: 120 * 1000,
    },
    ```
+
+   - Beantworte für dich: Welcher Befehl startet die App? Woran erkennt Playwright, dass sie bereit ist? Was passiert, wenn die App schon läuft?
+
+   <details><summary>Antworten</summary>
+
+   `command` startet die App, Playwright wartet, bis `url` antwortet (höchstens `timeout` ms). Lokal wird ein bereits laufender Server wiederverwendet, auf CI (`CI` gesetzt) startet Playwright immer einen frischen.
+
+   </details>
 
 4. **Ersten Smoke-Test erstellen:**
    - Erstelle `e2e/setup.spec.ts`:

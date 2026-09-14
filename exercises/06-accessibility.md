@@ -6,7 +6,7 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 4 – dieselben Seiten (`/`, `/news/public`), neue Prüf-Dimension.
 > **Du gibst weiter:** a11y-Scans als zusätzliche Qualitätsstufe deiner Suite.
-> **Zurückgefallen?** Die Seiten sind ohne Vorarbeit erreichbar; nur `@axe-core/playwright` installieren.
+> **Zurückgefallen?** Die Seiten sind ohne Vorarbeit erreichbar.
 
 **Warum Accessibility Testing?**
 
@@ -16,11 +16,7 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
 - Früherkennung von Accessibility-Problemen
 - Dokumentation der Barrierefreiheit
 
-**Vorbereitung:**
-
-```bash
-npm install --save-dev @axe-core/playwright
-```
+**Vorbereitung:** `@axe-core/playwright` ist im Workshop-Repo bereits installiert. In eigenen Projekten: `npm install --save-dev @axe-core/playwright`.
 
 **Aufgaben:**
 
