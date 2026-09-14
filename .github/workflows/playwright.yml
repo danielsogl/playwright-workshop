@@ -19,6 +19,16 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
+    - name: Run solutions (chromium)
+      # Visual-Baselines sind plattformabhängig und per .gitignore nicht versioniert,
+      # auf einem frischen Checkout schlagen sie immer fehl. Deshalb ausgeschlossen.
+      env:
+        RSS_OFFLINE_MODE: 'true'
+        TEST_USER_EMAIL: test@example.com
+        TEST_USER_PASSWORD: password
+      run: |
+        AUTH_SECRET=$(openssl rand -base64 32) \
+          npm run e2e:solutions -- --project=chromium --grep-invert "Visual Regression Testing"
     - uses: actions/upload-artifact@v5
       if: ${{ !cancelled() }}
       with:
