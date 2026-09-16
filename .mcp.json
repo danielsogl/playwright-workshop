@@ -1,5 +1,13 @@
 {
   "mcpServers": {
+    "playwright-test": {
+      "command": "npx",
+      "args": ["playwright", "run-test-mcp-server"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["playwright", "mcp", "--browser=chromium"]
+    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp/oauth"

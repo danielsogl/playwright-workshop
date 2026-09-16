@@ -54,13 +54,48 @@ ist – ein grüner Startpunkt nach dem Setup.
 ## Projektstruktur
 
 ```
-exercises/    Übungsaufgaben (01 … 17 plus 06b/16b, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
+exercises/    Übungsaufgaben (01 … 18 plus 06b/16b, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
   ci-templates/  Pipeline-Vorlagen (GitHub Actions, GitLab, Azure DevOps, Jenkins) zu Übung 16b
 solutions/    Musterlösungen (e2e-Specs mit gleicher Nummerierung + Page Objects) zum Abgleich
-e2e/          Verzeichnis für die eigenen Tests der Teilnehmer
+e2e/          Verzeichnis für die eigenen Tests der Teilnehmer (inkl. seed.spec.ts für die Test Agents)
+specs/        Markdown-Testpläne des playwright-test-planner (Übung 18)
+.claude/      Agent-Definitionen (agents/) & Skill-Symlinks (skills/)
+.agents/      Playwright Agent Skills (playwright-cli, playwright-trace, …)
 app/          Next.js App (news, auth, settings, clock, file-download, …)
 components/   UI-Komponenten
 config/       Seed-Daten & Site-Konfiguration
+```
+
+## KI-gestütztes Testen (Übung 18)
+
+Das Repo ist für Coding Agents vorbereitet – Agents, Skills und MCP-Server sind
+eingerichtet und committet:
+
+```bash
+.claude/agents/   playwright-test-planner | -generator | -healer
+.claude/skills/   Symlinks auf .agents/skills/ (playwright-cli, playwright-trace, …)
+.mcp.json         playwright-test (Agents) · playwright (interaktiv) · context7
+e2e/seed.spec.ts  Startpunkt, den der Planner ausführt und der Generator als Vorlage nutzt
+specs/            Markdown-Testpläne
+```
+
+Neu erzeugen (z.B. nach einem Playwright-Update, die Definitionen sind an die
+Version gebunden):
+
+```bash
+npx playwright init-agents --loop=claude   # claude | codex | copilot | opencode | vscode
+npx playwright init-skills --loop=claude   # claude | agents
+```
+
+> `init-agents` überschreibt eine vorhandene `.mcp.json` – danach den Diff prüfen,
+> bevor du committest.
+
+Terminal-Werkzeuge (ab v1.62 in Playwright gebündelt, kein Extra-Paket nötig):
+
+```bash
+npx playwright cli --help     # token-sparsame Browser-Steuerung, State auf Disk
+npx playwright mcp            # MCP-Server für interaktive Prompts
+npx playwright trace open …   # Trace-Analyse ohne Trace Viewer
 ```
 
 ## Tech-Stack
