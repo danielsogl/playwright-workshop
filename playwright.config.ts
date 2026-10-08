@@ -64,14 +64,18 @@ export default defineConfig({
     },
 
     /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+    // testMatch: die Mobile-Projekte führen nur die Mobile-Specs aus (Übung 16),
+    // nicht die Specs der früheren Übungen (die sind für Desktop gebaut).
+    {
+      name: 'Mobile Chrome',
+      testMatch: /16-mobile\.spec\.ts/,
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Mobile Safari',
+      testMatch: /16-mobile\.spec\.ts/,
+      use: { ...devices['iPhone 12'] },
+    },
 
     /* Test against branded browsers. */
     // {
