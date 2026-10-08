@@ -90,7 +90,7 @@ export default [
     settings: {
       playwright: {
         // Eigene test.extend()-Instanzen in der Fixtures-Lösung (Übung 8)
-        globalAliases: { test: ['testWithHelpers'] },
+        globalAliases: { test: ['testWithHelpers', 'testWithOption'] },
       },
     },
   },
