@@ -5,8 +5,8 @@ Du lernst die Grundlagen von Playwright Fixtures kennen – ein System für wied
 
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 7 – der API-Login wird zur wiederverwendbaren Fixture gekapselt.
-> **Du gibst weiter:** eine **`authenticatedPage`-Fixture** (`solutions/e2e/fixtures/auth.fixture.ts`), die der Capstone (Übung 17) importiert. Die Daten-Fixture übst du weiter auf `/fixtures-demo`.
-> **Zurückgefallen?** Das komplette Fixture-Snippet steht im Handout und in `solutions/e2e/fixtures/auth.fixture.ts`.
+> **Du gibst weiter:** eine **`authenticatedPage`-Fixture** (`e2e/fixtures/auth.fixture.ts`), die der Capstone (Übung 17) importiert. Die Daten-Fixture übst du weiter auf `/fixtures-demo`.
+> **Zurückgefallen?** `git switch ex/08-fixtures` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/08-fixtures ex/09-page-objects`. Das komplette Fixture-Snippet steht im Handout und in `e2e/fixtures/auth.fixture.ts`.
 
 ## Was sind Fixtures?
 
@@ -210,7 +210,7 @@ Jetzt kapselst du den API-Login aus Übung 7 in eine Fixture. Jeder Test, der si
 
 3. **Überlege:** Wann ist diese Fixture besser als der `storageState` aus Übung 7? (Tipp: Tests, die einen frischen Login oder einen anderen User brauchen.)
 
-Referenz: `solutions/e2e/fixtures/auth.fixture.ts`. Der Capstone (Übung 17) importiert genau diese Datei.
+Referenz: `e2e/fixtures/auth.fixture.ts`. Der Capstone (Übung 17) importiert genau diese Datei.
 
 ### 5. **Tests ausführen**
 

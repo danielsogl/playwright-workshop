@@ -6,7 +6,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 2 – du löst die dort aufgeschobenen Assertions auf dem Public-News-Flow ein.
 > **Du gibst weiter:** dein erstes echtes Assertion-Vokabular (`expect`, Auto-Waiting) – Grundlage für den Feature-Test in Übung 5.
-> **Zurückgefallen?** Die verwendeten Locators sind in den Snippets enthalten.
+> **Zurückgefallen?** `git switch ex/04-erster-test` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/04-erster-test ex/05-suche`. Die verwendeten Locators sind in den Snippets enthalten.
 
 **Aufgaben:**
 

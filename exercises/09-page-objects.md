@@ -6,7 +6,7 @@ Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbes
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 5 – du refactorierst genau deinen Suchtest ins Page Object Model.
 > **Du gibst weiter:** die POMs **`NewsPage`**, **`HomePage`** und **`LoginPage`** – das Rückgrat für die Übungen 10, 11, 15, 16 und den Capstone (Übung 17).
-> **Zurückgefallen?** Die fertigen POMs liegen in `solutions/pages/`.
+> **Zurückgefallen?** `git switch ex/09-page-objects` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/09-page-objects ex/10-erweiterte-page-objects`. Die fertigen POMs liegen in `e2e/pages/`.
 
 **Warum Page Objects?**
 

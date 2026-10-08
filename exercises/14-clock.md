@@ -4,7 +4,7 @@
 
 > **🧵 Roter Faden**
 > **Nächster Winkel derselben App:** `/clock` – eigenständige Technik, kein Reuse nötig.
-> **Zurückgefallen?** Vollständig eigenständig.
+> **Zurückgefallen?** `git switch ex/14-clock` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/14-clock ex/15-visual-regression`. Vollständig eigenständig.
 
 **Website:** http://localhost:3000/clock (Clock & Timer Testing Page)
 

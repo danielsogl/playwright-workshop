@@ -6,7 +6,7 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 4 – Assertions und Locators auf `/news/public`.
 > **Du gibst weiter:** deinen **ersten vollwertigen Feature-Test** (News-Suche). ⭐ **Genau diesen Test refactorierst du in Übung 9** ins Page Object Model – halte ihn griffbereit. Er wird außerdem in Übung 11 (Mocking) wieder aufgegriffen.
-> **Zurückgefallen?** Der komplette Suchtest liegt in `solutions/e2e/05-suche.spec.ts`.
+> **Zurückgefallen?** `git switch ex/05-suche` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/05-suche ex/06-accessibility`. Der komplette Suchtest liegt in `e2e/05-suche.spec.ts`.
 
 **Aufgaben:**
 

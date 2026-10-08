@@ -6,7 +6,7 @@ Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights 
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 7 – dieselben Auth-Endpunkte (CSRF → credentials), jetzt ohne Browser geprüft.
 > **Du gibst weiter:** API-Contract-Wissen als schnelle Ergänzung zu den UI-Tests.
-> **Zurückgefallen?** Vollständig eigenständig lauffähig gegen die laufende App.
+> **Zurückgefallen?** `git switch ex/13-api-testing` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/13-api-testing ex/14-clock`. Vollständig eigenständig lauffähig gegen die laufende App.
 
 **Aufgaben:**
 

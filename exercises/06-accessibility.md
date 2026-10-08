@@ -6,7 +6,7 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 4 – dieselben Seiten (`/`, `/news/public`), neue Prüf-Dimension.
 > **Du gibst weiter:** a11y-Scans als zusätzliche Qualitätsstufe deiner Suite.
-> **Zurückgefallen?** Die Seiten sind ohne Vorarbeit erreichbar.
+> **Zurückgefallen?** `git switch ex/06-accessibility` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06-accessibility ex/06b-dialoge-downloads`. Die Seiten sind ohne Vorarbeit erreichbar.
 
 **Warum Accessibility Testing?**
 

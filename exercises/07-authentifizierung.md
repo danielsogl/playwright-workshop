@@ -6,7 +6,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 3 – die Login-Form, jetzt als wiederverwendbarer Auth-Flow.
 > **Du gibst weiter:** den **`storageState`** (`playwright/.auth/user.json`) – schaltet `/news/private` + `/settings` für Tag 2/3 frei – und den **API-Login-Flow** (CSRF → credentials), Basis für die Fixture in Übung 8, die API-Tests in Übung 13 und den Capstone (Übung 17).
-> **Zurückgefallen?** Setup-Spec + Config-Auszug liegen in `solutions/e2e/07-authentifizierung.spec.ts`.
+> **Zurückgefallen?** `git switch ex/07-authentifizierung` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/07-authentifizierung ex/08-fixtures`. Setup-Spec + Config-Auszug liegen in `e2e/07-authentifizierung.spec.ts`.
 
 **Teil A: UI-basierte Authentifizierung**
 
@@ -17,7 +17,7 @@ Du lernst verschiedene Ansätze zur Authentifizierung in Playwright-Tests kennen
    - Füge `playwright/.auth` zu deiner `.gitignore` hinzu
    - Erstelle eine Datei `e2e/auth.setup.ts` für den Login-Prozess
 
-   > **Hinweis zur Musterlösung:** Die Lösung bündelt die Setup-Tests aus Kürze im selben Spec (`solutions/e2e/07-authentifizierung.spec.ts`); das `setup`-Projekt in der Config matcht sie über `grep: /authenticate as/`. Weil sie im `chromium`-Projekt zusätzlich mitlaufen, verhindert ein Test-Lock (`{ lock: 'user-auth-state' }`, seit 1.63), dass sie `user.json` überschreiben, während andere Tests die Datei lesen. In deinem eigenen Projekt ist eine separate `*.setup.ts`-Datei mit `testMatch: /.*\.setup\.ts/` die sauberere Variante.
+   > **Hinweis zur Musterlösung:** Die Lösung bündelt die Setup-Tests aus Kürze im selben Spec (`e2e/07-authentifizierung.spec.ts`); das `setup`-Projekt in der Config matcht sie über `grep: /authenticate as/`. Weil sie im `chromium`-Projekt zusätzlich mitlaufen, verhindert ein Test-Lock (`{ lock: 'user-auth-state' }`, seit 1.63), dass sie `user.json` überschreiben, während andere Tests die Datei lesen. In deinem eigenen Projekt ist eine separate `*.setup.ts`-Datei mit `testMatch: /.*\.setup\.ts/` die sauberere Variante.
 
 2. **UI-Login implementieren:**
 

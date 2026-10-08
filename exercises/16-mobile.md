@@ -5,7 +5,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 
 > **🧵 Roter Faden**
 > **Baut auf (weich):** Übung 9 – optionaler `NewsPage`-POM-Reuse zum Navigieren von `/` und dem Feed.
-> **Zurückgefallen?** `page.goto()` reicht; die POM ist hier nur Komfort.
+> **Zurückgefallen?** `git switch ex/16-mobile` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/16-mobile ex/16b-ci-lokal`. `page.goto()` reicht; die POM ist hier nur Komfort.
 
 **Breakpoints der App (Tailwind):** Hamburger-Menü unter `sm` (640px), Desktop-Navigation ab `lg` (1024px), News-Grid mit 2 Spalten ab `md` (768px) und 3 Spalten ab `lg`.
 

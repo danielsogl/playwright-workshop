@@ -64,8 +64,8 @@ export default [
   },
   {
     ...playwrightPlugin.configs['flat/recommended'],
-    // Teilnehmer-Tests und Musterlösungen (inkl. Page Objects und Fixtures)
-    files: ['e2e/**/*.{ts,tsx}', 'solutions/**/*.ts'],
+    // Tests inkl. Page Objects und Fixtures
+    files: ['e2e/**/*.{ts,tsx}'],
     languageOptions: {
       ...playwrightPlugin.configs['flat/recommended'].languageOptions,
       parserOptions: {

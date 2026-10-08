@@ -51,25 +51,56 @@ npm run e2e:report   # letzten HTML-Report öffnen
 Der mitgelieferte Smoke-Test `e2e/example.spec.ts` prüft, ob die App erreichbar
 ist – ein grüner Startpunkt nach dem Setup.
 
+## Checkpoints (Branches `ex/*`)
+
+Die Musterlösungen liegen nicht als Ordner im Repo, sondern als **lineare Kette
+von Branches**. `ex/NN-slug` ist der **Startpunkt** von Übung NN und enthält die
+Musterlösungen aller vorherigen Übungen. Die Lösung von Übung NN steckt im
+Folgebranch:
+
+```bash
+git switch ex/05-suche                       # Startpunkt Übung 5 (Lösungen 1–4 sind da)
+git diff ex/05-suche ex/06-accessibility     # Musterlösung von Übung 5
+git switch ex/end                            # alle Lösungen
+```
+
+`main` entspricht `ex/01-setup` (nur App, Handouts und ein Smoke-Test). Die
+Reihenfolge der Branches ist die Reihenfolge der Dateien in `exercises/`; die
+Config wächst mit (Auth-Setup-Projekt ab Übung 7, KI-Agents ab Übung 18).
+
+### Kette pflegen
+
+Die Kette ist **eine** lineare Historie mit einem Commit pro Musterlösung
+(`ex(05): …`); die Branches sind nur Zeiger darauf. Änderungen an einer früheren
+Übung machst du mit `git rebase -i` auf dem Quell-Branch `checkpoints` und
+setzt danach die Zeiger neu:
+
+```bash
+scripts/sync-checkpoints.sh            # setzt ex/* anhand der ex(NN)-Commits von `checkpoints`
+git push --force-with-lease origin 'refs/heads/ex/*' main
+```
+
+Die CI (`.github/workflows/playwright.yml`) prüft jeden `ex/*`-Branch (ESLint,
+Tests in Chromium) und dass die Kette linear ist.
+
 ## Projektstruktur
 
 ```
 exercises/    Übungsaufgaben (01 … 18 plus 06b/16b, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
   ci-templates/  Pipeline-Vorlagen (GitHub Actions, GitLab, Azure DevOps, Jenkins) zu Übung 16b
-solutions/    Musterlösungen (e2e-Specs mit gleicher Nummerierung + Page Objects) zum Abgleich
-e2e/          Verzeichnis für die eigenen Tests der Teilnehmer (inkl. seed.spec.ts für die Test Agents)
-specs/        Markdown-Testpläne des playwright-test-planner (Übung 18)
-.claude/      Agent-Definitionen (agents/) & Skill-Symlinks (skills/)
-.agents/      Playwright Agent Skills (playwright-cli, playwright-trace, …)
+e2e/          Verzeichnis für die Tests der Teilnehmer; auf den ex/*-Branches liegen hier die Musterlösungen (plus pages/, fixtures/, mocks/)
+scripts/      sync-checkpoints.sh – setzt die ex/*-Branches
 app/          Next.js App (news, auth, settings, clock, file-download, …)
 components/   UI-Komponenten
 config/       Seed-Daten & Site-Konfiguration
+.agents/      Playwright Agent Skills (playwright-cli, playwright-trace, …)
+.claude/      Skill-Symlinks (skills/); ab ex/18 auch agents/
 ```
 
 ## KI-gestütztes Testen (Übung 18)
 
-Das Repo ist für Coding Agents vorbereitet – Agents, Skills und MCP-Server sind
-eingerichtet und committet:
+Ab dem Branch `ex/18-ai-assisted` ist das Repo für Coding Agents vorbereitet –
+Agents, Skills und MCP-Server sind eingerichtet und committet:
 
 ```bash
 .claude/agents/   playwright-test-planner | -generator | -healer

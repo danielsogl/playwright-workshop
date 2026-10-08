@@ -4,12 +4,43 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 jobs:
-  test:
-    timeout-minutes: 60
+  # Jeder Checkpoint (ex/*) muss grün sein und auf dem vorherigen aufbauen.
+  checkpoints:
     runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.list.outputs.branches }}
     steps:
     - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+    - id: list
+      name: Checkpoints auflisten und Linearität prüfen
+      run: |
+        # C-Sortierung = Reihenfolge der Übungen (06- vor 06b-, ex/end zuletzt)
+        branches=$(git for-each-ref --format='%(refname:strip=3)' 'refs/remotes/origin/ex/*' | LC_ALL=C sort)
+        prev=
+        for b in $branches; do
+          if [ -n "$prev" ] && ! git merge-base --is-ancestor "origin/$prev" "origin/$b"; then
+            echo "::error::$prev ist kein Vorgänger von $b"; exit 1
+          fi
+          prev=$b
+        done
+        echo "branches=$(echo "$branches" | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: checkpoints
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.checkpoints.outputs.branches) }}
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ matrix.branch }}
     - uses: actions/setup-node@v6
       with:
         node-version: lts/*
@@ -18,10 +49,8 @@ jobs:
     - name: Lint
       run: npx eslint . --max-warnings=0
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - name: Run solutions (chromium)
+      run: npx playwright install --with-deps chromium
+    - name: Run Playwright tests (chromium)
       # Visual-Baselines sind plattformabhängig und per .gitignore nicht versioniert,
       # auf einem frischen Checkout schlagen sie immer fehl. Deshalb ausgeschlossen.
       env:
@@ -30,10 +59,10 @@ jobs:
         TEST_USER_PASSWORD: password
       run: |
         AUTH_SECRET=$(openssl rand -base64 32) \
-          npm run e2e:solutions -- --project=chromium --grep-invert "Visual Regression Testing"
+          npx playwright test --project=chromium --grep-invert "Visual Regression Testing"
     - uses: actions/upload-artifact@v5
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
+        name: playwright-report-${{ strategy.job-index }}
         path: playwright-report/
         retention-days: 30

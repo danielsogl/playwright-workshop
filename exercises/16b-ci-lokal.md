@@ -6,7 +6,7 @@ Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust ein
 > **🧵 Roter Faden**
 > **Baut auf:** deiner Suite aus den Übungen 1–16 – jede Aufgabe läuft mit den Tests, die du schon hast.
 > **Du gibst weiter:** ein `ci`-Script und einen pre-push-Hook, die du 1:1 in jedes CI-System übernehmen kannst (Vorlagen in `exercises/ci-templates/`).
-> **Zurückgefallen?** Es reicht der mitgelieferte Smoke-Test `e2e/example.spec.ts`.
+> **Zurückgefallen?** `git switch ex/16b-ci-lokal` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/16b-ci-lokal ex/17-capstone`. Es reicht der mitgelieferte Smoke-Test `e2e/example.spec.ts`.
 
 **Aufgaben:**
 

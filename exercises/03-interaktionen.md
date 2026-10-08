@@ -6,7 +6,7 @@ Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fo
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 2 – dieselben Elemente (Theme-Toggle, Suche, Login-Form), jetzt interaktiv.
 > **Du gibst weiter:** Interaktions-Muster (fill, click, keyboard), u. a. den Login-Flow, den Übung 7 zum Auth-Setup ausbaut.
-> **Zurückgefallen?** Alle Locators stehen in den Snippets unten – Übung 2 ist keine harte Voraussetzung.
+> **Zurückgefallen?** `git switch ex/03-interaktionen` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/03-interaktionen ex/04-erster-test`. Alle Locators stehen in den Snippets unten – Übung 2 ist keine harte Voraussetzung.
 
 **Warum Interaktions-Tests?**
 

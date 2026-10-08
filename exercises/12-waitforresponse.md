@@ -6,7 +6,7 @@ Du kombinierst Request-Interception (`page.route`) mit `page.waitForResponse`, u
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 11 – du importierst die Mock-Daten aus `e2e/mocks/news-mocks.ts` statt sie inline zu definieren (siehe Snippet-Variante unten).
 > **Du gibst weiter:** das Muster „Response abfangen + gegen UI abgleichen".
-> **Zurückgefallen?** Fehlt Übung 11, definiere den Mock inline – das Handout zeigt beide Wege.
+> **Zurückgefallen?** `git switch ex/12-waitforresponse` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/12-waitforresponse ex/13-api-testing`. Fehlt Übung 11, definiere den Mock inline – das Handout zeigt beide Wege.
 
 **Aufgaben:**
 

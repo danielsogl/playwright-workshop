@@ -50,7 +50,6 @@ node_modules/
 trace-news-search.zip
 **/*-snapshots/
 # von den Download-Übungen erzeugte Dateien
-/solutions/downloads/
 /downloads/
 # playwright-bdd und Playwright MCP
 /.features-gen/

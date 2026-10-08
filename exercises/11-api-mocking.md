@@ -6,7 +6,7 @@ Du lernst, wie du API-Antworten mockst um Tests unabhängiger, schneller und zuv
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 5/9 – derselbe Suchtest auf `/news/public`, jetzt mit deterministischen Mock-Daten statt Live-Feed.
 > **Du gibst weiter:** die Mock-Datei `e2e/mocks/news-mocks.ts` – wird in Übung 12 direkt importiert.
-> **Zurückgefallen?** Mock-Daten + Routen stehen im Handout; `solutions/e2e/mocks/news-mocks.ts` ist die Referenz.
+> **Zurückgefallen?** `git switch ex/11-api-mocking` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/11-api-mocking ex/12-waitforresponse`. Mock-Daten + Routen stehen im Handout; `e2e/mocks/news-mocks.ts` ist die Referenz.
 
 **Warum API Mocking?**
 

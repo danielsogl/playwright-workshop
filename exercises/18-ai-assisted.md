@@ -6,7 +6,7 @@ Du richtest das offizielle KI-Setup von Playwright im Workshop-Repo ein und läs
 > **🧵 Roter Faden**
 > **Baut auf:** der App, die du drei Tage lang von Hand getestet hast. Genau deshalb erkennst du jetzt, ob ein generierter Test gut ist.
 > **Du gibst weiter:** ein Repo, in dem jeder Coding Agent Playwright bedienen kann – Agents, Skills und MCP sind eingerichtet und committet.
-> **Zurückgefallen?** Alles in dieser Übung funktioniert unabhängig von den Übungen 1–17. Du brauchst nur die laufende App.
+> **Zurückgefallen?** `git switch ex/18-ai-assisted` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/18-ai-assisted ex/end`. Alles in dieser Übung funktioniert unabhängig von den Übungen 1–17. Du brauchst nur die laufende App.
 
 **Voraussetzungen:**
 
@@ -109,7 +109,7 @@ Du richtest das offizielle KI-Setup von Playwright im Workshop-Repo ein und läs
 
    - [ ] Das nutzt der Agent über den `playwright-trace`-Skill, um rote Tests zu diagnostizieren, ohne den Trace Viewer zu öffnen.
 
-**Bonus:** Lass den Planner den kompletten Capstone-Flow aus Übung 17 planen (Login → Public News → Private Feeds → Settings → Logout) und vergleiche den Plan mit der Musterlösung in `solutions/e2e/17-capstone.spec.ts`. Was hat die KI übersehen?
+**Bonus:** Lass den Planner den kompletten Capstone-Flow aus Übung 17 planen (Login → Public News → Private Feeds → Settings → Logout) und vergleiche den Plan mit der Musterlösung in `e2e/17-capstone.spec.ts`. Was hat die KI übersehen?
 
 **Was du lernst:**
 

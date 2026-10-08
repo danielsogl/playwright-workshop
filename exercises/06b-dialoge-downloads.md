@@ -5,7 +5,7 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
 
 > **🧵 Roter Faden**
 > **Anderer Winkel derselben App:** `/dialog-demo` und `/file-download` – eigenständige Bonus-Techniken, kein harter Reuse.
-> **Zurückgefallen?** Vollständig eigenständig; keine Voraussetzung aus früheren Übungen.
+> **Zurückgefallen?** `git switch ex/06b-dialoge-downloads` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06b-dialoge-downloads ex/07-authentifizierung`. Vollständig eigenständig; keine Voraussetzung aus früheren Übungen.
 
 ## Teil A: Dialoge (`/dialog-demo`)
 

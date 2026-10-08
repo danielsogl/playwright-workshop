@@ -6,7 +6,7 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
 > **🧵 Roter Faden**
 > **Baut auf (weich):** Übung 9 – optional navigierst du mit der `NewsPage`-POM zu den Screenshot-Zielen.
 > **Du gibst weiter:** Visual-Baselines als Regressions-Schutz.
-> **Zurückgefallen?** `page.goto()` funktioniert genauso – die POM ist hier nur Komfort.
+> **Zurückgefallen?** `git switch ex/15-visual-regression` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/15-visual-regression ex/16-mobile`. `page.goto()` funktioniert genauso – die POM ist hier nur Komfort.
 
 **Warum Visual Testing?**
 

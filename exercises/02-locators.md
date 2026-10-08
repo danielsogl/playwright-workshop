@@ -6,7 +6,7 @@ Du wendest verschiedene Locator-Strategien praktisch an. Fokus: Elemente **finde
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 1 – lauffähiges Setup.
 > **Du gibst weiter:** dein Locator-Vokabular für die Seiten `/` und `/news/public`, die Tag 1 tragen (eingelöst in Übung 4).
-> **Zurückgefallen?** Kein Vorarbeit nötig – die App läuft über den `webServer` automatisch, nur `npm install`.
+> **Zurückgefallen?** `git switch ex/02-locators` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/02-locators ex/03-interaktionen`. Kein Vorarbeit nötig – die App läuft über den `webServer` automatisch, nur `npm install`.
 
 **Aufgaben:**
 

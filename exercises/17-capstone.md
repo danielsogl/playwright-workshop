@@ -5,7 +5,7 @@ Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** 
 
 > **🧵 Roter Faden**
 > **Baut auf:** allem – **kein neuer Stoff**. Du kombinierst die Trägerartefakte: die **`authenticatedPage`-Fixture** (Übung 8, nutzt den API-Login aus Übung 7), die **`NewsPage`-POM** (Übung 9/10) und deine Assertions (Übung 4–6).
-> **Zurückgefallen?** Die komplette Musterlösung liegt in `solutions/e2e/17-capstone.spec.ts`.
+> **Zurückgefallen?** `git switch ex/17-capstone` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/17-capstone ex/18-ai-assisted`. Die komplette Musterlösung liegt in `e2e/17-capstone.spec.ts`.
 
 **Hinweis:** Diese Übung ist als **optionaler Abschluss** gedacht (~30–40 Min). Wenn die Zeit knapp ist, kann sie übersprungen oder gemeinsam als Live-Demo durchgegangen werden.
 
@@ -17,7 +17,6 @@ Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** 
    ```typescript
    import { test, expect } from './fixtures/auth.fixture';
    import { NewsPage } from './pages/NewsPage';
-   // Musterlösung: '../pages/NewsPage', dort liegen die POMs unter solutions/pages/
 
    test('kompletter User-Flow', async ({ authenticatedPage: page }) => {
      // page ist bereits eingeloggt (API-Login aus Übung 7)
@@ -54,7 +53,7 @@ Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** 
 **Ausführen:**
 
 ```bash
-npm run e2e:solutions -- 17-capstone.spec.ts --project=chromium
+npx playwright test 17-capstone.spec.ts --project=chromium
 ```
 
 **Was du zusammenführst:**
