@@ -4,7 +4,7 @@
 // installierten @playwright/test-Version passen.
 pipeline {
   agent {
-    docker { image 'mcr.microsoft.com/playwright:v1.63.0-noble' }
+    docker { image 'mcr.microsoft.com/playwright:v1.64.0-noble' }
   }
   environment {
     CI = 'true'

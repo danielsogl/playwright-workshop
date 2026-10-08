@@ -3,7 +3,7 @@
 # Das offizielle Image enthält Browser und Systemabhängigkeiten.
 # Die Version muss zur installierten @playwright/test-Version passen.
 e2e:
-  image: mcr.microsoft.com/playwright:v1.63.0-noble
+  image: mcr.microsoft.com/playwright:v1.64.0-noble
   variables:
     CI: 'true'
   script:
