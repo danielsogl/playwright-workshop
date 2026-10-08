@@ -4,7 +4,7 @@
 
 > **🧵 Roter Faden**
 > **Nächster Winkel derselben App:** `/clock` – eigenständige Technik, kein Reuse nötig.
-> **Zurückgefallen?** `git switch ex/14-clock` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/14-clock ex/15-visual-regression`. Vollständig eigenständig.
+> **Zurückgefallen?** `git switch ex/14-clock` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/14-clock ex/15-visual-regression`. Vollständig eigenständig. Die Musterlösung liegt in `e2e/14-clock.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Website:** http://localhost:3000/clock (Clock & Timer Testing Page)
 
@@ -71,6 +71,32 @@
      await expect(page.getByTestId('current-time')).toContainText('16:45');
    });
    ```
+
+4. **Bonus: `setFixedTime` und `runFor`:**
+
+   ```typescript
+   test('setFixedTime springt auf eine feste Zeit', async ({ page }) => {
+     await page.clock.install({ time: new Date('2024-02-02T08:00:00') });
+     await page.goto('/clock');
+     await expect(page.getByTestId('current-time')).toContainText('08:00');
+
+     // Date ist ab jetzt fix, die Timer der Seite laufen normal weiter
+     await page.clock.setFixedTime(new Date('2024-02-02T09:15:00'));
+     await expect(page.getByTestId('current-time')).toHaveText('09:15:00');
+   });
+
+   test('runFor lässt alle Timer der Reihe nach feuern', async ({ page }) => {
+     await page.clock.install({ time: new Date('2024-01-15 10:00:00') });
+     await page.goto('/clock');
+     await page.clock.pauseAt(new Date('2024-01-15 10:00:05'));
+     await expect(page.getByTestId('current-time')).toHaveText('10:00:05');
+
+     await page.clock.runFor(2000);
+     await expect(page.getByTestId('current-time')).toHaveText('10:00:07');
+   });
+   ```
+
+   Hinweis: Setze `setFixedTime` nach dem Laden der Seite. Vor dem Laden fixiert es die Zeit schon beim Hydrieren, die Uhr der Seite zeigt dann die Server-Zeit, weil sich der Wert nie ändert.
 
 **Clock API Methoden:**
 

@@ -6,7 +6,7 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 4 – dieselben Seiten (`/`, `/news/public`), neue Prüf-Dimension.
 > **Du gibst weiter:** a11y-Scans als zusätzliche Qualitätsstufe deiner Suite.
-> **Zurückgefallen?** `git switch ex/06-accessibility` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06-accessibility ex/06b-dialoge-downloads`. Die Seiten sind ohne Vorarbeit erreichbar.
+> **Zurückgefallen?** `git switch ex/06-accessibility` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06-accessibility ex/06b-dialoge-downloads`. Die Seiten sind ohne Vorarbeit erreichbar. Die Musterlösung liegt in `e2e/06-accessibility.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Warum Accessibility Testing?**
 
@@ -67,12 +67,12 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
 3. **Spezifische WCAG-Level testen:**
 
    ```typescript
-   test('WCAG 2.1 Level AA Compliance', async ({ page }) => {
+   test('WCAG 2.1 und 2.2 Level AA Compliance', async ({ page }) => {
      await page.goto('/');
 
-     // Nur WCAG 2.1 Level AA Regeln prüfen
+     // WCAG 2.1 und 2.2 Level AA Regeln prüfen (wcag22aa gibt es seit axe-core 4.5)
      const results = await new AxeBuilder({ page })
-       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
        .analyze();
 
      expect(results.violations).toEqual([]);
@@ -180,6 +180,43 @@ Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu imple
      expect(results.violations).toEqual([]);
    });
    ```
+
+8. **Struktur prüfen mit ARIA Snapshots:** `toMatchAriaSnapshot` vergleicht den Accessibility-Baum mit einem YAML-Template. Teil-Templates prüfen nur, was zählt. Dazu `toHaveRole` und `toHaveAccessibleName` für einzelne Elemente.
+
+   ```typescript
+   test('Navigation structure', async ({ page }) => {
+     await page.goto('/');
+
+     await expect(
+       page.getByRole('navigation', { name: 'Main navigation', exact: true }),
+     ).toMatchAriaSnapshot(`
+       - navigation "Main navigation":
+         - list:
+           - listitem:
+             - link "Navigate to Public News":
+               - /url: /news/public
+     `);
+   });
+
+   test('Login form structure, role and accessible name', async ({ page }) => {
+     await page.goto('/auth/signin');
+
+     await expect(
+       page.getByRole('form', { name: 'Sign in form' }),
+     ).toMatchAriaSnapshot(`
+       - form "Sign in form":
+         - textbox "Email address for sign in Email*"
+         - textbox "Password for sign in Password*"
+         - button "Submit sign in form"
+     `);
+
+     const submit = page.getByRole('button', { name: /sign in/i });
+     await expect(submit).toHaveRole('button');
+     await expect(submit).toHaveAccessibleName('Submit sign in form');
+   });
+   ```
+
+   Tipp: Lass dir das Template von Playwright erzeugen: `await expect(locator).toMatchAriaSnapshot('')` mit `--update-snapshots`, oder im Codegen den Button „Assert snapshot“ nutzen.
 
 **Ausschlüsse definieren (falls nötig):**
 

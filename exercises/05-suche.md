@@ -105,22 +105,23 @@ Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst 
    ```
 
 5. **Trace für Debugging aktivieren:**
-   - In `playwright.config.ts`:
+   - Die Demo-Config nutzt `trace: 'on-first-retry'`. Lokal gibt es keine Retries, deshalb entsteht dort kein Trace.
+   - In `playwright.config.ts` (dauerhaft) oder per CLI-Flag (einmalig, siehe Aufgabe 6):
 
    ```typescript
    use: {
-     trace: 'retain-on-failure', // Trace nur bei Fehlern
+     trace: 'retain-on-failure-and-retries', // Trace bei Fehlern und bei jedem Retry (ab v1.59)
      screenshot: 'only-on-failure',
    },
    ```
 
-6. **Tests ausführen und Trace analysieren:**
+6. **Tests ausführen und Trace analysieren:** Brich den Test absichtlich (z. B. falsche Anzahl erwarten).
 
    ```bash
-   # Tests ausführen
-   npx playwright test suche.spec.ts
+   # Einmalig per CLI, ohne die Config zu ändern
+   npx playwright test suche.spec.ts --trace retain-on-failure
 
-   # Bei Fehler: Trace öffnen
+   # Bei Fehler: Report öffnen und dort den Trace öffnen
    npx playwright show-report
    ```
 

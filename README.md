@@ -86,7 +86,7 @@ Tests in Chromium) und dass die Kette linear ist.
 ## Projektstruktur
 
 ```
-exercises/    Übungsaufgaben (01 … 18 plus 06b/16b, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
+exercises/    Übungsaufgaben (01 … 18 plus 06b/06c/16b, durchnummeriert wie im Foliensatz) – das, was die Teilnehmer umsetzen
   ci-templates/  Pipeline-Vorlagen (GitHub Actions, GitLab, Azure DevOps, Jenkins) zu Übung 16b
 e2e/          Verzeichnis für die Tests der Teilnehmer; auf den ex/*-Branches liegen hier die Musterlösungen (plus pages/, fixtures/, mocks/)
 scripts/      sync-checkpoints.sh – setzt die ex/*-Branches

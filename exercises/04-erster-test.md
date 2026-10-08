@@ -6,7 +6,7 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 2 – du löst die dort aufgeschobenen Assertions auf dem Public-News-Flow ein.
 > **Du gibst weiter:** dein erstes echtes Assertion-Vokabular (`expect`, Auto-Waiting) – Grundlage für den Feature-Test in Übung 5.
-> **Zurückgefallen?** `git switch ex/04-erster-test` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/04-erster-test ex/05-suche`. Die verwendeten Locators sind in den Snippets enthalten.
+> **Zurückgefallen?** `git switch ex/04-erster-test` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/04-erster-test ex/05-suche`. Die verwendeten Locators sind in den Snippets enthalten. Die Musterlösung liegt in `e2e/04-erster-test.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Aufgaben:**
 
@@ -97,11 +97,15 @@ Du lernst die Grundlagen von Playwright: Semantic Locators, Auto-Waiting und Ass
    # Normal ausführen
    npx playwright test first-test.spec.ts
 
-   # Im Debug-Modus mit Playwright Inspector
+   # Debug-Modus: Inspector mit Step-Button, Pick Locator und Actionability-Logs
    npx playwright test first-test.spec.ts --debug
 
-   # Mit UI Mode für bessere Übersicht
-   npx playwright test --ui
+   # UI Mode: Time-Travel durch die Aktionen, Pick Locator im DOM-Snapshot
+   npx playwright test first-test.spec.ts --ui
+
+   # Trace aufzeichnen, dann im HTML-Report den Trace öffnen
+   npx playwright test first-test.spec.ts --trace on
+   npx playwright show-report
    ```
 
 **Best Practices:**

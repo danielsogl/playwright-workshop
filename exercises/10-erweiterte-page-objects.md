@@ -6,7 +6,7 @@ Dies ist eine optionale Bonusübung für Fortgeschrittene. Verbessere das Page O
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 9 (harte Voraussetzung) – du erweiterst die `NewsPage` zu einer `NewsPageAdvanced` mit Komponenten-Objekten.
 > **Du gibst weiter:** `NewsItemComponent` + Rückgabewerte (`Promise<this>` bzw. nächstes Page Object) – zeigt das Muster für komponentenbasierte POMs.
-> **Zurückgefallen?** `git switch ex/10-erweiterte-page-objects` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/10-erweiterte-page-objects ex/11-api-mocking`. Fertige Lösung in `e2e/pages/NewsPageAdvanced.ts` + `e2e/pages/components/NewsItemComponent.ts`.
+> **Zurückgefallen?** `git switch ex/10-erweiterte-page-objects` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/10-erweiterte-page-objects ex/11-api-mocking`. Fertige Lösung in `e2e/pages/NewsPageAdvanced.ts` + `e2e/pages/components/NewsItemComponent.ts`. Die Musterlösung liegt in `e2e/10-erweiterte-page-objects.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Hinweis:** Diese Übung ist optional und kann übersprungen werden. Sie zeigt fortgeschrittene Patterns, die in größeren Projekten hilfreich sein können.
 

@@ -10,7 +10,7 @@ Du richtest das offizielle KI-Setup von Playwright im Workshop-Repo ein und läs
 
 **Voraussetzungen:**
 
-- Playwright ≥ 1.56 (im Repo: 1.63) – `npx playwright --version`
+- Playwright ≥ 1.56 (im Repo: 1.64) – `npx playwright --version`
 - Ein KI-Client: Claude Code, VS Code + Copilot (ab 1.105), Codex oder OpenCode
 - Die App muss erreichbar sein: `npm run dev` (bzw. Playwright startet sie über `webServer`)
 
@@ -31,9 +31,11 @@ Du richtest das offizielle KI-Setup von Playwright im Workshop-Repo ein und läs
    - [ ] So würdest du das in **deinem** Projekt erzeugen:
 
      ```bash
-     npx playwright init-agents --loop=claude     # claude | codex | copilot | opencode | vscode
+     npx playwright init-agents --loop=claude     # claude | codex | copilot | opencode | vscode | vscode-legacy
      npx playwright init-skills --loop=claude     # claude | agents
      ```
+
+     Weitere Optionen von `init-agents`: `--prompts` (Prompt-Dateien mit anlegen), `--project <name>` und `--config <datei>` (welches Projekt den Seed-Test liefert).
 
    - [ ] `init-agents` **überschreibt** eine bestehende `.mcp.json`. Prüfe nach dem Ausführen immer den Diff, bevor du committest.
    - [ ] Nach jedem Playwright-Update erneut ausführen: Die Agent-Definitionen sind an die Playwright-Version gebunden.

@@ -5,7 +5,7 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
 
 > **🧵 Roter Faden**
 > **Baut auf (weich):** Übung 9 – optionaler `NewsPage`-POM-Reuse zum Navigieren von `/` und dem Feed.
-> **Zurückgefallen?** `git switch ex/16-mobile` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/16-mobile ex/16b-ci-lokal`. `page.goto()` reicht; die POM ist hier nur Komfort.
+> **Zurückgefallen?** `git switch ex/16-mobile` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/16-mobile ex/16b-ci-lokal`. `page.goto()` reicht; die POM ist hier nur Komfort. Die Musterlösung liegt in `e2e/16-mobile.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Breakpoints der App (Tailwind):** Hamburger-Menü unter `sm` (640px), Desktop-Navigation ab `lg` (1024px), News-Grid mit 2 Spalten ab `md` (768px) und 3 Spalten ab `lg`.
 
@@ -155,7 +155,22 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
    });
    ```
 
-5. **Tests ausführen:**
+5. **`screen` prüfen (seit v1.64):** Die Gerätebeschreibung enthält auch `screen`. `window.screen` liefert jetzt die emulierte Größe.
+
+   ```typescript
+   test.use({ ...devices['iPhone 13'] });
+
+   test('window.screen liefert die emulierte Gerätegröße', async ({ page }) => {
+     await page.goto('/');
+     const screen = await page.evaluate(() => ({
+       width: window.screen.width,
+       height: window.screen.height,
+     }));
+     expect(screen).toEqual(devices['iPhone 13'].screen);
+   });
+   ```
+
+6. **Tests ausführen:**
    - Führe Tests für Desktop aus: `npx playwright test --project=chromium`
    - Führe Tests für Mobile aus (nach dem Einkommentieren): `npx playwright test --project="Mobile Chrome"`
    - Führe alle Tests aus: `npx playwright test`

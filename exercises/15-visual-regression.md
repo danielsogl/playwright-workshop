@@ -6,7 +6,7 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
 > **🧵 Roter Faden**
 > **Baut auf (weich):** Übung 9 – optional navigierst du mit der `NewsPage`-POM zu den Screenshot-Zielen.
 > **Du gibst weiter:** Visual-Baselines als Regressions-Schutz.
-> **Zurückgefallen?** `git switch ex/15-visual-regression` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/15-visual-regression ex/16-mobile`. `page.goto()` funktioniert genauso – die POM ist hier nur Komfort.
+> **Zurückgefallen?** `git switch ex/15-visual-regression` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/15-visual-regression ex/16-mobile`. `page.goto()` funktioniert genauso – die POM ist hier nur Komfort. Die Musterlösung liegt in `e2e/15-visual-regression.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Warum Visual Testing?**
 
@@ -148,7 +148,7 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
    npx playwright test visual-regression
    ```
 
-   Fehlende Baselines werden automatisch geschrieben (Default-Modus `missing`) – der erste Lauf schlägt dabei fehl, der zweite vergleicht. Ablage: `e2e/visual-regression.spec.ts-snapshots/`
+   Fehlende Baselines werden automatisch geschrieben (Default-Modus `default`) – der erste Lauf schlägt dabei fehl, damit eine Pipeline nicht stillschweigend grün wird. Der zweite Lauf vergleicht. Mit `--update-snapshots=missing` besteht der erste Lauf seit v1.64 (nur fehlende Baselines anlegen, nichts überschreiben). Ablage: `e2e/visual-regression.spec.ts-snapshots/`
 
 2. **Vergleich bei weiteren Ausführungen:**
 
@@ -161,7 +161,7 @@ Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der 
    ```bash
    # ohne Wert = changed: nur abweichende Screenshots neu schreiben
    npx playwright test visual-regression --update-snapshots
-   # weitere Modi: all, missing, none
+   # weitere Modi: all, missing (besteht seit v1.64), none
    npx playwright test visual-regression --update-snapshots=all
    ```
 

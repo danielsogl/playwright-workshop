@@ -5,7 +5,7 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
 
 > **🧵 Roter Faden**
 > **Anderer Winkel derselben App:** `/dialog-demo` und `/file-download` – eigenständige Bonus-Techniken, kein harter Reuse.
-> **Zurückgefallen?** `git switch ex/06b-dialoge-downloads` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06b-dialoge-downloads ex/07-authentifizierung`. Vollständig eigenständig; keine Voraussetzung aus früheren Übungen.
+> **Zurückgefallen?** `git switch ex/06b-dialoge-downloads` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06b-dialoge-downloads ex/06c-frames-drag-upload`. Vollständig eigenständig; keine Voraussetzung aus früheren Übungen. Die Musterlösung liegt in `e2e/06b-dialoge.spec.ts` und `e2e/06b-file-download.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 ## Teil A: Dialoge (`/dialog-demo`)
 
@@ -31,11 +31,27 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
    - `confirm`: mit `dialog.dismiss()` ablehnen und prüfen, dass die App das „Abbrechen" registriert.
    - `prompt`: mit `dialog.accept('mein Text')` bestätigen und den zurückgegebenen Text verifizieren.
    - Jeder Dialog braucht **genau ein** `accept()` oder `dismiss()`, sonst hängt die auslösende Aktion. Ein Handler für mehrere Typen: `switch (dialog.type())` mit `default: await dialog.accept()`.
-   - **Bonus `beforeunload`:** „Add BeforeUnload" klicken, dann `await page.close({ runBeforeUnload: true })`. Ohne die Option führt Playwright keine Unload-Handler aus.
+
+3. **Bonus `beforeunload`:** „Add BeforeUnload" klicken, dann `await page.close({ runBeforeUnload: true })`. Ohne die Option führt Playwright keine Unload-Handler aus.
+
+4. **Bonus `dialogclosed`:** Das Event `page.on('dialogclosed', …)` (seit v1.63) feuert, nachdem der Dialog beantwortet wurde. Logge damit den Dialog-Typ und prüfe ihn mit `expect.poll`.
+
+   ```typescript
+   test('dialogclosed mitloggen', async ({ page }) => {
+     await page.goto('/dialog-demo');
+
+     const closed: string[] = [];
+     page.on('dialogclosed', (dialog) => closed.push(dialog.type()));
+     page.on('dialog', (dialog) => dialog.accept());
+
+     await page.getByRole('button', { name: 'Show alert dialog' }).click();
+     await expect.poll(() => closed).toEqual(['alert']);
+   });
+   ```
 
 ## Teil B: Datei-Downloads (`/file-download`)
 
-3. **PDF-Download abfangen und prüfen** – das `download`-Event **vor** dem Klick abwarten:
+5. **PDF-Download abfangen und prüfen** – das `download`-Event **vor** dem Klick abwarten:
 
    ```typescript
    test('PDF herunterladen', async ({ page }) => {
@@ -57,7 +73,7 @@ Du lernst zwei fortgeschrittene Interaktionen: Browser-Dialoge (alert/confirm/pr
 **Was du lernst:**
 
 - `page.on('dialog', …)` + `accept()` / `dismiss()` / `accept(text)`
-- `page.close({ runBeforeUnload: true })` für `beforeunload`-Dialoge
+- `page.close({ runBeforeUnload: true })` für `beforeunload`-Dialoge, `dialogclosed` zum Mitloggen
 - `page.waitForEvent('download')`, `download.suggestedFilename()` (synchron), `download.failure()` und `download.path()`
 
 **Zeit:** 15 Minuten

@@ -6,7 +6,7 @@ Du wendest verschiedene Locator-Strategien praktisch an. Fokus: Elemente **finde
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 1 – lauffähiges Setup.
 > **Du gibst weiter:** dein Locator-Vokabular für die Seiten `/` und `/news/public`, die Tag 1 tragen (eingelöst in Übung 4).
-> **Zurückgefallen?** `git switch ex/02-locators` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/02-locators ex/03-interaktionen`. Kein Vorarbeit nötig – die App läuft über den `webServer` automatisch, nur `npm install`.
+> **Zurückgefallen?** `git switch ex/02-locators` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/02-locators ex/03-interaktionen`. Kein Vorarbeit nötig – die App läuft über den `webServer` automatisch, nur `npm install`. Die Musterlösung liegt in `e2e/02-locators.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 **Aufgaben:**
 
@@ -58,6 +58,13 @@ Du wendest verschiedene Locator-Strategien praktisch an. Fokus: Elemente **finde
    ```
 
 3. **Experiment:** Öffne den UI-Mode (`npx playwright test --ui`) und nutze den **Locator-Playground** („Pick locator"), um live zu sehen, welche Locators Playwright vorschlägt.
+
+4. **Locator benennen:** Gib einem Locator mit `describe()` einen sprechenden Namen und logge ihn. Die Beschreibung ersetzt ab v1.57 die Selektor-Darstellung in Log, Trace und Report.
+
+   ```typescript
+   const namedLink = publicNewsLink.describe('Link zu den Public News');
+   console.log('Benannter Locator:', namedLink); // Link zu den Public News
+   ```
 
 **Best Practices:**
 

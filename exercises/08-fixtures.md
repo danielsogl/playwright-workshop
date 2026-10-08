@@ -6,7 +6,7 @@ Du lernst die Grundlagen von Playwright Fixtures kennen – ein System für wied
 > **🧵 Roter Faden**
 > **Baut auf:** Übung 7 – der API-Login wird zur wiederverwendbaren Fixture gekapselt.
 > **Du gibst weiter:** eine **`authenticatedPage`-Fixture** (`e2e/fixtures/auth.fixture.ts`), die der Capstone (Übung 17) importiert. Die Daten-Fixture übst du weiter auf `/fixtures-demo`.
-> **Zurückgefallen?** `git switch ex/08-fixtures` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/08-fixtures ex/09-page-objects`. Das komplette Fixture-Snippet steht im Handout und in `e2e/fixtures/auth.fixture.ts`.
+> **Zurückgefallen?** `git switch ex/08-fixtures` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/08-fixtures ex/09-page-objects`. Das komplette Fixture-Snippet steht im Handout und in `e2e/fixtures/auth.fixture.ts`. Die Musterlösung liegt in `e2e/08-fixtures.spec.ts` und `e2e/fixtures/auth.fixture.ts` (der Dateiname weicht von dem in der Aufgabe ab).
 
 ## Was sind Fixtures?
 
@@ -212,7 +212,35 @@ Jetzt kapselst du den API-Login aus Übung 7 in eine Fixture. Jeder Test, der si
 
 Referenz: `e2e/fixtures/auth.fixture.ts`. Der Capstone (Übung 17) importiert genau diese Datei.
 
-### 5. **Tests ausführen**
+### 5. **Bonus: Option-Fixture**
+
+1. **`defaultRole` als Option-Fixture** definieren und in `testUser` verwenden. Der Default gilt für alle Tests, `test.use()` überschreibt ihn:
+
+   ```typescript
+   const testWithOption = base.extend<{
+     defaultRole: string;
+     testUser: { name: string; email: string; role: string };
+   }>({
+     defaultRole: ['user', { option: true }],
+     testUser: async ({ defaultRole }, use) => {
+       await use({
+         name: `Option User ${Date.now()}`,
+         email: `option-${Date.now()}@example.com`,
+         role: defaultRole,
+       });
+     },
+   });
+
+   testWithOption.describe('als Admin', () => {
+     testWithOption.use({ defaultRole: 'admin' });
+
+     testWithOption('überschreibt die Rolle per test.use()', async ({ testUser }) => {
+       expect(testUser.role).toBe('admin');
+     });
+   });
+   ```
+
+### 6. **Tests ausführen**
 
 1. **Führe die Tests aus:**
 
@@ -237,12 +265,13 @@ Referenz: `e2e/fixtures/auth.fixture.ts`. Der Capstone (Übung 17) importiert ge
 1. **Eine Fixture, eine Verantwortung**
 2. **Klare Namen**: `testUser` statt `data1`
 3. **TypeScript nutzen** für bessere Entwicklererfahrung
-4. **Semantische Locators**: `getByLabel()`, `getByRole()` statt `getByTestId()`
+4. **Semantische Locators**: `getByLabel()`, `getByRole()` zuerst, `getByTestId()` als Ausweg
 
 ### 🎯 Locator Best Practices:
 
-- **✅ User-facing**: `page.getByLabel('Name')`, `page.getByRole('button')`
-- **❌ Implementation**: `page.getByTestId('user-name-input')`
+- **✅ Zuerst user-facing**: `page.getByLabel('Name')`, `page.getByRole('button')`
+- **✅ Test-IDs** (`getByTestId`) nur, wenn es keinen sinnvollen user-facing Locator gibt
+- **❌ CSS-/XPath-Selektoren** auf Implementierungsdetails
 - **Warum?** Tests werden aus Benutzersicht geschrieben und sind robuster
 
 ### 🔄 Fixture Lebensdauer:

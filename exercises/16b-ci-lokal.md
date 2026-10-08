@@ -37,7 +37,7 @@ Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust ein
 
    - [ ] Mit `CI=1` ist der Lauf grün, die Ausgabe meldet aber `1 flaky`.
    - [ ] Unter `test-results/…-retry1/` liegt ein `trace.zip` (wegen `trace: 'on-first-retry'`). Öffne ihn mit `npx playwright show-trace`.
-   - [ ] Mit `--fail-on-flaky-tests` wird derselbe Lauf rot. Wann willst du das in einer Pipeline?
+   - [ ] Mit `--fail-on-flaky-tests` wird derselbe Lauf rot. Wann willst du das in einer Pipeline? (Mehr zu Retries und flaky Tests: Kapitel „Retries, flaky Tests & Parallelität“)
    - [ ] Lösche die Datei danach wieder (ohne `CI` ist der Test immer rot).
 
 3. **Reporter für CI-Systeme** – ersetze in `playwright.config.ts` die Zeile `reporter: 'html',`:
@@ -69,6 +69,7 @@ Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust ein
    - [ ] Jeder Lauf leert `blob-report/`. Deshalb sammelst du die Dateien in einem eigenen Ordner, genau wie eine Pipeline die Artefakte aller Shards herunterlädt.
    - [ ] Die Shards laufen **nacheinander**, sonst konkurrieren sie um Port 3000.
    - [ ] Der zusammengeführte Report enthält alle Tests.
+   - [ ] In einer echten Pipeline laufen die Shards als Matrix-Jobs, ein Merge-Job führt die Blob-Reports zusammen (Kapitel „Sharding“).
 
 5. **Die Pipeline als npm-Script** – ergänze in `package.json`:
 
@@ -78,7 +79,7 @@ Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust ein
 
    - [ ] `npm run ci` ist der einzige Befehl, den ein CI-System aufrufen muss. Schau dir an, wie die Vorlagen in `exercises/ci-templates/` genau diesen Befehl einbetten.
 
-6. **Nur betroffene Tests laufen lassen (Git):**
+6. **Optional: Nur betroffene Tests laufen lassen (Git):**
 
    ```bash
    git switch -c feature/suche
@@ -91,7 +92,7 @@ Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust ein
 
    > **Kein `.git`-Ordner?** (z. B. Repo als ZIP erhalten) `git init && git add -A && git commit -m start && git branch -M main`
 
-7. **Lokaler Quality Gate beim Push** – ein lokales Bare-Repo übernimmt die Rolle des Servers:
+7. **Optional: Lokaler Quality Gate beim Push** – ein lokales Bare-Repo übernimmt die Rolle des Servers:
 
    ```bash
    git init --bare ../ci-remote.git
@@ -115,7 +116,9 @@ Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust ein
    - [ ] Repariere den Test, committe erneut: Der Push geht durch.
    - [ ] Pushe eine reine App-Änderung: Es läuft kein Test, der Push geht durch. Ist das ein Problem? (Tipp: Aufgabe 6)
 
-**Bonus:** Passe die Vorlage aus `exercises/ci-templates/` für das CI-System in deinem Unternehmen an (GitHub Actions, GitLab, Azure DevOps oder Jenkins).
+**Hinweis:** Aufgaben 1 bis 5 sind der Kern, 6 und 7 sind optional.
+
+**Bonus:** Passe die Vorlage aus `exercises/ci-templates/` für das CI-System in deinem Unternehmen an (GitHub Actions, GitLab, Azure DevOps oder Jenkins). Pinne das Docker-Image passend zur Playwright-Version (`mcr.microsoft.com/playwright:v1.64.0-noble`).
 
 **Was du lernst:**
 
