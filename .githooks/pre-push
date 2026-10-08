@@ -1,0 +1,2 @@
+#!/bin/sh
+npx playwright test --project=chromium --only-changed=main
