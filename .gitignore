@@ -44,6 +44,7 @@ node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
+/results/
 /playwright/.cache/
 /playwright/.auth/
 # von exercise-05 erzeugte Demo-Trace
