@@ -88,11 +88,12 @@
    test('runFor lässt alle Timer der Reihe nach feuern', async ({ page }) => {
      await page.clock.install({ time: new Date('2024-01-15 10:00:00') });
      await page.goto('/clock');
-     await page.clock.pauseAt(new Date('2024-01-15 10:00:05'));
-     await expect(page.getByTestId('current-time')).toHaveText('10:00:05');
+     // Puffer von 5 Minuten: Das erste Laden der Seite (Dev-Server kompiliert) kostet echte Sekunden
+     await page.clock.pauseAt(new Date('2024-01-15 10:05:00'));
+     await expect(page.getByTestId('current-time')).toHaveText('10:05:00');
 
      await page.clock.runFor(2000);
-     await expect(page.getByTestId('current-time')).toHaveText('10:00:07');
+     await expect(page.getByTestId('current-time')).toHaveText('10:05:02');
    });
    ```
 
