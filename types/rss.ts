@@ -23,15 +23,3 @@ export interface RSSFeed {
   name: string;
   category: string;
 }
-
-export interface RSSFeedState {
-  items: RSSItem[];
-  loading: boolean;
-  error: string | null;
-  selectedCategory: string;
-  searchQuery: string;
-}
-
-export interface RSSFeedResponse {
-  items: RSSItem[];
-}

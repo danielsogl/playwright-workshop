@@ -1,5 +1,3 @@
-'use client';
-
 import type { Route } from 'next';
 
 import { Card, Chip, Separator } from '@heroui/react';

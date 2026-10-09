@@ -10,26 +10,7 @@ import { UserCog, Lock, Shield } from 'lucide-react';
 
 import { title, subtitle } from '@/components/primitives';
 import { User } from '@/lib/db/models/user';
-
-// Define fetcher for SWR
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    let errorMessage = 'Failed to fetch user data';
-
-    try {
-      const errorData = await res.json();
-
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      /* Ignore json parsing error */
-    }
-    throw new Error(`Fetch error (${res.status}): ${errorMessage}`);
-  }
-
-  return res.json();
-};
+import { fetcher } from '@/lib/utils/fetchers';
 
 // Define the type for user data returned by the API (excluding passwordHash)
 type UserData = Omit<User, 'passwordHash'>;
