@@ -166,7 +166,12 @@ Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs
        width: window.screen.width,
        height: window.screen.height,
      }));
-     expect(screen).toEqual(devices['iPhone 13'].screen);
+     // Die Typen der Gerätebeschreibung kennen `screen` noch nicht (zur Laufzeit seit 1.64 vorhanden)
+     const { screen: expected } = devices['iPhone 13'] as (typeof devices)['iPhone 13'] & {
+       screen: { width: number; height: number };
+     };
+
+     expect(screen).toEqual(expected);
    });
    ```
 
