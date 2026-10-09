@@ -47,7 +47,6 @@
     "**/.next": true,
     "**/playwright-report": true,
     "**/test-results": true,
-    "**/.husky": true
   },
   "files.exclude": {
     "**/node_modules": true,

@@ -7,7 +7,6 @@ coverage
 public
 .vercel
 .github
-.husky
 .vscode
 *.lock
 *.log
