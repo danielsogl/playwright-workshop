@@ -1,140 +1,60 @@
 # Übung 5 – News Feed Suche testen
 
-**Ziel:**
-Du testest die Suchfunktion auf der öffentlichen News-Feed-Seite. Dabei lernst du Test-Organisation mit `beforeEach`, Formular-Interaktionen und das Arbeiten mit dynamischen Inhalten.
+**Ziel:** Du testest die Suche auf `/news/public` mit `beforeEach`, Eingaben und dynamischen Ergebnissen und analysierst einen fehlgeschlagenen Test im Trace.
+**Zeit:** 25 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/05-suche` · **Datei:** `e2e/05-suche.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 4 – Assertions und Locators auf `/news/public`.
-> **Du gibst weiter:** deinen **ersten vollwertigen Feature-Test** (News-Suche). ⭐ **Genau diesen Test refactorierst du in Übung 9** ins Page Object Model – halte ihn griffbereit. Er wird außerdem in Übung 11 (Mocking) wieder aufgegriffen.
-> **Zurückgefallen?** `git switch ex/05-suche` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/05-suche ex/06-accessibility`. Der komplette Suchtest liegt in `e2e/05-suche.spec.ts`.
+> Roter Faden: Baut auf: Übung 4, Assertions und Locators auf `/news/public`. · Du gibst weiter: deinen ersten vollwertigen Feature-Test. Genau diesen Test refactorierst du in Übung 9 ins Page Object Model, halte ihn griffbereit. Übung 11 (Mocking) greift ihn wieder auf. · Zurückgefallen? → `git switch ex/05-suche` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/05-suche ex/06-accessibility`.
 
-**Aufgaben:**
+Die Zahlen in dieser Übung (20 Artikel, „Technology“ 9, „Cybersecurity“ 1) gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true` in deiner `.env`). Der Live-Feed ändert sich laufend.
 
-1. **Test-Suite mit Setup erstellen:**
+## Aufgaben
 
-   ```typescript
-   // e2e/suche.spec.ts
-   import { test, expect } from '@playwright/test';
+### Aufgabe 1 – Suite mit `beforeEach`
+Lege `e2e/05-suche.spec.ts` an. Packe alle Tests in einen `test.describe`-Block. Ein `test.beforeEach` öffnet vor jedem Test `/news/public` und wartet, bis der erste Artikel sichtbar ist.
 
-   test.describe('News Feed Suche', () => {
-     // Vor jedem Test zur News-Seite navigieren
-     test.beforeEach(async ({ page }) => {
-       await page.goto('/news/public');
+**Fertig, wenn:** die Datei einen `describe`-Block mit `beforeEach` enthält (die Tests folgen in Aufgabe 2 bis 3).
 
-       // Warte bis die News geladen sind
-       await expect(
-         page.getByRole('feed', { name: 'News articles' }),
-       ).toBeVisible();
-     });
+<details><summary>Tipp</summary>
+`test.beforeEach(async ({ page }) => { … })` läuft vor jedem Test im Block. Warte mit `expect(page.getByRole('article').first()).toBeVisible()`.
+</details>
 
-     // Tests kommen hier...
-   });
-   ```
+### Aufgabe 2 – Initiale Anzeige
+Schreibe einen Test, der prüft, dass der Feed 20 Artikel zeigt und dass der erste Artikel eine sichtbare Überschrift (`heading`) hat.
 
-2. **Initiale Anzeige testen:**
+**Fertig, wenn:** der Test grün ist.
 
-   ```typescript
-   test('zeigt alle News-Artikel initial an', async ({ page }) => {
-     // Finde die News-Liste
-     const newsList = page.getByRole('feed', { name: 'News articles' });
-     const newsItems = newsList.getByRole('article');
+<details><summary>Tipp</summary>
+`getByRole('article')` und `toHaveCount(20)`. Die Überschrift suchst du verkettet am ersten Artikel.
+</details>
 
-     // Der Feed zeigt initial mehrere Artikel an
-     await expect(newsItems.first()).toBeVisible();
-     expect(await newsItems.count()).toBeGreaterThan(0);
-   });
-   ```
+### Aufgabe 3 – Suche testen
+Das Suchfeld („Search news articles“, Rolle `textbox`) filtert schon beim Tippen. Schreibe Tests für diese Fälle:
+- „XYZ123NonExistent“: 0 Artikel und der Text „0 articles found“.
+- Danach das Feld leeren: wieder 20 Artikel.
+- „Technology“: 9 Artikel, der erste enthält „technology“ (ohne Beachtung der Groß-/Kleinschreibung).
+- „Cybersecurity“: genau 1 Artikel mit einer sichtbaren Überschrift.
 
-3. **Suchfunktion implementieren:**
+**Fertig, wenn:** alle Tests grün sind und die Zahlen 0, 20, 9 und 1 stimmen.
 
-   ```typescript
-   test('kann nach News suchen', async ({ page }) => {
-     // Finde das Suchfeld und die Artikel
-     const searchInput = page.getByRole('textbox', { name: 'Search news' });
-     const newsItems = page.getByRole('article');
-     await expect(searchInput).toBeVisible();
+<details><summary>Tipp</summary>
+`fill()` füllt das Feld, `clear()` leert es. `toHaveCount()` und `toContainText()` warten selbst, du brauchst weder `waitForTimeout` noch `networkidle`. Die Suche läuft im Browser, es gibt keinen Netzwerk-Request zum Abwarten.
+</details>
 
-     // Anzahl der initial angezeigten Artikel merken
-     const initialCount = await newsItems.count();
+### Aufgabe 4 – Fehlgeschlagenen Test im Trace analysieren
+Ein **Trace** ist eine Aufzeichnung des Testlaufs mit Screenshots, Aktionen und Netzwerk. Die Config zeichnet nur beim Retry auf (`trace: 'on-first-retry'`), lokal gibt es keine Retries, deshalb entsteht dort kein Trace. Schalte ihn per CLI an: Brich einen Test absichtlich (z. B. 21 statt 20 Artikel erwarten) und starte `npx playwright test e2e/05-suche.spec.ts --trace retain-on-failure`. Öffne danach `npx playwright show-report` und dort den Trace des fehlgeschlagenen Tests. Mache die Änderung anschließend rückgängig.
 
-     // Suche nach einem Begriff der keine Ergebnisse liefert
-     await searchInput.fill('XYZ123');
-     await searchInput.press('Enter'); // Oder warte auf auto-search
+**Fertig, wenn:** du im Trace den fehlgeschlagenen Schritt gefunden hast, und `npx playwright test e2e/05-suche.spec.ts` wieder grün ist.
 
-     // Prüfe dass keine Artikel angezeigt werden
-     await expect(newsItems).toHaveCount(0);
+<details><summary>Tipp</summary>
+Der Trace-Viewer zeigt links die Schritte, rechts den DOM-Snapshot vor und nach der Aktion. Der rote Schritt ist die fehlgeschlagene Assertion.
+</details>
 
-     // Leere Suche und prüfe Reset
-     await searchInput.clear();
-     await expect(newsItems).toHaveCount(initialCount);
+## Bonus (optional)
+### Bonus A – Suche zurücksetzen und Tastatur
+Schreibe einen Test, der nach einer Suche mit `clear()` und Enter wieder alle 20 Artikel erwartet. Schreibe einen weiteren, der das Suchfeld per `focus()` fokussiert, „Keyboard Test“ mit `pressSequentially()` tippt und danach den Wert prüft.
 
-     // Suche nach existierendem Begriff
-     await searchInput.fill('Technology');
+### Bonus B – Suchfeld nach Navigation
+Tippe „Playwright“ ein, gehe über das Logo („Go to homepage“) zur Startseite und über „View Public News“ zurück. Prüfe, dass das Suchfeld wieder leer ist.
 
-     // Warte bis die Filterung angewendet wurde
-     await expect(newsItems.first()).toContainText(/technology/i);
-
-     // Prüfe dass weniger Artikel angezeigt werden
-     const count = await newsItems.count();
-     expect(count).toBeLessThan(initialCount);
-     expect(count).toBeGreaterThan(0);
-   });
-   ```
-
-4. **Erweiterte Suche mit Assertions:**
-
-   ```typescript
-   test('zeigt Suchergebnisse korrekt an', async ({ page }) => {
-     const searchInput = page.getByRole('textbox', { name: 'Search news' });
-     const newsList = page.getByRole('feed', { name: 'News articles' });
-
-     // Suche nach spezifischem Artikel (genau ein Treffer im Feed)
-     await searchInput.fill('Cybersecurity');
-
-     // Warte bis genau 1 Ergebnis angezeigt wird
-     await expect(newsList.getByRole('article')).toHaveCount(1);
-
-     // Prüfe den Inhalt des Ergebnisses
-     const result = newsList.getByRole('article').first();
-     await expect(result).toContainText('Cybersecurity');
-
-     // Optional: Prüfe weitere Details
-     const headline = result.getByRole('heading');
-     await expect(headline).toBeVisible();
-   });
-   ```
-
-5. **Trace für Debugging aktivieren:**
-   - Die Demo-Config nutzt `trace: 'on-first-retry'`. Lokal gibt es keine Retries, deshalb entsteht dort kein Trace.
-   - In `playwright.config.ts` (dauerhaft) oder per CLI-Flag (einmalig, siehe Aufgabe 6):
-
-   ```typescript
-   use: {
-     trace: 'retain-on-failure-and-retries', // Trace bei Fehlern und bei jedem Retry (ab v1.59)
-     screenshot: 'only-on-failure',
-   },
-   ```
-
-6. **Tests ausführen und Trace analysieren:** Brich den Test absichtlich (z. B. falsche Anzahl erwarten).
-
-   ```bash
-   # Einmalig per CLI, ohne die Config zu ändern
-   npx playwright test suche.spec.ts --trace retain-on-failure
-
-   # Bei Fehler: Report öffnen und dort den Trace öffnen
-   npx playwright show-report
-   ```
-
-**Was du lernst:**
-
-- Test-Organisation mit `describe` und `beforeEach`
-- Formular-Interaktionen (fill, clear, press)
-- Dynamische Assertions mit `toHaveCount()` (wartet automatisch) und `count()`
-- Arbeiten mit Listen von Elementen
-- Trace-Viewer für Debugging
-
-**Zeit:** 20 Minuten
-
----
-
-> **Tipp:** Der Trace-Viewer zeigt jeden Schritt deines Tests mit Screenshots, Netzwerk-Aktivität und Console-Logs. Perfekt um zu verstehen, was während des Tests passiert!
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/05-suche ex/06-accessibility` · oder `git switch ex/06-accessibility`.

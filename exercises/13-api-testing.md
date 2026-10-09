@@ -1,92 +1,60 @@
 # Übung 13 – API-Tests mit der Request API
 
-**Ziel:**
-Du testest die REST-API der App **direkt – ohne Browser** – mit Playwrights `request`-Fixture (`APIRequestContext`). Das ist schnell und ideal für Contract- und Integrationstests.
+**Ziel:** Du testest die REST-API der App direkt, ohne Browser, mit Playwrights `request`-Fixture.
+**Zeit:** 30 Min. (Pflicht) · **Startbranch:** `git switch ex/13-api-testing` · **Datei:** `e2e/13-api-testing.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 7 – dieselben Auth-Endpunkte (CSRF → credentials), jetzt ohne Browser geprüft.
-> **Du gibst weiter:** API-Contract-Wissen als schnelle Ergänzung zu den UI-Tests.
-> **Zurückgefallen?** `git switch ex/13-api-testing` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/13-api-testing ex/14-clock`. Vollständig eigenständig lauffähig gegen die laufende App. Die Musterlösung liegt in `e2e/13-api-testing.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf Übung 7 (Login mit `test@example.com` / `password`) · Du gibst weiter: schnelle API-Tests als Ergänzung zu UI-Tests · Zurückgefallen? `git switch ex/13-api-testing`. Der Startbranch enthält die Lösungen der Übungen 1–12, aber nicht die dieser Übung. Musterlösung: `git diff ex/13-api-testing ex/14-clock`.
 
-**Aufgaben:**
+API-Tests sind schnell, weil kein Browser eine Seite rendert. Die App läuft mit `RSS_OFFLINE_MODE=true` (siehe `.env.example`).
 
-1. **Öffentlichen Feed testen (GET):**
+## Begriffe
 
-   ```typescript
-   import { test, expect } from '@playwright/test';
+- `request`: eine Playwright-Fixture (`APIRequestContext`) für HTTP-Aufrufe wie `request.get(url)` und `request.post(url, { data })`. `baseURL` aus der Config gilt, du schreibst nur den Pfad.
+- **Cookie-Jar:** der Speicher für Cookies. Die `request`-Fixture hat einen eigenen, getrennten Jar. `page.request` teilt ihn mit der Seite, so sieht die Seite einen Login, den du per API gemacht hast.
+- **CSRF-Token:** Auth.js verlangt vor dem Login einen einmaligen Token, der vor Cross-Site-Formularen schützt. Du holst ihn mit `GET /api/auth/csrf` und schickst ihn beim Login mit.
+- `data` sendet einen JSON-Body, `form` einen URL-kodierten Formular-Body.
 
-   test('öffentlicher News-Feed liefert Artikel', async ({ request }) => {
-     // Der Typparameter typisiert json() (seit Playwright 1.63)
-     const response = await request.get<{ items: unknown[] }>('/api/news/public');
+## Aufgaben
 
-     await expect(response).toBeOK();
-     const body = await response.json();
-     expect(body.items.length).toBeGreaterThan(0);
-   });
-   ```
+### Aufgabe 1 – Öffentlicher Feed (GET)
+Lege `e2e/13-api-testing.spec.ts` an und rufe `GET /api/news/public` mit der `request`-Fixture auf.
 
-2. **Login über die API (Auth.js v5):**
-   - Auth.js meldet sich über den Credentials-Callback an: zuerst CSRF-Token holen, dann Login posten.
-   - Nutze `page.request` statt der `request`-Fixture, damit der Session-Cookie mit dem Page-Context geteilt wird (die `request`-Fixture hat einen eigenen Cookie-Jar).
+**Fertig, wenn:** Test grün. `await expect(response).toBeOK()` und die Liste `items` im JSON ist nicht leer (mit Offline-Feed 20 Einträge).
 
-   ```typescript
-   test('Login via API und geschützte Route', async ({ page }) => {
-     const api = page.request;
+<details><summary>Tipp</summary>
 
-     const csrf = await api.get('/api/auth/csrf');
-     const { csrfToken } = await csrf.json();
+`const body = await response.json()`. Mit `request.get<{ items: unknown[] }>(...)` ist `json()` typisiert.
+</details>
 
-     const login = await api.post('/api/auth/callback/credentials', {
-       form: {
-         email: process.env.TEST_USER_EMAIL || 'test@example.com',
-         password: process.env.TEST_USER_PASSWORD || 'password',
-         csrfToken,
-         callbackUrl: '/',
-         json: 'true',
-       },
-     });
-     // Redirects werden automatisch verfolgt, daher reicht toBeOK()
-     await expect(login).toBeOK();
+### Aufgabe 2 – Login über die API
+Melde dich ohne UI an: 1) CSRF-Token holen, 2) `POST /api/auth/callback/credentials` mit `form`, 3) Session und geschützte Route prüfen. Nimm `page.request`, damit der Session-Cookie erhalten bleibt.
 
-     // Session prüfen
-     const session = await api.get('/api/auth/session');
-     const sessionData = await session.json();
-     expect(sessionData.user?.email).toBe('test@example.com');
+**Fertig, wenn:** Test grün. `/api/auth/session` liefert `user.email` = `test@example.com`, `/api/user` liefert `email` = `test@example.com` und `name` = `Test User`.
 
-     // Geschützte Route mit der Session abrufen
-     const user = await api.get('/api/user');
-     await expect(user).toBeOK();
-     expect((await user.json()).email).toBe('test@example.com');
-   });
-   ```
+<details><summary>Tipp</summary>
 
-3. **Signup testen (POST mit JSON-Body):**
+Formularfelder für den Login: `email`, `password`, `csrfToken`, `callbackUrl` (z. B. `'/'`) und `json: 'true'`. Mit `json: 'true'` antwortet Auth.js mit 200 statt einem Redirect. Den Token liefert `csrfToken` aus der JSON-Antwort von `/api/auth/csrf`.
+</details>
 
-   ```typescript
-   test('Signup legt einen neuen Benutzer an', async ({ request }) => {
-     const uniqueEmail = `apitest-${Date.now()}@example.com`;
+### Aufgabe 3 – Signup (POST mit JSON)
+Lege über `POST /api/auth/signup` einen neuen Benutzer an. Der Body (`data`) hat `name`, `email` und `password` (mind. 6 Zeichen). Die E-Mail muss eindeutig sein, z. B. mit `Date.now()`.
 
-     const response = await request.post('/api/auth/signup', {
-       data: {
-         name: 'API Test User',
-         email: uniqueEmail,
-         password: 'testpassword123',
-       },
-     });
+**Fertig, wenn:** Test grün. Status 201, `message` ist „User created successfully“ und `user.email` ist die gesendete E-Mail.
 
-     expect(response.status()).toBe(201);
-   });
-   ```
+> Achtung: Der Test legt echte Benutzer an. Sie liegen im Speicher des Servers und verschwinden, wenn du den Dev-Server neu startest.
 
-**Was du lernst:**
+### Aufgabe 4 – Fehlerfälle
+Teste zwei Fehlerantworten von `/api/auth/signup`:
 
-- `request`-Fixture vs. `page.request` (getrennter vs. geteilter Cookie-Jar)
-- GET/POST mit `form` (URL-encoded) und `data` (JSON)
-- Statuscodes und JSON-Responses asserten: `await expect(response).toBeOK()` für 2xx, `status()` für konkrete Codes wie 201/409
-- API-Tests als schnelle Ergänzung zu UI-Tests
+- Eine bereits vorhandene E-Mail (`test@example.com`) liefert Status **409**, `message` enthält „already registered“.
+- Ungültige Daten (leerer Name, E-Mail `invalid-email`, Passwort `123`) liefern Status **400**, `message` ist „Validation failed“ und `errors` ist gesetzt.
 
-**Zeit:** 20 Minuten
+**Fertig, wenn:** beide Prüfungen grün sind und `npx playwright test e2e/13-api-testing.spec.ts` durchläuft.
 
----
+## Bonus (optional)
 
-> **Tipp:** API-Tests eignen sich hervorragend, um Setup-Schritte (z. B. Testdaten anlegen) schnell und ohne UI vorzubereiten.
+Rufe nach dem Login in Aufgabe 2 `page.goto('/')` auf und prüfe, dass der Button „user profile actions menu“ sichtbar ist. Damit weist du nach, dass die Seite den API-Login sieht.
+
+## Wenn du nicht weiterkommst
+
+Musterlösung ansehen: `git diff ex/13-api-testing ex/14-clock` oder `git switch ex/14-clock`.

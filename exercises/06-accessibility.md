@@ -1,249 +1,73 @@
 # Übung 6 – Accessibility Testing mit Axe
 
-**Ziel:**
-Du lernst automatisierte Accessibility-Tests mit Axe-Core in Playwright zu implementieren. Der Fokus liegt auf dem Finden und Beheben von Barrierefreiheits-Problemen in der Feed App.
+**Ziel:** Du scannst Seiten der Feed App mit Axe auf Barrierefreiheits-Probleme und prüfst die Seitenstruktur per ARIA-Snapshot. Gefundene Probleme dokumentierst du als Befund, du behebst sie nicht.
+**Zeit:** 35 Min. (Pflicht) · Bonus: +15 Min. · **Startbranch:** `git switch ex/06-accessibility` · **Datei:** `e2e/06-accessibility.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 4 – dieselben Seiten (`/`, `/news/public`), neue Prüf-Dimension.
-> **Du gibst weiter:** a11y-Scans als zusätzliche Qualitätsstufe deiner Suite.
-> **Zurückgefallen?** `git switch ex/06-accessibility` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06-accessibility ex/06b-dialoge-downloads`. Die Seiten sind ohne Vorarbeit erreichbar. Die Musterlösung liegt in `e2e/06-accessibility.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf: Übung 4, dieselben Seiten (`/`, `/news/public`), neue Prüf-Dimension. · Du gibst weiter: a11y-Scans als zusätzliche Qualitätsstufe deiner Suite. · Zurückgefallen? → `git switch ex/06-accessibility` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/06-accessibility ex/06b-dialoge-downloads`. Sie enthält mehr Tests als die Pflichtaufgaben.
 
-**Warum Accessibility Testing?**
+**Axe** (`@axe-core/playwright`, im Workshop-Repo installiert) prüft eine geladene Seite gegen Barrierefreiheits-Regeln und liefert eine Liste von **Violations**. Jede Violation hat Regel-ID, Auswirkung (`impact`), Hilfe-Link (`helpUrl`) und die betroffenen Elemente (`nodes`). Automatische Scans finden nur einen Teil der Probleme, ein manueller Test mit Screenreader bleibt nötig.
 
-- Gesetzliche Anforderungen (WCAG 2.1, EU-Richtlinie 2016/2102)
-- Bessere Nutzererfahrung für ALLE Nutzer
-- SEO-Vorteile durch semantisches HTML
-- Früherkennung von Accessibility-Problemen
-- Dokumentation der Barrierefreiheit
+> **Rote Violations: Befund oder Fehler?** Ein roter Axe-Test heißt: Die **App** hat ein Problem, nicht dein Test. Lies den Report (Regel, Selektor, `helpUrl`), halte den Befund fest und ändere weder die Erwartung noch schaltest du die Regel ab. Ist ein Problem bekannt und wird später behoben, markierst du den Test mit `test.fail()` (siehe Bonus A). Die Demo-App ist so gebaut, dass die Pflichtaufgaben grün werden.
 
-**Vorbereitung:** `@axe-core/playwright` ist im Workshop-Repo bereits installiert. In eigenen Projekten: `npm install --save-dev @axe-core/playwright`.
+## Aufgaben
 
-**Aufgaben:**
+### Aufgabe 1 – Startseite scannen
+Lege `e2e/06-accessibility.spec.ts` an. Öffne `/`, warte, bis `main` sichtbar ist, führe einen `AxeBuilder`-Scan aus und erwarte keine Violations.
+**Fertig, wenn:** der Test grün ist und `results.violations` ein leeres Array ist.
+<details><summary>Tipp</summary>
+`import AxeBuilder from '@axe-core/playwright'`, dann `await new AxeBuilder({ page }).analyze()`. Das Warten auf `page.getByRole('main')` stellt sicher, dass die Seite gerendert ist, bevor Axe scannt. Erwartung: `expect(results.violations).toEqual([])`.
+</details>
 
-1. **Basis Accessibility Test:**
+### Aufgabe 2 – News-Feed mit lesbarem Report
+Scanne `/news/public` (warte auf den ersten `article`). Gib vor der Assertion jede Violation mit `impact`, `description`, `helpUrl` und den `target`-Selektoren ihrer `nodes` aus. Erwarte danach 0 Violations.
+**Fertig, wenn:** der Test grün ist und der Report-Code vor der Assertion steht. Bei 0 Violations erscheint keine Log-Ausgabe, bei einer Violation siehst du sofort Regel und Selektor.
+<details><summary>Tipp</summary>
+`results.violations.forEach(...)` und darin `violation.nodes.forEach(...)`. Das Log steht dabei ohne `if`, bei 0 Violations passiert einfach nichts.
+</details>
 
-   ```typescript
-   // e2e/accessibility.spec.ts
-   import { test, expect } from '@playwright/test';
-   import AxeBuilder from '@axe-core/playwright';
+### Aufgabe 3 – WCAG-Level AA
+Scanne `/` nur gegen die Regeln für WCAG 2.1 und 2.2 Level AA.
+**Fertig, wenn:** der Test grün ist und der Scan auf die fünf Tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa` begrenzt ist.
+<details><summary>Tipp</summary>
+`new AxeBuilder({ page }).withTags([...])`. Ein **Tag** ordnet Regeln einem Standard und Level zu.
+</details>
 
-   test.describe('Accessibility Tests', () => {
-     test('Homepage Accessibility', async ({ page }) => {
-       await page.goto('/');
+### Aufgabe 4 – Nur Teile der Seite prüfen
+Schreibe zwei Tests: Auf `/` scannst du nur die Navigation, auf `/auth/signin` nur das Formular.
+**Fertig, wenn:** beide Tests grün sind und jeder Scan mit `include(...)` auf sein Element begrenzt ist.
+<details><summary>Tipp</summary>
+`.include('nav')` bzw. `.include('form')` nimmt einen CSS-Selektor. Für das Formular reicht `expect(results.violations).toEqual([])`.
+</details>
 
-       // Führe Axe-Analyse aus
-       const accessibilityScanResults = await new AxeBuilder({
-         page,
-       }).analyze();
+### Aufgabe 5 – Struktur mit ARIA-Snapshot
+Ein **ARIA-Snapshot** beschreibt den Accessibility-Baum eines Elements als YAML-Text. Prüfe damit zwei Dinge:
+- Auf `/`: Die Navigation (Rolle `navigation`, Name „Main navigation“) enthält einen Link „Navigate to Public News“ mit `/url: /news/public`.
+- Auf `/auth/signin`: Das Formular „Sign in form“ hat zwei Textfelder und den Button „Submit sign in form“. Prüfe den Button zusätzlich mit `toHaveRole` und `toHaveAccessibleName`.
 
-       // Test schlägt fehl bei Violations
-       expect(accessibilityScanResults.violations).toEqual([]);
-     });
-   });
-   ```
+**Fertig, wenn:** beide Tests grün sind, mindestens ein `toMatchAriaSnapshot` und ein `toHaveAccessibleName` vorkommen.
+<details><summary>Tipp</summary>
+Du musst das YAML nicht von Hand schreiben: `await expect(locator).toMatchAriaSnapshot('')` zusammen mit `npx playwright test e2e/06-accessibility.spec.ts --update-snapshots` füllt das Template aus. Alternativ erzeugt der Codegen-Button „Assert snapshot“ es. Teil-Templates prüfen nur, was du aufführst. Das Navigations-Element findest du mit `getByRole('navigation', { name: 'Main navigation', exact: true })`.
+</details>
 
-2. **Detaillierte Violation-Reports:**
+**Alles fertig, wenn:** `npx playwright test e2e/06-accessibility.spec.ts --project=chromium` grün ist.
 
-   ```typescript
-   test('News Feed Accessibility mit Details', async ({ page }) => {
-     await page.goto('/news/public');
-     await expect(page.getByRole('article').first()).toBeVisible();
+## Bonus (optional)
 
-     const results = await new AxeBuilder({ page }).analyze();
+### Bonus A – Dark und Light Mode
+Die Feed App startet per `next-themes` immer dunkel. `test.use({ colorScheme: 'dark' })` setzt nur `prefers-color-scheme` und schaltet das Theme **nicht** um. Prüfe die Kontraste (`color-contrast`, Tag `wcag2aa`) in beiden Modi.
+**Fertig, wenn:** der Dark-Mode-Test grün ist. Der Light-Mode-Test hat einen bekannten Befund: `.text-muted` hat nur 4.43:1 statt 4.5:1. Markiere ihn mit `test.fail()`, dann gilt „Test scheitert“ als Erfolg, und er schlägt Alarm, sobald die App den Kontrast behebt.
+<details><summary>Tipp</summary>
+Light Mode erzwingst du vor dem Laden: `page.addInitScript(() => localStorage.setItem('theme', 'light'))`, dann `goto`. Prüfe vorher, dass `html` die Klasse `dark` nicht hat. Warte vor dem Scan, bis keine CSS-Übergänge mehr laufen (`document.getAnimations().length` ist 0), sonst misst Axe Zwischenfarben. `test.fail(true, 'Grund')` setzt du am Anfang des Tests.
+</details>
 
-     // Bessere Fehlerausgabe (ohne if: bei 0 Violations passiert nichts)
-     results.violations.forEach((violation) => {
-       console.log(`\n${violation.impact}: ${violation.description}`);
-       console.log(`  Help: ${violation.helpUrl}`);
-       violation.nodes.forEach((node) => {
-         console.log(`  - ${node.target}`);
-       });
-     });
+### Bonus B – Mobile und Tastatur
+- Viewport 375 × 667: Auf `/` darf die Regel `target-size` keine Violation liefern.
+- Tastatur: Nach einem `Tab` auf `/` hat der Link „Skip to main content“ den Fokus.
 
-     expect(results.violations).toHaveLength(0);
-   });
-   ```
+**Fertig, wenn:** beide Tests grün sind. WebKit fokussiert Links per Tab nur mit macOS Full Keyboard Access: Überspringe den Tastatur-Test dort mit `test.skip(browserName === 'webkit')`.
 
-3. **Spezifische WCAG-Level testen:**
+### Bonus C – Ausnahmen dokumentieren
+Mit `.exclude(selector)` und `.disableRules([...])` nimmst du bewusst Teile aus einem Scan. Schreibe einen Test, der das nutzt, und erkläre in einem Kommentar, warum die Ausnahme gilt. Ohne Begründung ist eine Ausnahme versteckter Befund.
 
-   ```typescript
-   test('WCAG 2.1 und 2.2 Level AA Compliance', async ({ page }) => {
-     await page.goto('/');
-
-     // WCAG 2.1 und 2.2 Level AA Regeln prüfen (wcag22aa gibt es seit axe-core 4.5)
-     const results = await new AxeBuilder({ page })
-       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
-       .analyze();
-
-     expect(results.violations).toEqual([]);
-   });
-   ```
-
-4. **Komponenten-spezifische Tests:**
-
-   ```typescript
-   test('Navigation Accessibility', async ({ page }) => {
-     await page.goto('/');
-
-     // Teste nur die Navigation
-     const results = await new AxeBuilder({ page }).include('nav').analyze();
-
-     expect(results.violations).toEqual([]);
-   });
-
-   test('Form Accessibility - Login', async ({ page }) => {
-     await page.goto('/auth/signin');
-
-     // Teste nur das Login-Formular
-     const results = await new AxeBuilder({ page }).include('form').analyze();
-
-     // Prüfe spezifische Regeln für Formulare
-     const formViolations = results.violations.filter(
-       (v) =>
-         v.tags.includes('forms') ||
-         v.id.includes('label') ||
-         v.id.includes('form-field'),
-     );
-
-     expect(formViolations).toEqual([]);
-   });
-   ```
-
-5. **Dark Mode Accessibility:**
-
-   ```typescript
-   test.describe('Dark Mode', () => {
-     // Dark Mode per Emulation statt Theme-Toggle
-     // (analog: test.use({ forcedColors: 'active' }) oder { contrast: 'more' })
-     // Achtung: colorScheme setzt nur prefers-color-scheme. Die Feed App startet
-     // per next-themes immer dunkel (defaultTheme: 'dark'). Light Mode vor dem Laden setzen:
-     // await page.addInitScript(() => localStorage.setItem('theme', 'light'));
-     // (Nach einem Klick auf den Theme-Switch laufen noch Farbübergänge – axe misst dann Zwischenwerte.)
-     test.use({ colorScheme: 'dark' });
-
-     test('Dark Mode Contrast Ratios', async ({ page }) => {
-       await page.goto('/');
-
-       // Prüfe Kontrastverhältnisse im Dark Mode
-       const results = await new AxeBuilder({ page })
-         .withTags(['wcag2aa']) // Fokus auf Kontrast
-         .analyze();
-
-       const contrastViolations = results.violations.filter((v) =>
-         v.id.includes('color-contrast'),
-       );
-
-       expect(contrastViolations).toHaveLength(0);
-     });
-   });
-   ```
-
-6. **Mobile Accessibility:**
-
-   ```typescript
-   test('Mobile Touch Target Sizes', async ({ page }) => {
-     // Mobile Viewport
-     await page.setViewportSize({ width: 375, height: 667 });
-     await page.goto('/');
-
-     const results = await new AxeBuilder({ page }).analyze();
-
-     // Prüfe ob Touch-Targets groß genug sind
-     const touchTargetViolations = results.violations.filter(
-       (v) => v.id === 'target-size',
-     );
-
-     expect(touchTargetViolations).toEqual([]);
-   });
-   ```
-
-7. **Keyboard Navigation Test:**
-
-   ```typescript
-   test('Keyboard Navigation', async ({ page }) => {
-     await page.goto('/');
-
-     // Tab durch die Seite
-     await page.keyboard.press('Tab');
-
-     // Der erste Tab-Stopp ist der Skip-Link
-     // (WebKit fokussiert Links per Tab nur mit macOS Full Keyboard Access)
-     await expect(
-       page.getByRole('link', { name: 'Skip to main content' }),
-     ).toBeFocused();
-
-     // Accessibility Check mit Fokus
-     const results = await new AxeBuilder({ page })
-       .withTags(['keyboard'])
-       .analyze();
-
-     expect(results.violations).toEqual([]);
-   });
-   ```
-
-8. **Struktur prüfen mit ARIA Snapshots:** `toMatchAriaSnapshot` vergleicht den Accessibility-Baum mit einem YAML-Template. Teil-Templates prüfen nur, was zählt. Dazu `toHaveRole` und `toHaveAccessibleName` für einzelne Elemente.
-
-   ```typescript
-   test('Navigation structure', async ({ page }) => {
-     await page.goto('/');
-
-     await expect(
-       page.getByRole('navigation', { name: 'Main navigation', exact: true }),
-     ).toMatchAriaSnapshot(`
-       - navigation "Main navigation":
-         - list:
-           - listitem:
-             - link "Navigate to Public News":
-               - /url: /news/public
-     `);
-   });
-
-   test('Login form structure, role and accessible name', async ({ page }) => {
-     await page.goto('/auth/signin');
-
-     await expect(
-       page.getByRole('form', { name: 'Sign in form' }),
-     ).toMatchAriaSnapshot(`
-       - form "Sign in form":
-         - textbox "Email address for sign in Email*"
-         - textbox "Password for sign in Password*"
-         - button "Submit sign in form"
-     `);
-
-     const submit = page.getByRole('button', { name: /sign in/i });
-     await expect(submit).toHaveRole('button');
-     await expect(submit).toHaveAccessibleName('Submit sign in form');
-   });
-   ```
-
-   Tipp: Lass dir das Template von Playwright erzeugen: `await expect(locator).toMatchAriaSnapshot('')` mit `--update-snapshots`, oder im Codegen den Button „Assert snapshot“ nutzen.
-
-**Ausschlüsse definieren (falls nötig):**
-
-```typescript
-test('Mit bekannten Ausschlüssen', async ({ page }) => {
-  await page.goto('/');
-
-  const results = await new AxeBuilder({ page })
-    .exclude('.third-party-widget') // Externe Widgets ausschließen
-    .disableRules(['color-contrast']) // Temporär Regel deaktivieren
-    .analyze();
-
-  expect(results.violations).toEqual([]);
-});
-```
-
-**Best Practices:**
-
-- ✅ Teste verschiedene Seitenzustände (logged in/out, light/dark mode)
-- ✅ Integriere A11y-Tests in CI/CD Pipeline
-- ✅ Dokumentiere bewusste Ausnahmen
-- ✅ Teste mit Screen Reader (manuell) zusätzlich
-- ✅ Prüfe Keyboard-Navigation
-- ❌ Ignoriere keine Violations ohne Grund
-
-**Zeit:** 30 Minuten
-
----
-
-> **Tipp:** Nutze Browser-Extensions wie "axe DevTools" oder "WAVE" während der Entwicklung für sofortiges Feedback. Die automatisierten Tests fangen dann Regressionen!
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/06-accessibility ex/06b-dialoge-downloads` · oder `git switch ex/06b-dialoge-downloads`.

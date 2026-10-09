@@ -1,197 +1,71 @@
 # Übung 16 – Mobile Testing
 
-**Ziel:**
-Du lernst, wie du mit Playwright mobile Geräte emulierst und responsive Designs testest. Der Fokus liegt auf praktischen Tests für die Next.js Feed App.
+**Ziel:** Du emulierst mobile Geräte und prüfst, dass sich Navigation und News-Grid der Feed App je nach Bildschirmbreite richtig verhalten.
+**Zeit:** 40 Min. (Pflicht) · Bonus: +15 Min. · **Startbranch:** `git switch ex/16-mobile` · **Datei:** `e2e/16-mobile.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf (weich):** Übung 9 – optionaler `NewsPage`-POM-Reuse zum Navigieren von `/` und dem Feed.
-> **Zurückgefallen?** `git switch ex/16-mobile` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/16-mobile ex/16b-ci-lokal`. `page.goto()` reicht; die POM ist hier nur Komfort. Die Musterlösung liegt in `e2e/16-mobile.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf Übung 11 auf (Feed mocken) und optional auf Übung 9 (`NewsPage`) · Du gibst weiter: Mobile-Projekte in der Config · Zurückgefallen? `git switch ex/16-mobile` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 16). Musterlösung: `git diff ex/16-mobile ex/16b-ci-lokal`.
 
-**Breakpoints der App (Tailwind):** Hamburger-Menü unter `sm` (640px), Desktop-Navigation ab `lg` (1024px), News-Grid mit 2 Spalten ab `md` (768px) und 3 Spalten ab `lg`.
+## Vorbereitung
 
-**Aufgaben:**
+**Breakpoints der App (Tailwind):** Hamburger-Menü unter 640 px, Desktop-Navigation ab 1024 px. News-Grid: 1 Spalte unter 768 px, 2 Spalten ab 768 px, 3 Spalten ab 1024 px.
 
-1. **Mobile Projekte in der Konfiguration aktivieren:**
-   - Öffne `playwright.config.ts`
-   - Die Projekte `Mobile Chrome` (Pixel 5) und `Mobile Safari` (iPhone 12) sind auskommentiert – einkommentieren. **Ein Projekt pro Gerät**: Mehrere `devices` in ein `use` zu spreaden überschreibt sich gegenseitig.
+**Projekt:** In `playwright.config.ts` bündelt ein Projekt eine Geräte-Einstellung (Browser, Viewport, Touch). Dieselben Tests laufen dann je Projekt einmal.
 
-   ```typescript
-   projects: [
-     // Desktop Browser
-     {
-       name: 'chromium',
-       use: { ...devices['Desktop Chrome'] },
-     },
-     // Mobile Devices
-     {
-       name: 'Mobile Chrome',
-       use: { ...devices['Pixel 5'] },
-     },
-     {
-       name: 'Mobile Safari',
-       use: { ...devices['iPhone 12'] },
-     },
-   ],
-   ```
+**Wichtig:** Setze in jedem Test den Viewport **selbst** (`page.setViewportSize`). Dann verhält sich der Test in jedem Projekt gleich: Ein Test, der sich auf den Standard-Viewport verlässt, bekommt in `Mobile Chrome` eine Handy-Größe und schlägt fehl.
 
-   - Ohne Mobile-Projekt: `page.setViewportSize({ width: 375, height: 667 })` im Test.
+## Aufgaben
 
-2. **Responsive Navigation testen:**
-   - Erstelle `e2e/responsive.spec.ts`:
+### Aufgabe 1 – Mobile-Projekte aktivieren
+Öffne `playwright.config.ts`. Die Projekte `Mobile Chrome` (Pixel 5) und `Mobile Safari` (iPhone 12) sind auskommentiert: Kommentiere sie ein. Beschränke beide mit `testMatch` auf `16-mobile.spec.ts`. Ohne diese Beschränkung laufen auch die Specs aller früheren Übungen in den Mobile-Projekten, und die sind dafür nicht gebaut (z. B. ohne Login-Setup).
+**Fertig, wenn:** `npx playwright test --list --project="Mobile Chrome"` (nach Aufgabe 2) ausschließlich Tests aus `16-mobile.spec.ts` auflistet.
+<details><summary>Tipp</summary>
 
-   ```typescript
-   import { test, expect, devices } from '@playwright/test';
+`testMatch: /16-mobile\.spec\.ts/` als Eigenschaft im Projekt, neben `name` und `use`. Pro Gerät ein eigenes Projekt: Mehrere `devices[…]` in ein `use` zu spreaden überschreibt sich gegenseitig.
+</details>
 
-   test.describe('Responsive Navigation', () => {
-     test('Desktop: zeigt normale Navigation', async ({ page }) => {
-       await page.goto('/');
+### Aufgabe 2 – Responsive Navigation
+Lege `e2e/16-mobile.spec.ts` an und schreibe zwei Tests:
+- **Desktop** (Viewport 1280 × 720): Die `navigation` „Main navigation" (`exact: true`) ist sichtbar, der Button „Open menu" ist nicht sichtbar.
+- **Mobile** (Viewport 375 × 667): Die Desktop-Navigation ist unsichtbar, „Open menu" ist sichtbar. Nach dem Klick erscheint die `navigation` „Mobile navigation" mit dem Link „Navigate to Public News" und der Button „Close menu".
 
-       // Desktop Navigation sollte sichtbar sein
-       const desktopNav = page.getByRole('navigation', {
-         name: 'Main navigation',
-         exact: true,
-       });
-       await expect(desktopNav).toBeVisible();
+**Fertig, wenn:** beide Tests mit `npx playwright test e2e/16-mobile.spec.ts` in allen fünf Projekten (chromium, firefox, webkit, Mobile Chrome, Mobile Safari) grün sind.
+<details><summary>Tipp</summary>
 
-       // Mobile Menu Button sollte nicht sichtbar sein
-       const mobileMenuButton = page.getByRole('button', { name: 'Open menu' });
-       await expect(mobileMenuButton).toBeHidden();
-     });
+`getByRole('navigation', { name: 'Main navigation', exact: true })` unterscheidet sie von „Main navigation bar". Unsichtbare Elemente prüfst du mit `toBeHidden()`.
+</details>
 
-     test('Mobile: zeigt Hamburger Menu', async ({ page, isMobile }) => {
-       // Dieser Test läuft nur auf mobilen Geräten
-       // (isMobile wird in Firefox nicht unterstützt)
-       test.skip(!isMobile, 'Nur auf Mobile-Projekten');
+### Aufgabe 3 – News-Grid auf drei Viewports
+Prüfe die Spaltenzahl des Grids (`feed`, Name „News articles") auf `/news/public`: 3 Spalten bei 1280 px, 2 bei 768 px, 1 bei 375 px. Mocke den Feed wie in Übung 11 (`route.fulfill({ path: 'app/api/feed.json' })`) und warte auf den ersten `article`.
+**Fertig, wenn:** drei Tests grün sind, in allen fünf Projekten.
+<details><summary>Tipp</summary>
 
-       await page.goto('/');
+`toHaveCSS('grid-template-columns', …)` vergleicht den **berechneten** Wert. Der besteht aus Pixel-Werten, z. B. `"394.656px 394.672px 394.656px"`, nicht aus `repeat(3, …)`. Prüfe mit einem regulären Ausdruck, wie viele Werte es sind, z. B. `/^[\d.]+px [\d.]+px$/` für 2 Spalten.
+</details>
 
-       // Mobile Menu Button sollte sichtbar sein
-       const mobileMenuButton = page.getByRole('button', { name: 'Open menu' });
-       await expect(mobileMenuButton).toBeVisible();
+### Aufgabe 4 – Ausführen
+Starte nacheinander `npx playwright test e2e/16-mobile.spec.ts --project=chromium`, dann `--project="Mobile Chrome"`, dann ohne `--project`.
+**Fertig, wenn:** alle drei Läufe ohne `failed` enden. Der Lauf ohne `--project` nutzt alle Projekte, auch die Mobile-Projekte, und das ist nur wegen `testMatch` (Aufgabe 1) und der festen Viewports (Aufgaben 2 und 3) grün.
 
-       // Desktop Navigation sollte nicht sichtbar sein
-       const desktopNav = page.getByRole('navigation', {
-         name: 'Main navigation',
-         exact: true,
-       });
-       await expect(desktopNav).toBeHidden();
+## Bonus (optional)
 
-       // Öffne das Mobile Menu
-       await mobileMenuButton.click();
+### Bonus A – Touch-Gesten
+Ergänze in derselben Datei einen `describe`-Block mit `test.use({ …devices['iPhone 13'] })`. Tippe in einem Test mit `tap()` auf „Open menu", dann auf den Link „Navigate to Public News". Erwartet: URL `/news/public`, erster `article` sichtbar.
+**Fertig, wenn:** der Test grün ist. `tap()` braucht `hasTouch: true`, das setzt die Geräte-Emulation.
+<details><summary>Tipp</summary>
 
-       // Prüfe ob Menu-Items erscheinen
-       const mobileNav = page.getByRole('navigation', {
-         name: 'Mobile navigation',
-       });
-       await expect(
-         mobileNav.getByRole('link', { name: 'Navigate to Public News' }),
-       ).toBeVisible();
-     });
-   });
-   ```
+`defaultBrowserType` darf in `test.use` nicht in einem `describe` stehen. Lege die Gerätebeschreibung ohne es an:
+```typescript
+const { defaultBrowserType: _ignored, ...iPhone13 } = devices['iPhone 13'];
+```
+</details>
 
-3. **News Grid Layout auf verschiedenen Viewports testen:**
-   - `toHaveCSS` vergleicht den **berechneten** Wert – `grid-template-columns` liefert px-Werte (z.B. `"394.656px 394.672px 394.656px"`), nicht `repeat(3, …)`.
+### Bonus B – `window.screen`
+Seit Playwright 1.64 liefert `window.screen` in der Emulation die Größe aus der Gerätebeschreibung. Lies `screen.width` und `screen.height` mit `page.evaluate` unter `iPhone 13` aus und vergleiche mit der Gerätebeschreibung.
+**Fertig, wenn:** der Test grün ist.
 
-   ```typescript
-   test.describe('News Grid Responsive Layout', () => {
-     test('Desktop: zeigt 3 Spalten', async ({ page }) => {
-       await page.goto('/news/public');
+### Bonus C – `isMobile`
+Die Test-Variable `isMobile` ist in Mobile-Projekten wahr. Schreibe einen Test, der mit `test.skip(!isMobile, …)` nur dort läuft und das Handy von Hoch- auf Querformat (667 × 375) dreht: Die Artikelzahl bleibt gleich. (`isMobile` wird in Firefox nicht unterstützt.)
+**Fertig, wenn:** der Test in `Mobile Chrome` grün ist und in den Desktop-Projekten als „skipped" erscheint.
 
-       const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveCSS(
-         'grid-template-columns',
-         /^[\d.]+px [\d.]+px [\d.]+px$/,
-       );
-     });
-
-     test('Tablet: zeigt 2 Spalten', async ({ page }) => {
-       // Setze Viewport für Tablet
-       await page.setViewportSize({ width: 768, height: 1024 });
-       await page.goto('/news/public');
-
-       const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveCSS(
-         'grid-template-columns',
-         /^[\d.]+px [\d.]+px$/,
-       );
-     });
-
-     test('Mobile: zeigt 1 Spalte', async ({ page }) => {
-       // Mobiles Viewport, auch in Desktop-Projekten
-       await page.setViewportSize({ width: 375, height: 667 });
-       await page.goto('/news/public');
-
-       const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveCSS('grid-template-columns', /^[\d.]+px$/);
-     });
-   });
-   ```
-
-4. **Touch-Gesten testen (optional):**
-   - `tap()` braucht einen Context mit `hasTouch: true` – die Device-Emulation setzt das.
-   - `test.use({ ...devices['iPhone 13'] })` gehört an den Anfang der Datei: `defaultBrowserType` darf nicht in einem `describe` gesetzt werden.
-
-   ```typescript
-   // e2e/touch.spec.ts
-   import { test, expect, devices } from '@playwright/test';
-
-   test.use({ ...devices['iPhone 13'] }); // setzt hasTouch und isMobile
-
-   test('Mobile: Touch-Interaktionen', async ({ page }) => {
-     await page.goto('/');
-
-     // Simuliere Touch auf den Hamburger-Button
-     await page.getByRole('button', { name: 'Open menu' }).tap();
-
-     const mobileNav = page.getByRole('navigation', {
-       name: 'Mobile navigation',
-     });
-     await mobileNav.getByRole('link', { name: 'Navigate to Public News' }).tap();
-
-     // Prüfe Navigation
-     await expect(page).toHaveURL('/news/public');
-     await expect(page.getByRole('article').first()).toBeVisible();
-   });
-   ```
-
-5. **`screen` prüfen (seit v1.64):** Die Gerätebeschreibung enthält auch `screen`. `window.screen` liefert jetzt die emulierte Größe.
-
-   ```typescript
-   test.use({ ...devices['iPhone 13'] });
-
-   test('window.screen liefert die emulierte Gerätegröße', async ({ page }) => {
-     await page.goto('/');
-     const screen = await page.evaluate(() => ({
-       width: window.screen.width,
-       height: window.screen.height,
-     }));
-     // Die Typen der Gerätebeschreibung kennen `screen` noch nicht (zur Laufzeit seit 1.64 vorhanden)
-     const { screen: expected } = devices['iPhone 13'] as (typeof devices)['iPhone 13'] & {
-       screen: { width: number; height: number };
-     };
-
-     expect(screen).toEqual(expected);
-   });
-   ```
-
-6. **Tests ausführen:**
-   - Führe Tests für Desktop aus: `npx playwright test --project=chromium`
-   - Führe Tests für Mobile aus (nach dem Einkommentieren): `npx playwright test --project="Mobile Chrome"`
-   - Führe alle Tests aus: `npx playwright test`
-
-**Best Practices:**
-
-- Nutze `isMobile` Context-Variable für bedingte Tests (in Firefox nicht unterstützt)
-- Ein Projekt pro Gerät – nie mehrere `devices` in ein Projekt spreaden
-- Teste kritische User Journeys auf mobilen Geräten
-- Prüfe Touch-Targets auf ausreichende Größe (min. 44x44px)
-- Teste Landscape und Portrait Orientierung bei wichtigen Features
-- Barrierefreiheits-Präferenzen emulierst du ab v1.63 direkt als Test-Optionen: `test.use({ reducedMotion: 'reduce', forcedColors: 'active', contrast: 'more' })`
-- Geolocation immer mit Namen angeben: `geolocation: { latitude: 48.8584, longitude: 2.2945 }` plus `permissions: ['geolocation']`
-
-**Zeit:** 25 Minuten
-
----
-
-> **Tipp:** Verwende `page.setViewportSize()` für spezifische Viewport-Tests. Die `devices` von Playwright enthalten realistische User-Agent Strings und Touch-Support. Nutze den Playwright Inspector (`--debug`) um Mobile-Ansichten visuell zu prüfen.
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/16-mobile ex/16b-ci-lokal` · oder `git switch ex/16b-ci-lokal`.

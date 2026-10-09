@@ -1,103 +1,81 @@
-# Übung 6c – Frames, Drag & Drop und Uploads (BONUS)
+# Übung 6c – Frames, Drag & Drop und Uploads (Bonus)
 
-**Ziel:**
-Du testest Interaktionen, für die die Demo-App keine Seite hat: Inhalte in iframes, Drag & Drop und Datei-Uploads. Die Testseiten baust du mit `page.setContent()` selbst.
+**Ziel:** Du testest Inhalte in iframes, Drag & Drop und Datei-Uploads auf selbst gebauten Testseiten.
+**Zeit:** Bonus-Übung, nicht im Zeitplan, ca. 15 Min. · **Startbranch:** `git switch ex/06c-frames-drag-upload` · **Datei:** `e2e/06c-frames-drag-upload.spec.ts`
 
-> **🧵 Roter Faden**
-> **Anderer Winkel derselben Technik:** Wie in Übung 6b arbeitest du mit Browser-Features, die nicht über normale Klicks laufen. Eigenständige Bonus-Übung, kein harter Reuse.
-> **Zurückgefallen?** `git switch ex/06c-frames-drag-upload` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/06c-frames-drag-upload ex/07-authentifizierung`. Die Musterlösung liegt in `e2e/06c-frames-drag-upload.spec.ts`.
+> Roter Faden: Eigenständige Bonus-Übung, wie 6b mit Browser-Features jenseits normaler Klicks. · Du gibst weiter: `frameLocator`, `dragTo` und `setInputFiles` für eigene Projekte. · Zurückgefallen? → `git switch ex/06c-frames-drag-upload` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/06c-frames-drag-upload ex/07-authentifizierung`.
 
-**Vorbereitung:** Lege `e2e/frames-drag-upload.spec.ts` an. Alle Tests bauen ihre Seite selbst:
+Die Demo-App hat keine Seiten für diese Themen. Mit `page.setContent(html)` setzt du in jedem Test eine eigene Testseite. Die HTML-Seiten sind vorgegeben, die Playwright-Schritte schreibst du selbst.
 
-```typescript
-import { test, expect } from '@playwright/test';
+## Aufgaben
 
-test('Beispiel: Seite mit setContent bauen', async ({ page }) => {
-  await page.setContent('<button>Hallo</button>');
-  await expect(page.getByRole('button', { name: 'Hallo' })).toBeVisible();
-});
+### Aufgabe 1 – Button im iframe klicken
+Lege `e2e/06c-frames-drag-upload.spec.ts` an. Setze diese Testseite, klicke im iframe „Pay Now“ und prüfe die Ausgabe.
+
+```html
+<iframe srcdoc="
+  <button id='pay'>Pay Now</button>
+  <p id='out' role='status'></p>
+  <script>
+    document.getElementById('pay').onclick = () => {
+      document.getElementById('out').textContent = 'paid';
+    };
+  </script>"></iframe>
 ```
 
-## Teil A: Frames
+**Fertig, wenn:** der Test grün ist und das Element mit Rolle `status` im iframe den Text „paid“ hat.
+<details><summary>Tipp</summary>
+Elemente in einem iframe erreichst du nicht über `page`, sondern über `page.frameLocator('iframe')`. Daran hängst du `getByRole(...)` wie gewohnt. Der Frame-Locator wartet auf den Frame.
+</details>
 
-1. **Button im iframe klicken:** Baue mit `setContent()` einen `iframe` mit `srcdoc`. Darin ein Button „Pay Now“ und ein `<p role="status">`, das nach dem Klick „paid“ zeigt.
+### Aufgabe 2 – Drag & Drop
+Setze diese Testseite, ziehe „Drag me“ auf die Zone und prüfe das Ergebnis.
 
-   ```typescript
-   await page.setContent(`
-     <iframe srcdoc="
-       <button id='pay'>Pay Now</button>
-       <p id='out' role='status'></p>
-       <script>
-         document.getElementById('pay').onclick = () => {
-           document.getElementById('out').textContent = 'paid';
-         };
-       </script>"></iframe>`);
-   ```
+```html
+<div draggable="true">Drag me</div>
+<div id="zone" style="width: 200px; height: 100px; border: 1px solid">Drop here</div>
+<script>
+  const zone = document.getElementById('zone');
+  zone.addEventListener('dragover', (event) => event.preventDefault());
+  zone.addEventListener('drop', (event) => {
+    event.preventDefault();
+    zone.textContent = 'dropped';
+  });
+</script>
+```
 
-2. **Mit `frameLocator()` arbeiten:** `page.frameLocator('iframe')` wartet auf den Frame, `getByRole` sucht darin.
+**Fertig, wenn:** der Test grün ist und der Text „dropped“ sichtbar ist.
+<details><summary>Tipp</summary>
+`locator.dragTo(target)`. Der `dragover`-Handler mit `preventDefault()` in der Seite ist nötig, sonst lehnt die Zone den Drop ab.
+</details>
 
-   ```typescript
-   const frame = page.frameLocator('iframe');
-   await frame.getByRole('button', { name: 'Pay Now' }).click();
-   await expect(frame.getByRole('status')).toHaveText('paid');
-   ```
+### Aufgabe 3 – Datei hochladen
+Setze diese Testseite und lade eine Datei hoch, die nur im Speicher existiert.
 
-3. **Bonus: verschachtelte iframes:** Ein `iframe`, der einen weiteren `iframe` enthält. Verkette `frameLocator().frameLocator()`.
+```html
+<label>Datei <input type="file"></label>
+<p role="status"></p>
+<script>
+  document.querySelector('input').addEventListener('change', (event) => {
+    document.querySelector('p').textContent = event.target.files[0].name;
+  });
+</script>
+```
 
-   > **Hinweis:** Seit v1.64 gelten Elemente in **versteckten** iframes als hidden: Aktionen und Assertions behandeln sie wie versteckte Elemente.
+**Fertig, wenn:** der Test grün ist und der Status „hallo.txt“ zeigt.
+<details><summary>Tipp</summary>
+`getByLabel('Datei').setInputFiles(...)` nimmt ein Objekt mit `name`, `mimeType` und `buffer` (`Buffer.from('Text')`). Es braucht keine Datei auf der Platte.
+</details>
 
-## Teil B: Drag & Drop
+## Zusatz (noch optional)
 
-4. **Dropzone bauen:** Ein `div` mit `draggable="true"` und eine Zone mit `dragover`-Handler (`preventDefault()`, sonst lehnt die Zone den Drop ab) und `drop`-Handler, der „dropped“ in die Zone schreibt.
+### Bonus A – Verschachtelte iframes
+Baue eine Seite mit einem iframe, der einen weiteren iframe mit einem Button „Deep Button“ enthält. Prüfe, dass der Button sichtbar ist.
+**Fertig, wenn:** der Test grün ist. Tipp: Frame-Locator lassen sich verketten. Seit v1.64 gelten Elemente in versteckten iframes als hidden.
 
-   ```typescript
-   await page.setContent(`
-     <div draggable="true">Drag me</div>
-     <div id="zone" style="width: 200px; height: 100px; border: 1px solid">Drop here</div>
-     <script>
-       const zone = document.getElementById('zone');
-       zone.addEventListener('dragover', (event) => event.preventDefault());
-       zone.addEventListener('drop', (event) => {
-         event.preventDefault();
-         zone.textContent = 'dropped';
-       });
-     </script>`);
-   ```
+### Bonus B – Datei auf eine Dropzone legen
+Baue eine Zone mit `dragover`- und `drop`-Handler, der `event.dataTransfer.files` ausliest und den Dateinamen in ein `role="status"`-Element schreibt. Lege dann die Datei `bericht.txt` (Inhalt frei) mit `locator.drop()` (seit v1.60) ab.
+**Fertig, wenn:** der Status „bericht.txt“ zeigt.
 
-5. **Mit `dragTo()` ziehen** und den Text prüfen:
-
-   ```typescript
-   await page.getByText('Drag me').dragTo(page.getByText('Drop here'));
-   await expect(page.getByText('dropped')).toBeVisible();
-   ```
-
-## Teil C: Uploads
-
-6. **`setInputFiles` mit Buffer:** `<input type="file">` mit Label und ein `<p role="status">`, das den Dateinamen zeigt. Die Datei kommt aus dem Speicher, es ist keine Datei auf der Platte nötig:
-
-   ```typescript
-   await page.getByLabel('Datei').setInputFiles({
-     name: 'hallo.txt',
-     mimeType: 'text/plain',
-     buffer: Buffer.from('Hallo Playwright'),
-   });
-   await expect(page.getByRole('status')).toHaveText('hallo.txt');
-   ```
-
-7. **Datei auf eine Dropzone legen:** Eine Zone mit `drop`-Handler, der `event.dataTransfer.files` ausliest. Lege die Datei mit `locator.drop()` (seit v1.60) ab:
-
-   ```typescript
-   await page.getByText('Drop files').drop({
-     files: { name: 'bericht.txt', mimeType: 'text/plain', buffer: Buffer.from('Inhalt') },
-   });
-   await expect(page.getByRole('status')).toHaveText('bericht.txt');
-   ```
-
-**Was du lernst:**
-
-- `frameLocator()` für Inhalte in iframes, auch verschachtelt
-- `dragTo()` und die Rolle von `dragover` + `preventDefault()`
-- `setInputFiles` mit Buffer, `locator.drop({ files })` für Dropzones
-- Eigene Testseiten mit `page.setContent()`, wenn die App keine passende Seite hat
-
-**Zeit:** 20 Minuten (optional)
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/06c-frames-drag-upload ex/07-authentifizierung` · oder `git switch ex/07-authentifizierung`.

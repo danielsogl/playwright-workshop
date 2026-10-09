@@ -1,202 +1,76 @@
 # Übung 15 – Visual Regression Testing
 
-**Ziel:**
-Du lernst Visual Regression Testing mit Playwright's Screenshot-Funktionen. Der Fokus liegt auf dem Erkennen von unbeabsichtigten visuellen Änderungen in der Feed App.
+**Ziel:** Du erkennst unbeabsichtigte visuelle Änderungen der Feed App mit Screenshot-Vergleichen.
+**Zeit:** 35 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/15-visual-regression` · **Datei:** `e2e/15-visual-regression.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf (weich):** Übung 9 – optional navigierst du mit der `NewsPage`-POM zu den Screenshot-Zielen.
-> **Du gibst weiter:** Visual-Baselines als Regressions-Schutz.
-> **Zurückgefallen?** `git switch ex/15-visual-regression` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/15-visual-regression ex/16-mobile`. `page.goto()` funktioniert genauso – die POM ist hier nur Komfort. Die Musterlösung liegt in `e2e/15-visual-regression.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf Übung 11 auf (Feed mit `route.fulfill` mocken) und optional auf Übung 9 (`NewsPage`) · Du gibst weiter: Baselines als Schutz gegen Layout-Fehler · Zurückgefallen? `git switch ex/15-visual-regression` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 15). Musterlösung: `git diff ex/15-visual-regression ex/16-mobile`.
 
-**Warum Visual Testing?**
+## Vorbereitung
 
-- Erkennt CSS/Layout-Probleme, die funktionale Tests übersehen
-- Schützt vor unbeabsichtigten Design-Änderungen
-- Dokumentiert das erwartete Aussehen der App
-- Besonders wichtig für Design Systems und Komponenten
+**Visual Regression:** Ein Test vergleicht einen Screenshot mit einem gespeicherten Referenzbild, der **Baseline**. Weicht das Bild ab, schlägt der Test fehl. Das findet CSS- und Layoutfehler, die funktionale Tests übersehen.
 
-**Aufgaben:**
+`expect(page).toHaveScreenshot('name.png')` und `expect(locator).toHaveScreenshot(…)` wartet selbst, bis das Bild stabil ist, und schaltet Animationen ab. Warte vorher nur auf den erwarteten Inhalt (web-first), nie mit `networkidle` oder `waitForTimeout`.
 
-1. **Basis-Screenshots erstellen:**
+Die Zahlen und Daten gelten mit `RSS_OFFLINE_MODE=true` (siehe `.env`, Übung 1). Zusätzlich mockst du den Feed, damit sich die Bilder nicht ändern.
 
-   ```typescript
-   // e2e/visual-regression.spec.ts
-   import { test, expect } from '@playwright/test';
+**Das erwartest du beim Ausführen:**
+1. **Lauf 1** (`npx playwright test e2e/15-visual-regression.spec.ts --project=chromium`) schlägt fehl. Es gibt noch keine Baselines, Playwright schreibt sie und meldet Fehler, damit eine Pipeline nicht still grün wird.
+2. **Lauf 2** mit `--update-snapshots` erzeugt bzw. aktualisiert die Baselines (Ordner `e2e/15-visual-regression.spec.ts-snapshots/`).
+3. **Lauf 3** ohne Zusatz vergleicht und ist grün.
 
-   test.describe('Visual Regression Tests', () => {
-     // Screenshots dürfen nicht von Live-Daten abhängen: News-API mit dem
-     // Offline-Feed der App mocken (Übung 11)
-     test.beforeEach(async ({ page }) => {
-       await page.route('**/api/news/public', (route) =>
-         route.fulfill({ path: 'app/api/feed.json' }),
-       );
-     });
+## Aufgaben
 
-     test('Homepage Screenshot', async ({ page }) => {
-       await page.goto('/');
+### Aufgabe 1 – Homepage und News-Grid
+Lege `e2e/15-visual-regression.spec.ts` an. Mocke in einem `beforeEach` die Route `**/api/news/public` mit dem Offline-Feed `app/api/feed.json`. Schreibe zwei Tests: Screenshot der gesamten Homepage (`homepage.png`) und nur des News-Grids auf `/news/public` (`news-grid.png`).
+**Fertig, wenn:** nach den drei Läufen (siehe oben) beide Tests grün sind und im Snapshot-Ordner `homepage-…png` und `news-grid-…png` liegen.
+<details><summary>Tipp</summary>
 
-       // Web-First auf den erwarteten Zustand warten: Die Navbar zeigt
-       // „Loading…", bis die Session geladen ist.
-       await expect(
-         page.getByRole('button', { name: 'Loading authentication status' }),
-       ).toBeHidden();
+Die Navbar zeigt „Loading…", bis die Session geladen ist. Warte vor dem Homepage-Screenshot, bis der Button „Loading authentication status" `toBeHidden()` ist, sonst ist die Baseline mal „Loading…", mal „Sign In". `route.fulfill({ path: 'app/api/feed.json' })` liefert die Datei als Antwort. Grid: `getByRole('feed', { name: 'News articles' })`, vorher auf `getByRole('article').first()` warten. Option `fullPage: true` für die ganze Seite.
+</details>
 
-       // Kein networkidle/Timeout nötig: toHaveScreenshot wartet selbst,
-       // bis zwei aufeinanderfolgende Screenshots identisch sind.
-       await expect(page).toHaveScreenshot('homepage.png', {
-         fullPage: true,
-         animations: 'disabled', // Default bei toHaveScreenshot
-       });
-     });
+### Aufgabe 2 – Dark Mode und Light Mode
+Die App startet im Dark Mode. Mache einen Screenshot (`dark-mode.png`), schalte auf Light Mode um und mache einen zweiten (`light-mode.png`).
+**Fertig, wenn:** der Test grün ist und zwei verschiedene Baselines (dark, light) existieren. Vor dem zweiten Screenshot hat `html` die Klasse `light`.
+<details><summary>Tipp</summary>
 
-     test('News Feed Layout', async ({ page }) => {
-       await page.goto('/news/public');
+Der Schalter heißt nach dem Laden „Switch to light mode" (`getByRole('switch', …)`). Warte mit `expect(page.locator('html')).toHaveClass(/light/)`, bevor du fotografierst.
+</details>
 
-       // Web-First: auf den erwarteten Inhalt warten
-       await expect(page.getByRole('article').first()).toBeVisible();
+### Aufgabe 3 – Dynamischen Inhalt maskieren
+Mache einen Screenshot der ersten News-Card (`news-card.png`). Das Veröffentlichungsdatum (z. B. „13. September 2026") ändert sich, also maskiere es.
+**Fertig, wenn:** der Test grün ist und die Baseline an der Stelle des Datums eine magentafarbene Fläche zeigt.
+<details><summary>Tipp</summary>
 
-       // Screenshot nur vom News-Grid
-       const newsGrid = page.getByRole('feed', { name: 'News articles' });
-       await expect(newsGrid).toHaveScreenshot('news-grid.png');
-     });
-   });
-   ```
+Option `mask: [locator]`, Farbe mit `maskColor: '#FF00FF'`. Das Datum findest du mit `card.getByText(/^\d{1,2}\. \S+ \d{4}$/)`.
+</details>
 
-2. **Dark Mode Visual Test:**
+### Aufgabe 4 – Responsive Screenshots
+Fotografiere die Homepage bei 1920, 768 und 375 px Breite (`homepage-desktop.png`, `homepage-tablet.png`, `homepage-mobile.png`), als Schleife oder drei Tests. Warte nach jedem `goto`, bis die Session geladen ist (wie in Aufgabe 1), sonst sind die Bilder instabil.
+**Fertig, wenn:** alle drei Größen grün sind und drei verschieden große Baselines existieren.
+<details><summary>Tipp</summary>
 
-   ```typescript
-   test('Dark Mode Toggle', async ({ page }) => {
-     await page.goto('/');
+`page.setViewportSize({ width, height })` vor `goto`. Zeigt ein Bild ein „Compiling"-Badge von Next.js, blende es aus: `page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' })`.
+</details>
 
-     // Die App startet im Dark Mode. Der Switch heißt nach der Hydration
-     // „Switch to light mode" – der Locator wartet darauf automatisch.
-     const toLight = page.getByRole('switch', { name: 'Switch to light mode' });
-     await expect(toLight).toBeVisible();
+Gesamt-Check: `npx playwright test e2e/15-visual-regression.spec.ts --project=chromium` ist grün (zweiter Lauf nach der Baseline-Erzeugung).
 
-     // Dark Mode Screenshot
-     await expect(page).toHaveScreenshot('dark-mode.png');
-
-     // Toggle Light Mode
-     await toLight.click();
-     await expect(page.locator('html')).toHaveClass(/light/);
-
-     // Light Mode Screenshot
-     await expect(page).toHaveScreenshot('light-mode.png');
-   });
-   ```
-
-3. **Komponenten-Screenshots mit Maskierung:**
-
-   ```typescript
-   test('News Card mit dynamischen Inhalten', async ({ page }) => {
-     await page.goto('/news/public');
-
-     const firstNewsCard = page.getByRole('article').first();
-     await expect(firstNewsCard).toBeVisible();
-
-     // Maskiere dynamische Inhalte (Veröffentlichungsdatum, z.B. „13. September 2026")
-     await expect(firstNewsCard).toHaveScreenshot('news-card.png', {
-       mask: [firstNewsCard.getByText(/^\d{1,2}\. \S+ \d{4}$/)],
-       maskColor: '#FF00FF',
-     });
-   });
-   ```
-
-4. **Responsive Screenshots:**
-
-   ```typescript
-   test('Responsive Design Screenshots', async ({ page }) => {
-     const viewports = [
-       { width: 1920, height: 1080, name: 'desktop' },
-       { width: 768, height: 1024, name: 'tablet' },
-       { width: 375, height: 667, name: 'mobile' },
-     ];
-
-     for (const viewport of viewports) {
-       await page.setViewportSize({
-         width: viewport.width,
-         height: viewport.height,
-       });
-       await page.goto('/');
-
-       await expect(page).toHaveScreenshot(`homepage-${viewport.name}.png`, {
-         fullPage: true,
-       });
-     }
-   });
-   ```
-
-5. **Cross-Browser Visual Testing:**
-
-   ```typescript
-   // Nutze browserName aus dem Test-Context
-   test('Cross-Browser Consistency', async ({ page, browserName }) => {
-     await page.goto('/news/public');
-     await expect(page.getByRole('article').first()).toBeVisible();
-
-     await expect(page).toHaveScreenshot(`news-page-${browserName}.png`, {
-       fullPage: true,
-     });
-   });
-   ```
-
-**Screenshots verwalten:**
-
-1. **Erste Ausführung:**
-
-   ```bash
-   npx playwright test visual-regression
-   ```
-
-   Fehlende Baselines werden automatisch geschrieben (Default-Modus `default`) – der erste Lauf schlägt dabei fehl, damit eine Pipeline nicht stillschweigend grün wird. Der zweite Lauf vergleicht. Mit `--update-snapshots=missing` besteht der erste Lauf seit v1.64 (nur fehlende Baselines anlegen, nichts überschreiben). Ablage: `e2e/visual-regression.spec.ts-snapshots/`
-
-2. **Vergleich bei weiteren Ausführungen:**
-
-   ```bash
-   npx playwright test visual-regression
-   ```
-
-3. **Screenshots aktualisieren nach gewollten Änderungen:**
-
-   ```bash
-   # ohne Wert = changed: nur abweichende Screenshots neu schreiben
-   npx playwright test visual-regression --update-snapshots
-   # weitere Modi: all, missing (besteht seit v1.64), none
-   npx playwright test visual-regression --update-snapshots=all
-   ```
-
-**Best Practices:**
-
-- ✅ Animationen sind bei `toHaveScreenshot` standardmäßig deaktiviert
-- ✅ Maskiere dynamische Inhalte (Datum, Zeit, User-Daten)
-- ✅ Mocke wechselnde Daten (z.B. den News-Feed) – auch die Tests aus Aufgabe 3 und 5 brauchen den `beforeEach`-Mock aus Aufgabe 1
-- ✅ Warte vor Screenshots mit Web-First-Assertions auf den erwarteten Inhalt (statt `networkidle` oder `waitForTimeout`)
-- ✅ Versioniere Screenshot-Baselines in echten Projekten im Git-Repository, damit CI gegen dieselbe Referenz vergleicht (dieses Demo-Repo ignoriert `**/*-snapshots/` per `.gitignore`, die Baselines entstehen hier nur lokal)
-- ✅ Nutze CI-spezifische Toleranzen für kleine Unterschiede
-- ✅ Endet der Name auf `.webp` (z.B. `toHaveScreenshot('home.webp')`), speichert Playwright die Baseline als verlustfreies WebP (ab v1.62)
-- ❌ Vermeide Screenshots von externen Inhalten (Ads, Social Media Embeds)
-
-**Konfiguration (playwright.config.ts):**
-
+## Hinweis: Konfiguration (keine Aufgabe)
+In `playwright.config.ts` kannst du Vergleichs-Toleranzen für alle Screenshots festlegen und bei Fehlern Bilder mitschreiben lassen. Das musst du hier nicht ändern:
 ```typescript
-use: {
-  // Screenshot bei Fehlschlag (unabhängig von toHaveScreenshot)
-  screenshot: {
-    mode: 'only-on-failure',
-    fullPage: true
-  },
-  video: 'retain-on-failure'
-},
-expect: {
-  // Visual Regression Toleranzen für alle toHaveScreenshot-Aufrufe
-  toHaveScreenshot: {
-    maxDiffPixelRatio: 0.01,
-  },
-},
+expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.01 } }, // 1 % Abweichung erlaubt
+use: { screenshot: 'only-on-failure' },
 ```
+Baselines gehören in echten Projekten ins Git. Dieses Demo-Repo ignoriert `**/*-snapshots/` per `.gitignore`, deshalb entstehen sie nur lokal.
 
-**Zeit:** 30 Minuten
+## Bonus (optional)
 
----
+### Bonus A – Cross-Browser
+Führe die Tests ohne `--project` aus (`npx playwright test e2e/15-visual-regression.spec.ts`) und erzeuge die Baselines mit `--update-snapshots`. Playwright hängt Projektnamen und Betriebssystem automatisch an den Dateinamen an, jeder Browser hat also eigene Baselines.
+**Fertig, wenn:** im Snapshot-Ordner Dateien für `chromium`, `firefox` und `webkit` liegen und ein Lauf ohne Zusatz grün ist. Beachte: Firefox und WebKit müssen installiert sein (`npx playwright install`).
 
-> **Tipp:** Nutze `npx playwright test --ui` um Screenshots visuell zu vergleichen. Der Diff-Viewer zeigt Pixel-Unterschiede farblich hervorgehoben!
+### Bonus B – Leere Liste und Fehlerzustand
+Mocke `/api/news/public` einmal mit `{ items: [] }` und einmal mit Status 500 und fotografiere jeweils die ganze Seite. Warte auf „0 articles found" bzw. den Alert „Failed to load RSS feeds".
+**Fertig, wenn:** beide Zustände eine Baseline haben und der Lauf grün ist.
+
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/15-visual-regression ex/16-mobile` · oder `git switch ex/16-mobile`. Beachte: Baselines liegen nicht im Git, du erzeugst sie selbst mit `--update-snapshots`.

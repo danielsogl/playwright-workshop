@@ -1,135 +1,94 @@
 # Übung 16b – CI lokal simulieren
 
-**Ziel:**
-Du erlebst, was sich ändert, wenn Tests in einer Pipeline laufen, und baust einen lokalen Quality Gate. Dafür brauchst du **keinen** GitHub- oder CI-Server-Zugang: Eine Pipeline ist im Kern eine Shell, die Umgebungsvariable `CI` und ein paar Dateien, die aufbewahrt werden.
+**Ziel:** Du lässt deine Tests wie in einer Pipeline laufen und baust ein lokales Quality Gate, ohne GitHub oder CI-Server.
+**Zeit:** 45 Min. (Pflicht: Aufgaben 1 bis 5) · Bonus: +25 Min. (Aufgaben 6 und 7, Vorlage) · **Startbranch:** `git switch ex/16b-ci-lokal` · **Datei:** Config und `package.json`, Hilfsdatei `e2e/flaky.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** deiner Suite aus den Übungen 1–16 – jede Aufgabe läuft mit den Tests, die du schon hast.
-> **Du gibst weiter:** ein `ci`-Script und einen pre-push-Hook, die du 1:1 in jedes CI-System übernehmen kannst (Vorlagen in `exercises/ci-templates/`).
-> **Zurückgefallen?** `git switch ex/16b-ci-lokal` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/16b-ci-lokal ex/17-capstone`. Es reicht der mitgelieferte Smoke-Test `e2e/example.spec.ts`.
+> Roter Faden: Baut auf deiner Suite aus den Übungen 1 bis 16 auf. Aufgaben 1 bis 5 laufen mit `e2e/example.spec.ts` (und für Aufgabe 4 zusätzlich `e2e/01-setup.spec.ts`), Aufgaben 6 und 7 brauchen ein Git-Repo mit Branch `main` und deine Page Objects aus Übung 9 · Du gibst weiter: ein `ci`-Script, das du in jedes CI-System übernehmen kannst (Vorlagen in `exercises/ci-templates/`) · Zurückgefallen? `git switch ex/16b-ci-lokal` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 16b). Musterlösung: `git diff ex/16b-ci-lokal ex/17-capstone`.
 
-**Aufgaben:**
+## Vorbereitung: Begriffe
+- **Pipeline:** Eine Shell, die auf einem Server deine Befehle ausführt. Sie setzt die Umgebungsvariable `CI`.
+- **Quality Gate:** Eine Sperre, die schlechten Code nicht durchlässt, z. B. ein roter Test blockiert den Push.
+- **`forbidOnly`:** Config-Option. Ist sie an, bricht der Lauf ab, wenn ein `test.only` im Code steht.
+- **Flaky:** Ein Test, der mal grün und mal rot ist. Playwright meldet `flaky`, wenn er erst im Retry besteht.
+- **Sharding:** Die Test-Suite wird in Teile (Shards) geteilt, die auf getrennten Maschinen laufen.
+- **Blob-Report:** Zwischenformat eines Shards. `merge-reports` führt mehrere Blob-Reports zu einem Report zusammen.
 
-1. **Wie CI laufen lassen:**
+## Aufgaben
 
-   ```bash
-   # macOS / Linux
-   CI=1 npx playwright test --project=chromium
-   # Windows PowerShell
-   $env:CI=1; npx playwright test --project=chromium
-   ```
+### Aufgabe 1 – Wie CI laufen lassen
+Starte `CI=1 npx playwright test e2e/example.spec.ts --project=chromium` (Windows PowerShell: `$env:CI=1; npx playwright test …`). Öffne `playwright.config.ts` und suche, was `CI` ändert. Setze dann ein `test.only` in `example.spec.ts` und starte erneut. Starte zuletzt `npm run dev` in einem zweiten Terminal und danach den CI-Lauf.
+**Fertig, wenn:** du für `workers`, `retries`, `forbidOnly` und `webServer.reuseExistingServer` sagen kannst, wie sie sich mit `CI` ändern, und die beiden Fehlschläge (`test.only`, belegter Port) gesehen hast. Entferne `test.only` danach wieder und beende den Dev-Server.
+<details><summary>Erwartete Antworten</summary>
 
-   - [ ] Vergleiche mit `playwright.config.ts`: Was ändert `CI` bei `workers`, `retries`, `forbidOnly` und `webServer.reuseExistingServer`?
-   - [ ] Setze in einen Test `test.only(...)` und starte den CI-Lauf erneut. Warum ist der Abbruch gewollt?
-   - [ ] Starte parallel `npm run dev` und dann den CI-Lauf. Warum scheitert er am Port?
+- `workers`: 1 statt automatisch (Tests laufen nacheinander, stabiler auf kleinen Runnern).
+- `retries`: 2 statt 0 (fehlgeschlagene Tests werden wiederholt).
+- `forbidOnly`: an. Der Lauf bricht mit einem Fehler ab, weil ein vergessenes `test.only` sonst fast alle Tests still überspringt.
+- `reuseExistingServer`: aus. Die Config startet immer einen eigenen Server. Läuft schon einer auf Port 3000, scheitert der Start. Eine Pipeline hat keinen Server vom Vortag.
+</details>
 
-2. **Flaky Tests erkennen** – lege `e2e/flaky.spec.ts` an:
+### Aufgabe 2 – Flaky Tests erkennen
+Lege `e2e/flaky.spec.ts` an mit einem Test, der **nur im Retry** besteht: Er öffnet `/` und fordert `testInfo.retry` größer als 0. Starte ihn mit `CI=1` (nur diese Datei, Projekt chromium). Öffne den Trace aus `test-results/…-retry1/trace.zip`. Starte den Lauf dann mit `--fail-on-flaky-tests`.
+**Fertig, wenn:** der erste Lauf grün ist und `1 flaky` meldet, der zweite Lauf rot ist. Lösche die Datei danach (ohne `CI` ist der Test immer rot).
+<details><summary>Tipp</summary>
 
-   ```typescript
-   import { test, expect } from '@playwright/test';
+Der Test-Callback bekommt `testInfo` als zweiten Parameter: `async ({ page }, testInfo) => …`. Den Trace öffnest du mit `npx playwright show-trace <pfad>`. Er entsteht wegen `trace: 'on-first-retry'` in der Config.
+</details>
+<details><summary>Erwartete Antwort: Wann `--fail-on-flaky-tests`?</summary>
 
-   // Scheitert beim ersten Versuch und besteht im Retry: verlässlich "flaky"
-   test('simulierter flaky Test', async ({ page }, testInfo) => {
-     await page.goto('/');
-     expect(testInfo.retry).toBeGreaterThan(0);
-   });
-   ```
+Wenn dein Team flaky Tests nicht tolerieren will, z. B. auf `main` oder vor einem Release. Auf Feature-Branches reicht oft die Warnung `flaky`, sonst blockieren einzelne Aussetzer jeden Merge.
+</details>
 
-   - [ ] Mit `CI=1` ist der Lauf grün, die Ausgabe meldet aber `1 flaky`.
-   - [ ] Unter `test-results/…-retry1/` liegt ein `trace.zip` (wegen `trace: 'on-first-retry'`). Öffne ihn mit `npx playwright show-trace`.
-   - [ ] Mit `--fail-on-flaky-tests` wird derselbe Lauf rot. Wann willst du das in einer Pipeline? (Mehr zu Retries und flaky Tests: Kapitel „Retries, flaky Tests & Parallelität“)
-   - [ ] Lösche die Datei danach wieder (ohne `CI` ist der Test immer rot).
+### Aufgabe 3 – Reporter für CI-Systeme
+Ersetze in `playwright.config.ts` die Zeile `reporter: 'html',` so, dass mit `CI` die Reporter `list`, `junit` (Datei `results/junit.xml`) und `html` (mit `open: 'never'`) laufen, ohne `CI` bleibt es `'html'`. Trage `/results/` in die `.gitignore` ein.
+**Fertig, wenn:** nach `CI=1 npx playwright test e2e/example.spec.ts --project=chromium` die Datei `results/junit.xml` existiert und sich kein Browser mit dem Report öffnet.
+<details><summary>Tipp</summary>
 
-3. **Reporter für CI-Systeme** – ersetze in `playwright.config.ts` die Zeile `reporter: 'html',`:
+`reporter` akzeptiert eine Liste von `[name, optionen]`-Paaren, z. B. `['junit', { outputFile: … }]`. Wähle mit `process.env.CI ? … : …`.
+</details>
+<details><summary>Erwartete Antwort: Warum JUnit und `open: 'never'`?</summary>
 
-   ```typescript
-   reporter: process.env.CI
-     ? [['list'], ['junit', { outputFile: 'results/junit.xml' }], ['html', { open: 'never' }]]
-     : 'html',
-   ```
+JUnit-XML lesen GitLab, Jenkins und Azure DevOps ein, um Testergebnisse anzuzeigen. `open: 'never'` verhindert, dass der HTML-Report einen Browser öffnet, in einer Pipeline sitzt niemand davor.
+</details>
 
-   - [ ] Nach einem CI-Lauf liegt `results/junit.xml` vor. Dieses Format lesen GitLab, Jenkins und Azure DevOps ein.
-   - [ ] Es öffnet sich kein Browser: In einer Pipeline sitzt niemand davor.
-   - [ ] Trage `/results/` in die `.gitignore` ein.
+### Aufgabe 4 – Sharding und Reports zusammenführen
+Teile den Lauf in 2 Shards: `npx playwright test e2e/01-setup.spec.ts e2e/example.spec.ts --project=chromium --shard=1/2 --reporter=blob`, danach `--shard=2/2`. Mit nur einer Spec-Datei hätte ein Shard nichts zu tun. Jeder Lauf leert `blob-report/`: Verschiebe die Dateien nach jedem Lauf in einen Ordner `all-blob-reports/`. Führe sie mit `npx playwright merge-reports --reporter=html ./all-blob-reports` zusammen und öffne den Report mit `npx playwright show-report`.
+**Fertig, wenn:** der zusammengeführte Report alle 4 Tests (3 aus `01-setup`, 1 aus `example`) zeigt (die Auth-Setup-Tests aus Übung 7 erscheinen zusätzlich, weil jeder Shard sie als Abhängigkeit mitlaufen lässt). Die Shards laufen nacheinander, sonst konkurrieren sie um Port 3000.
+<details><summary>Tipp</summary>
 
-4. **Sharding und Reports zusammenführen:**
+`mkdir all-blob-reports`, dann nach jedem Lauf `mv blob-report/* all-blob-reports/`. In einer echten Pipeline laufen die Shards parallel als Matrix-Jobs, ein Merge-Job lädt alle Blob-Reports herunter und führt sie zusammen.
+</details>
 
-   ```bash
-   npx playwright test --project=chromium --shard=1/2 --reporter=blob
-   mkdir all-blob-reports
-   mv blob-report/* all-blob-reports/
+### Aufgabe 5 – Die Pipeline als npm-Script
+Ergänze in `package.json` unter `scripts` ein Script `ci`, das `playwright test --project=chromium` ausführt.
+**Fertig, wenn:** `npm run ci -- e2e/example.spec.ts` grün ist. Schau dir danach an, wie die Vorlagen in `exercises/ci-templates/` genau diesen Befehl aufrufen.
+<details><summary>Erwartete Antwort: Warum ein Script?</summary>
 
-   npx playwright test --project=chromium --shard=2/2 --reporter=blob
-   mv blob-report/* all-blob-reports/
+Das CI-System braucht nur noch `npm run ci`. Was genau läuft (Projekt, Optionen), steht im Repo und lässt sich lokal prüfen.
+</details>
 
-   npx playwright merge-reports --reporter=html ./all-blob-reports
-   npx playwright show-report
-   ```
+## Bonus (optional)
 
-   - [ ] Jeder Lauf leert `blob-report/`. Deshalb sammelst du die Dateien in einem eigenen Ordner, genau wie eine Pipeline die Artefakte aller Shards herunterlädt.
-   - [ ] Die Shards laufen **nacheinander**, sonst konkurrieren sie um Port 3000.
-   - [ ] Der zusammengeführte Report enthält alle Tests.
-   - [ ] In einer echten Pipeline laufen die Shards als Matrix-Jobs, ein Merge-Job führt die Blob-Reports zusammen (Kapitel „Sharding“).
+Für A und B brauchst du ein Git-Repo mit Branch `main` und Page Objects aus Übung 9 (`e2e/pages/…`). Ohne `.git`-Ordner (z. B. ZIP): `git init && git add -A && git commit -m start && git branch -M main`.
 
-5. **Die Pipeline als npm-Script** – ergänze in `package.json`:
+### Bonus A – Nur betroffene Tests (`--only-changed`)
+Wechsle in einen Branch (`git switch -c feature/suche`), ändere ein Page Object und committe. Liste mit `npx playwright test --project=chromium --list --only-changed=main` die betroffenen Tests. Ändere danach nur App-Code (z. B. `components/news/FeedList.tsx`).
+**Fertig, wenn:** im ersten Fall nur Specs erscheinen, die das Page Object importieren, im zweiten Fall keiner.
+<details><summary>Erwartete Antwort</summary>
 
-   ```json
-   "ci": "playwright test --project=chromium"
-   ```
+`--only-changed` kennt nur die Imports der Tests, nicht die App. Es taugt für schnelles Feedback im Branch, ein vollständiger Lauf gehört auf `main`.
+</details>
 
-   - [ ] `npm run ci` ist der einzige Befehl, den ein CI-System aufrufen muss. Schau dir an, wie die Vorlagen in `exercises/ci-templates/` genau diesen Befehl einbetten.
+### Bonus B – Lokaler Quality Gate beim Push
+Lege ein lokales Bare-Repo als „Server" an (`git init --bare ../ci-remote.git`, `git remote add ci ../ci-remote.git`). Schreibe `.githooks/pre-push`, der `npx playwright test --project=chromium --only-changed=main` ausführt, mache ihn ausführbar (`chmod +x`, unter Windows nicht nötig) und aktiviere ihn mit `git config core.hooksPath .githooks`.
+**Fertig, wenn:** `git push ci feature/suche` mit einem absichtlich roten Test abgebrochen wird und nach der Reparatur durchgeht.
+<details><summary>Erwartete Antwort: Reine App-Änderung?</summary>
 
-6. **Optional: Nur betroffene Tests laufen lassen (Git):**
+Es läuft kein Test, der Push geht durch. Das ist eine Lücke (siehe Bonus A). Hooks lassen sich außerdem mit `git push --no-verify` umgehen. Ein lokales Gate ersetzt deshalb keine echte Pipeline.
+</details>
 
-   ```bash
-   git switch -c feature/suche
-   # ändere eines deiner Page Objects aus Übung 9, dann committen
-   npx playwright test --project=chromium --list --only-changed=main
-   ```
+### Bonus C – CI-Vorlage anpassen
+Passe die Vorlage aus `exercises/ci-templates/` für das CI-System in deinem Unternehmen an (GitHub Actions, GitLab, Azure DevOps oder Jenkins). Pinne das Docker-Image passend zur Playwright-Version (`mcr.microsoft.com/playwright:v1.64.0-noble`).
+**Fertig, wenn:** die Vorlage `npm run ci` aufruft und der Image-Tag zu deiner Playwright-Version passt.
 
-   - [ ] Es erscheinen nur die Specs, die das geänderte Page Object importieren.
-   - [ ] Ändere stattdessen nur App-Code (z. B. `components/news/FeedList.tsx`): Jetzt findet `--only-changed` **keinen** Test. Es kennt nur die Imports der Tests, nicht die App. Deshalb: schnelles Feedback im Branch, vollständiger Lauf auf `main`.
-
-   > **Kein `.git`-Ordner?** (z. B. Repo als ZIP erhalten) `git init && git add -A && git commit -m start && git branch -M main`
-
-7. **Optional: Lokaler Quality Gate beim Push** – ein lokales Bare-Repo übernimmt die Rolle des Servers:
-
-   ```bash
-   git init --bare ../ci-remote.git
-   git remote add ci ../ci-remote.git
-   mkdir .githooks
-   ```
-
-   `.githooks/pre-push`:
-
-   ```sh
-   #!/bin/sh
-   npx playwright test --project=chromium --only-changed=main
-   ```
-
-   ```bash
-   chmod +x .githooks/pre-push   # unter Windows nicht nötig
-   git config core.hooksPath .githooks
-   ```
-
-   - [ ] Mach einen Test absichtlich rot, committe und führe `git push ci feature/suche` aus: Der Push wird abgebrochen.
-   - [ ] Repariere den Test, committe erneut: Der Push geht durch.
-   - [ ] Pushe eine reine App-Änderung: Es läuft kein Test, der Push geht durch. Ist das ein Problem? (Tipp: Aufgabe 6)
-
-**Hinweis:** Aufgaben 1 bis 5 sind der Kern, 6 und 7 sind optional.
-
-**Bonus:** Passe die Vorlage aus `exercises/ci-templates/` für das CI-System in deinem Unternehmen an (GitHub Actions, GitLab, Azure DevOps oder Jenkins). Pinne das Docker-Image passend zur Playwright-Version (`mcr.microsoft.com/playwright:v1.64.0-noble`).
-
-**Was du lernst:**
-
-- Was `CI` in der Config umschaltet: Worker, Retries, `forbidOnly`, Server-Start
-- Flaky Tests erkennen und bewusst entscheiden, ob sie die Pipeline brechen
-- JUnit- und HTML-Report für CI-Systeme, Sharding mit `blob` + `merge-reports`
-- `--only-changed` als schnelles Feedback und seine Grenzen
-- Ein Quality Gate, das ohne CI-Server funktioniert
-
-**Zeit:** 60 Minuten
-
----
-
-> **Tipp:** Hooks lassen sich mit `git push --no-verify` umgehen. Ein lokaler Gate ersetzt deshalb keine echte Pipeline, er fängt aber die meisten Fehler ab, bevor sie jemand anderes sieht.
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/16b-ci-lokal ex/17-capstone` · oder `git switch ex/17-capstone`.

@@ -1,128 +1,90 @@
-# Übung 18 – KI-gestütztes Testen: Agents, Skills & MCP (BONUS)
+# Übung 18 – KI-gestütztes Testen: Agents, Seed, Planner, Generator, Healer
 
-**Ziel:**
-Du richtest das offizielle KI-Setup von Playwright im Workshop-Repo ein und lässt dir einen Test **planen**, **generieren** und **heilen** – und lernst dabei, wo die KI hilft und wo dein Testing-Know-how gebraucht wird.
+**Ziel:** Du richtest das offizielle Playwright-KI-Setup ein und lässt dir einen Test planen, generieren und heilen. Dabei erkennst du, wo die KI hilft und wo dein Testing-Know-how gebraucht wird.
+**Zeit:** 50 Min. (Kern: Aufgaben 1–4) · Bonus: +20 Min. · **Startbranch:** `git switch ex/18-ai-assisted` · **Dateien:** `e2e/seed.spec.ts`, `specs/*.md`, `e2e/news-search.spec.ts` (frei benennbar)
 
-> **🧵 Roter Faden**
-> **Baut auf:** der App, die du drei Tage lang von Hand getestet hast. Genau deshalb erkennst du jetzt, ob ein generierter Test gut ist.
-> **Du gibst weiter:** ein Repo, in dem jeder Coding Agent Playwright bedienen kann – Agents, Skills und MCP sind eingerichtet und committet.
-> **Zurückgefallen?** `git switch ex/18-ai-assisted` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/18-ai-assisted ex/end`. Alles in dieser Übung funktioniert unabhängig von den Übungen 1–17. Du brauchst nur die laufende App.
+> Roter Faden: Baut auf der App auf, die du von Hand getestet hast. Genau deshalb erkennst du, ob ein generierter Test gut ist. · Du gibst weiter: ein Repo, in dem ein Coding Agent Playwright bedienen kann. · Zurückgefallen? `git switch ex/18-ai-assisted` (Startbranch: enthält die Lösungen der Übungen 1–17, aber noch kein KI-Setup). Die Lösung der Übung (Agent-Dateien, `.mcp.json`, Seed) zeigt `git diff ex/18-ai-assisted ex/end`. Du brauchst keine früheren Übungen, nur die laufende App.
 
-**Voraussetzungen:**
+## Begriffe in Kürze
 
-- Playwright ≥ 1.56 (im Repo: 1.64) – `npx playwright --version`
-- Ein KI-Client: Claude Code, VS Code + Copilot (ab 1.105), Codex oder OpenCode
-- Die App muss erreichbar sein: `npm run dev` (bzw. Playwright startet sie über `webServer`)
+- **Agent:** vordefinierte Rolle für einen KI-Client (Datei mit Anweisungen und erlaubten Tools), hier Planner, Generator, Healer.
+- **Skill:** Anleitungsdatei (`SKILL.md`), die ein Agent bei Bedarf liest, z. B. wie man das Playwright-CLI bedient.
+- **MCP** (Model Context Protocol): Schnittstelle, über die ein KI-Client Tools wie „Browser klicken“ aufruft.
+- **Seed-Test:** kleiner Test, der festlegt, wie ein generierter Test startet (Start-URL, Fixtures, Login). Jeder generierte Test erbt ihn.
+- **Healer:** Agent, der fehlschlagende Tests ausführt, analysiert und repariert.
 
-**Aufgaben:**
+## Vorbereitung
 
-1. **Setup prüfen – was ist schon da?**
+- Playwright ≥ 1.56 (`npx playwright --version`), App läuft (`npm run dev`) oder startet über `webServer`; `.env` mit `RSS_OFFLINE_MODE=true` (Übung 1).
+- Du brauchst einen KI-Client. Die Anleitung unten nutzt **Claude Code** (`--loop=claude`). Alternativen laut `npx playwright init-agents --help`: `--loop=copilot` bzw. `vscode` (VS Code mit Copilot), `codex`, `opencode`. Der Ablauf ist gleich, nur die Dateien landen woanders (z. B. `.github/agents/`).
+- KI ist nicht deterministisch: Formulierungen, Plan und Test sehen bei dir anders aus als beim Nachbarn. „Gut genug“ ist bei jedem Schritt unten beschrieben.
 
-   Das Repo ist bereits initialisiert. Schau dir an, was dabei entstanden ist:
+## Aufgaben (Kern)
 
-   ```bash
-   ls .claude/agents/      # playwright-test-planner / -generator / -healer
-   ls .claude/skills/      # Symlinks auf .agents/skills/ (Skills für jeden Agent)
-   cat .mcp.json           # playwright-test (Agents) + playwright (interaktiv)
-   cat e2e/seed.spec.ts    # der Startpunkt für alle generierten Tests
-   ```
+### Aufgabe 1 – Agents einrichten
+Führe im Repo-Root aus:
 
-   - [ ] Öffne `.claude/agents/playwright-test-planner.md`. Welche Tools darf der Planner benutzen – und welche bewusst **nicht**? (Tipp: Er darf nicht schreiben, außer über `planner_save_plan`.)
-   - [ ] So würdest du das in **deinem** Projekt erzeugen:
+```bash
+npx playwright init-agents --loop=claude
+```
 
-     ```bash
-     npx playwright init-agents --loop=claude     # claude | codex | copilot | opencode | vscode | vscode-legacy
-     npx playwright init-skills --loop=claude     # claude | agents
-     ```
+Schau dir an, was entstanden ist: die drei Agent-Dateien (`.claude/agents/playwright-test-*.md`), `.mcp.json` und der Seed-Test. Öffne `playwright-test-planner.md` und lies die Zeile `tools:`.
 
-     Weitere Optionen von `init-agents`: `--prompts` (Prompt-Dateien mit anlegen), `--project <name>` und `--config <datei>` (welches Projekt den Seed-Test liefert).
+**Fertig, wenn:** Drei Agent-Dateien (planner, generator, healer), `.mcp.json` mit dem Server `playwright-test` und `e2e/seed.spec.ts` existieren. Du kannst beantworten, warum der Planner keine Dateien frei schreiben darf (nur über `planner_save_plan`).
 
-   - [ ] `init-agents` **überschreibt** eine bestehende `.mcp.json`. Prüfe nach dem Ausführen immer den Diff, bevor du committest.
-   - [ ] Nach jedem Playwright-Update erneut ausführen: Die Agent-Definitionen sind an die Playwright-Version gebunden.
+<details><summary>Tipp</summary>
+`init-agents` überschreibt eine bestehende `.mcp.json`: prüfe nach dem Lauf `git diff`. Nach jedem Playwright-Update erneut ausführen. Wo der Seed landet, steuern `--project`/`--config`.
+</details>
 
-2. **Der Seed-Test – das wichtigste Stück Setup:**
+### Aufgabe 2 – Seed-Test schreiben
+`init-agents` legt `e2e/seed.spec.ts` nur als leeres Skelett an (ein Test ohne Inhalt, Kommentar „generate code here“). Öffne die Datei und schreibe den Seed selbst: Er lädt die Startseite `/` und prüft den Seitentitel (er enthält „Playwright Demo“).
 
-   `e2e/seed.spec.ts` legt fest, wie ein generierter Test *startet*. Der Planner führt ihn aus, bevor er die App erkundet.
+**Fertig, wenn:** `npx playwright test e2e/seed.spec.ts --project=chromium` ist grün und der Seed prüft den Seitentitel (`/Playwright Demo/`).
 
-   ```typescript
-   test('seed', async ({ page }) => {
-     await page.goto('/');
-     await expect(page).toHaveTitle(/Playwright Demo/);
-   });
-   ```
+<details><summary>Tipp</summary>
+Playwright findet den Seed am Dateinamen (`*seed*`) im `testDir` (`e2e/`). Für Flows, die Login brauchen, würdest du hier die `authenticatedPage`-Fixture aus Übung 8 importieren. Ein schlechter Seed ist teuer: jeder generierte Test erbt ihn.
+</details>
 
-   - [ ] Playwright findet den Seed über den **Dateinamen** (`*seed*`) innerhalb des `testMatch` deiner Config. Deshalb liegt er in `e2e/`, nicht im Repo-Root.
-   - [ ] **Für authentifizierte Flows:** Tausche den Import gegen deine Auth-Fixture aus Übung 8 und den Parameter gegen `authenticatedPage`. Jeder generierte Test startet dann eingeloggt.
-   - [ ] Warum ist ein schlechter Seed teuer? (Tipp: Jeder generierte Test erbt ihn.)
+### Aufgabe 3 – Planner: Testplan erzeugen und reviewen
+Starte Claude Code im Repo-Root und gib diesen Prompt:
 
-3. **Planner: Testplan statt Test:**
+> Nutze den **playwright-test-planner**, um Tests für die News-Suche auf `/news/public` zu planen.
 
-   Prompt in deinem KI-Client:
+Öffne den Plan in `specs/`. Reviewe ihn wie einen Pull Request: Sind die Szenarien unabhängig voneinander? Fehlt der Negativfall (Suche ohne Treffer)? Beschreibt ein Szenario Implementierung statt Verhalten? Korrigiere den Plan direkt im Markdown.
 
-   > Nutze den **playwright-test-planner**, um Tests für die News-Suche auf `/news/public` zu planen.
+**Fertig, wenn:** Es gibt eine Plan-Datei `specs/*.md` mit nummerierten Szenarien (z. B. 1.1, 1.2), mindestens einem Treffer-Szenario und einem Szenario ohne Treffer. Fehlt eines, hast du es selbst ergänzt.
 
-   - [ ] Der Plan landet als Markdown in `specs/`. Öffne ihn.
-   - [ ] **Review wie einen PR:** Sind die Szenarien unabhängig? Fehlt der Negativfall (Suche ohne Treffer)? Testet er Implementierung statt Verhalten?
-   - [ ] Korrigiere den Plan direkt im Markdown. Das ist der Schritt, den nur du machen kannst.
+<details><summary>Tipp</summary>
+Der Planner kann ein paar Minuten explorieren und fragt eventuell Rechte für Tools ab. Bestätige nur Tools von `playwright-test`. Ein anderer Plan als beim Nachbarn ist normal.
+</details>
 
-4. **Generator: vom Plan zum Test:**
+### Aufgabe 4 – Generator: Plan zum Test
+Prompt:
 
-   > Nutze den **playwright-test-generator** für Szenario 1.1 aus `specs/<dein-plan>.md`.
+> Nutze den **playwright-test-generator** für Szenario 1.1 aus `specs/<dein-plan>.md`.
 
-   - [ ] Referenziere Szenarien per **Nummer**, nicht per Name – bei langen Plänen trifft der Agent sonst das falsche.
-   - [ ] Der Generator verifiziert Locators **live gegen die App**, statt sie zu raten. Schau ihm dabei zu.
-   - [ ] **Review den Test:** Nutzt er `getByRole`/`getByLabel` – oder ist er auf `getByTestId` bzw. CSS ausgewichen? Sind die Assertions aussagekräftig oder nur `toBeVisible()`?
-   - [ ] Vergleiche mit deinem handgeschriebenen Test aus Übung 5. Was ist besser, was schlechter?
+Referenziere das Szenario per **Nummer**, nicht per Name. Der Generator prüft Locators live gegen die App. Reviewe den erzeugten Test: Nutzt er `getByRole`/`getByLabel` statt CSS oder Test-IDs? Prüfen die Assertions echtes Verhalten (Anzahl, Text) oder nur `toBeVisible()`?
 
-5. **Healer: kaputte Tests reparieren:**
+**Fertig, wenn:** Ein neuer Test liegt in `e2e/` (z. B. `e2e/news-search.spec.ts`) und `npx playwright test <Datei> --project=chromium` ist grün. Mindestens eine schwache Stelle hast du benannt und verbessert (Locator oder Assertion).
 
-   - [ ] Mach einen Locator in deinem generierten Test absichtlich kaputt (z.B. `getByRole('textbox', { name: 'Search news' })` → `'Suche'`).
-   - [ ] Prompt: *Nutze den **playwright-test-healer**, um die fehlschlagenden Tests in `e2e/` zu reparieren.*
-   - [ ] Der Healer führt den Test aus, findet den kaputten Locator und repariert ihn.
-   - [ ] **Jetzt der wichtige Teil:** Baue einen Bug in die **App** statt in den Test (z.B. in `app/news/public/page.tsx` das `aria-label` des Suchfelds ändern). Was macht der Healer? Er sollte den Test **skippen**, nicht "reparieren". Ein Healer, der einen echten App-Bug wegpatcht, hat den Test wertlos gemacht.
+## Bonus (optional, zählt nicht zur Zeit)
 
-6. **CLI + Skills: die token-sparsame Ebene:**
+### Bonus A – Healer: Locator kaputt, App kaputt
+1. Ändere im generierten Test einen Locator absichtlich falsch (z. B. `'Search news articles'` → `'Suche'`). Prompt: *Nutze den **playwright-test-healer**, um die fehlschlagenden Tests in `e2e/` zu reparieren.* Erwartung: Der Healer korrigiert den Locator, Test wird grün.
+2. Mach den Test wieder heil und ändere stattdessen in der **App** (`app/news/public/page.tsx`) das `aria-label` des Suchfelds. Erwartung: Der Healer soll den Test **nicht** an die Änderung anpassen, sondern skippen oder den App-Bug melden. Ein Healer, der echte App-Fehler wegpatcht, macht den Test wertlos. Nimm die App-Änderung danach zurück (`git restore app/`).
 
-   Für Agents mit Terminal-Zugriff. Der State liegt auf der Disk statt im Kontext:
+Gut genug: Du hast beide Fälle beobachtet und kannst erklären, warum der zweite nicht „geheilt“ werden darf. Verhält sich die KI anders, ist das ebenfalls ein Ergebnis.
 
-   ```bash
-   npx playwright cli open http://localhost:3000/news/public
-   npx playwright cli snapshot          # Accessibility-Baum als YAML auf Disk
-   npx playwright cli find "Search news" # nur die passenden Knoten, nicht der ganze Baum
-   npx playwright cli fill e12 "Tech" --submit
-   npx playwright cli snapshot
-   npx playwright cli close
-   ```
+### Bonus B – CLI und Skills (token-sparsam)
+Für Agents mit Terminal-Zugriff: `npx playwright cli open http://localhost:3000/news/public`, dann `snapshot`, `find "Search news"`, `close`. Der Zustand liegt auf der Disk statt im KI-Kontext. Die Skills dazu liegen in `.agents/skills/playwright-cli/SKILL.md` (nach `init-skills`: `npx playwright init-skills --loop=claude`). Faustregel: Agent hat Bash → CLI + Skills; kein Terminal → MCP.
 
-   - [ ] Elemente werden per kurzer Ref (`e1`, `e12`, …) angesprochen – kein kompletter Accessibility-Tree im Kontext.
-   - [ ] Die Skills dazu liegen in `.agents/skills/playwright-cli/` (plus `playwright-trace` und `playwright-component-testing`). Öffne `SKILL.md`: Das ist die Anleitung, die dein Agent liest.
-   - [ ] **Faustregel:** Agent hat Bash-Zugriff → **CLI + Skills**. Kein Terminal → **MCP**.
+### Bonus C – MCP interaktiv und Trace-Analyse
+Der Server `playwright` (`npx playwright mcp`) gibt deinem Client Browser-Tools für eigene Prompts. `init-agents` trägt ihn nicht ein: Ergänze in `.mcp.json` einen zweiten Eintrag (`command: npx`, `args: ["playwright", "mcp", "--browser=chromium"]`), siehe `git show ex/end:.mcp.json`. Zum Absichern: `--allowed-hosts` begrenzt die Hosts, über die der Server selbst erreichbar ist (kommagetrennt); `--allowed-origins` begrenzt, welche Origins der Browser anfragen darf (Semikolon-getrennt). Trace analysieren: `npx playwright trace open <trace.zip>`, `trace errors`, `trace actions`.
 
-7. **MCP interaktiv & Trace-Analyse:**
+### Bonus D – Capstone planen lassen
+Lass den Planner den Flow aus Übung 17 planen und vergleiche den Plan mit `e2e/17-capstone.spec.ts`. Was hat die KI übersehen?
 
-   - [ ] Der Server `playwright` aus `.mcp.json` (`npx playwright mcp`) gibt deinem Client Browser-Tools für eigene Prompts – ohne Agent-Definition.
-   - [ ] Nimm einen Trace aus einer früheren Übung (z.B. `trace-news-search.zip` oder aus `test-results/`) und lass ihn analysieren:
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/18-ai-assisted ex/end` · oder `git switch ex/end` (Agent-Dateien, `.mcp.json` und `e2e/seed.spec.ts` liegen dort fertig).
 
-     ```bash
-     npx playwright trace open test-results/<ordner>/trace.zip
-     npx playwright trace errors
-     npx playwright trace actions
-     ```
-
-   - [ ] Das nutzt der Agent über den `playwright-trace`-Skill, um rote Tests zu diagnostizieren, ohne den Trace Viewer zu öffnen.
-
-**Bonus:** Lass den Planner den kompletten Capstone-Flow aus Übung 17 planen (Login → Public News → Private Feeds → Settings → Logout) und vergleiche den Plan mit der Musterlösung in `e2e/17-capstone.spec.ts`. Was hat die KI übersehen?
-
-**Was du lernst:**
-
-- Das offizielle Setup: `init-agents`, `init-skills`, Seed-Test, `.mcp.json`
-- Der Loop **Explore → Plan → Generate → Heal → Expand** und wo du eingreifst
-- Warum der Plan-Review der wichtigste Schritt ist – ein falscher Plan erzeugt zuverlässig falsche Tests
-- Wann CLI + Skills (Tokens) und wann MCP (kein Terminal) die richtige Ebene ist
-- Die Grenze: Die KI macht die mechanische Arbeit, **was** getestet wird, entscheidest du
-
-**Zeit:** 45–60 Minuten (optional)
-
----
-
-> **Achtung:** Generierte Tests sind ganz normale `*.spec.ts` und laufen in jeder CI. Die **Agents** selbst gehören nicht in die Pipeline – sie sind interaktive Dev-Tools. Und den Healer nie automatisch auf `main` pushen lassen: Fixes gehen als PR zu einem Menschen.
+> Hinweis: Generierte Tests sind normale `*.spec.ts` und laufen in jeder CI. Die Agents selbst gehören nicht in die Pipeline. Den Healer nie automatisch auf `main` pushen lassen: Fixes gehen als PR zu einem Menschen.

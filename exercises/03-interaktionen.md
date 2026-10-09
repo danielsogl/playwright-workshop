@@ -1,167 +1,64 @@
 # Übung 3 – Interaktionen in der Feed App
 
-**Ziel:**
-Du lernst verschiedene Benutzer-Interaktionen mit der Feed App zu testen. Der Fokus liegt auf realistischen Aktionen wie Klicks, Eingaben, Auswahllisten und Tastatur-Navigation.
+**Ziel:** Du testest Benutzer-Aktionen wie Klicks, Eingaben, Auswahllisten und Tastatur in vier eigenen Tests.
+**Zeit:** 30 Min. (Pflicht) · Bonus: +5 Min. · **Startbranch:** `git switch ex/03-interaktionen` · **Datei:** `e2e/03-interaktionen.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 2 – dieselben Elemente (Theme-Toggle, Suche, Login-Form), jetzt interaktiv.
-> **Du gibst weiter:** Interaktions-Muster (fill, click, keyboard), u. a. den Login-Flow, den Übung 7 zum Auth-Setup ausbaut.
-> **Zurückgefallen?** `git switch ex/03-interaktionen` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/03-interaktionen ex/04-erster-test`. Alle Locators stehen in den Snippets unten – Übung 2 ist keine harte Voraussetzung. Die Musterlösung liegt in `e2e/03-interaktionen.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf: Übung 2, dieselben Elemente (Theme-Umschalter, Suche), jetzt interaktiv. · Du gibst weiter: Interaktions-Muster (`click`, `fill`, `keyboard`) und den Login-Flow, den Übung 7 zum Auth-Setup ausbaut. · Zurückgefallen? → `git switch ex/03-interaktionen` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/03-interaktionen ex/04-erster-test`. Übung 2 ist keine harte Voraussetzung.
 
-**Warum Interaktions-Tests?**
+Feste Zahlen (20 Artikel, 5 in „Business“) gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true` in deiner `.env`, siehe Übung 1).
 
-- Simulieren echte Nutzer-Aktionen
-- Prüfen der UI-Responsivität
-- Testen von dynamischen Elementen
-- Validieren von Formular-Verhalten
+Lege `e2e/03-interaktionen.spec.ts` an. Packe die vier Tests in einen gemeinsamen `test.describe`-Block. Die Tests sind von eng angeleitet bis offen geordnet.
 
-**Aufgaben:**
+## Aufgaben
 
-1. **Theme Toggle Interaktion:**
+### Aufgabe 1 – Theme umschalten
+Öffne `/`. Der Theme-Umschalter hat die Rolle `switch` und einen Namen mit „dark“ oder „light“ (es gibt ihn für Desktop und Mobile, `.visible()` nimmt den sichtbaren). Merke dir die `class` des `<html>`-Elements, klicke den Umschalter, prüfe, dass sich die Klasse geändert hat, klicke erneut und prüfe, dass sie wieder die alte ist.
 
-   ```typescript
-   // e2e/interactions.spec.ts
-   import { test, expect } from '@playwright/test';
+**Fertig, wenn:** der Test grün ist.
 
-   test.describe('Feed App Interaktionen', () => {
-     test('Theme umschalten', async ({ page }) => {
-       await page.goto('/');
+<details><summary>Tipp</summary>
+Locator für `<html>`: `page.locator('html')`. Klasse lesen: `getAttribute('class')`. Zum Vergleich `expect(html).not.toHaveClass(alt)` und `toHaveClass(alt)`. Diese Assertions warten selbst, du brauchst keine Pause.
+</details>
 
-       // Finde den Theme-Toggle (role="switch", gibt es für Desktop und Mobile)
-       // visible() nimmt nur den sichtbaren
-       const themeToggle = page
-         .getByRole('switch', { name: /dark|light/i })
-         .visible();
+### Aufgabe 2 – Kategorie filtern
+Öffne `/news/public`. Prüfe, dass im Feed (`role="feed"`, Name „News articles“) 20 Artikel stehen. Wähle in der Auswahlliste „Filter news by category“ die Kategorie „Business“. Prüfe danach den Text „5 articles found“ und dass 5 Artikel übrig sind.
 
-       // Merke initialen Zustand
-       const htmlElement = page.locator('html');
-       const initialTheme = (await htmlElement.getAttribute('class')) || '';
+**Fertig, wenn:** der Test grün ist.
 
-       // Klicke auf Theme Toggle
-       await themeToggle.click();
+<details><summary>Tipp</summary>
+Ein `<select>` hat die Rolle `combobox`. `selectOption('Business')` wählt per Label. Für die Anzahl: `toHaveCount()`. Den Text suchst du mit `getByText('5 articles found', { exact: true })`.
+</details>
 
-       // Prüfe ob Theme gewechselt hat (wartet automatisch)
-       await expect(htmlElement).not.toHaveClass(initialTheme);
+### Aufgabe 3 – Suche per Tastatur
+Öffne `/news/public` und warte, bis die Artikel da sind. Bringe den Fokus nur mit der Tastatur ins Suchfeld („Search news articles“), tippe „Playwright“ mit echten Tastenanschlägen und drücke Enter. Prüfe vorher, dass das Suchfeld fokussiert ist. Prüfe am Ende, dass keine Artikel mehr übrig sind.
 
-       // Toggle zurück
-       await themeToggle.click();
-       await expect(htmlElement).toHaveClass(initialTheme);
-     });
-   });
-   ```
+**Fertig, wenn:** der Test grün ist und nach der Suche 0 Artikel (Text „0 articles found“) sichtbar sind.
 
-2. **Suche mit Tastatur-Navigation:**
+<details><summary>Tipp</summary>
+Vom Seitenanfang aus liegen Skip-Link und Navbar vor dem Suchfeld, du bräuchtest viele `Tab`-Schritte. Klicke stattdessen die Überschrift „News Feed“ an: Der Fokus startet dann direkt davor, ein `page.keyboard.press('Tab')` reicht. Fokus prüfst du mit `toBeFocused()`, Tasten tippst du mit `pressSequentially()`.
+</details>
 
-   ```typescript
-   test('Suche mit Tastatur bedienen', async ({ page }) => {
-     await page.goto('/news/public');
+### Aufgabe 4 – Login-Formular
+Öffne `/auth/signin`. Das Feld „Email“, das Feld „Password“ und der Button (Name „Submit sign in form“) sind per Label bzw. Rolle erreichbar. Teste der Reihe nach:
+1. leeres Formular absenden: du bleibst auf `/auth/signin`, es erscheint keine Fehlermeldung (die Felder sind Pflichtfelder, der Browser hält das Absenden an),
+2. nur E-Mail ausfüllen und absenden: du bleibst auf `/auth/signin`,
+3. falsches Passwort absenden: die Fehlermeldung „Invalid email or password“ erscheint,
+4. Zugangsdaten aus `.env` (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`) eintragen und absenden: du landest nicht mehr auf `/auth/signin`.
 
-     // Warte bis die Artikel geladen sind und merke die Anzahl
-     const results = page.getByRole('article');
-     await expect(results.first()).toBeVisible();
-     const initialCount = await results.count();
+**Fertig, wenn:** der Test grün ist.
 
-     // Vom Seitenanfang aus liegen Skip-Link und Navbar vor dem Suchfeld (ca. 10× Tab).
-     // Klick auf die Überschrift setzt den Startpunkt der Tab-Navigation direkt davor.
-     await page.getByRole('heading', { name: 'News Feed' }).click();
-     await page.keyboard.press('Tab');
+<details><summary>Tipp</summary>
+Die Fehlermeldung hat `role="alert"`. Der Next.js Route Announcer hat ebenfalls `role="alert"`, filtere deshalb mit `getByRole('alert').filter({ hasText: … })`. Die Werte aus der `.env` liest du mit `process.env.TEST_USER_EMAIL`. URL prüfst du mit `toHaveURL()` bzw. `not.toHaveURL()`.
+</details>
 
-     // Prüfe ob Suchfeld fokussiert ist
-     const searchInput = page.getByRole('textbox', {
-       name: 'Search news articles',
-     });
-     await expect(searchInput).toBeFocused();
+### Alles zusammen
+Führe `npx playwright test e2e/03-interaktionen.spec.ts` aus.
 
-     // Tippe Suchbegriff Zeichen für Zeichen (echte Tastenanschläge)
-     await searchInput.pressSequentially('Playwright');
+**Fertig, wenn:** 4 Tests × 3 Browser = `12 passed` angezeigt werden.
 
-     // Enter zum Suchen
-     await page.keyboard.press('Enter');
+## Bonus (optional)
+### Bonus A – Debuggen mit `page.pause()`
+Setze `await page.pause()` in einen deiner Tests und starte ihn mit `--debug`. Der Inspector zeigt dir Schritt für Schritt, was ausgeführt wird. Entferne die Zeile danach wieder. **Fertig, wenn:** du den Test im Inspector durchgeklickt hast.
 
-     // Prüfe ob gefiltert wurde: weniger als alle Items (wartet automatisch)
-     await expect(results).not.toHaveCount(initialCount);
-   });
-   ```
-
-3. **Nach Kategorie filtern (Auswahlliste):**
-
-   ```typescript
-   test('News nach Kategorie filtern', async ({ page }) => {
-     await page.goto('/news/public');
-
-     const articles = page
-       .getByRole('feed', { name: 'News articles' })
-       .getByRole('article');
-
-     // Offline-Feed (RSS_OFFLINE_MODE=true): 20 Artikel, davon 5 in "Business"
-     await expect(articles).toHaveCount(20);
-
-     // Ein <select> hat die Rolle combobox, selectOption() wählt per Label oder Value
-     await page
-       .getByRole('combobox', { name: 'Filter news by category' })
-       .selectOption('Business');
-
-     await expect(page.getByText('5 articles found', { exact: true })).toBeVisible();
-     await expect(articles).toHaveCount(5);
-   });
-   ```
-
-4. **Formular-Interaktionen (Login):**
-
-   ```typescript
-   test('Login Formular Validierung', async ({ page }) => {
-     await page.goto('/auth/signin');
-
-     const emailInput = page.getByLabel('Email');
-     const passwordInput = page.getByLabel('Password');
-     const submitButton = page.getByRole('button', {
-       name: 'Submit sign in form',
-     });
-
-     // Teste leeres Formular
-     await submitButton.click();
-
-     // Erwarte Validierungs-Fehler (falls vorhanden)
-     // oder dass wir noch auf der Login-Seite sind
-     await expect(page).toHaveURL('/auth/signin');
-
-     // Fülle nur Email aus
-     await emailInput.fill('test@example.com');
-     await submitButton.click();
-
-     // Sollte immer noch auf Login-Seite sein (Passwort fehlt)
-     await expect(page).toHaveURL('/auth/signin');
-
-     // Fülle Passwort aus
-     await passwordInput.fill('wrongpassword');
-     await submitButton.click();
-
-     // Prüfe auf Fehlermeldung (per Text, denn auch der Next.js Route Announcer hat role="alert")
-     await expect(
-       page.getByRole('alert').filter({ hasText: 'Invalid email or password' }),
-     ).toBeVisible();
-
-     // Teste mit korrekten Daten des Test-Users aus der .env
-     await emailInput.fill(process.env.TEST_USER_EMAIL ?? 'test@example.com');
-     await passwordInput.fill(process.env.TEST_USER_PASSWORD ?? 'password');
-     await submitButton.click();
-
-     // Sollte weitergeleitet werden
-     await expect(page).not.toHaveURL('/auth/signin');
-   });
-   ```
-
-**Best Practices:**
-
-- ✅ Nutze realistische Benutzer-Flows
-- ✅ Teste Tastatur-Navigation für Accessibility, Fokus prüfst du mit `toBeFocused()`
-- ✅ Validiere Formular-Verhalten vollständig
-- ✅ Berücksichtige verschiedene Eingabe-Methoden (Klick, Tastatur, Auswahlliste)
-- ❌ Keine bedingten Tests wie `if (await button.isVisible())`: ein Test prüft einen festen, bekannten Zustand
-- ❌ Vermeide feste Wartezeiten (`waitForTimeout`, `networkidle`), nutze Auto-Waiting und Web-First Assertions
-
-**Zeit:** 20 Minuten
-
----
-
-> **Tipp:** Nutze `page.pause()` während der Entwicklung, um Interaktionen Schritt für Schritt zu debuggen. Der Playwright Inspector zeigt dir genau, welche Aktionen ausgeführt werden!
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/03-interaktionen ex/04-erster-test` · oder `git switch ex/04-erster-test`.

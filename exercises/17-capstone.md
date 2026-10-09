@@ -1,68 +1,87 @@
-# Übung 17 – Capstone: Der komplette User-Flow (BONUS)
+# Übung 17 – Capstone: der komplette User-Flow
 
-**Ziel:**
-Du führst alles zusammen, was du über die drei Tage gebaut hast, zu **einem** realistischen End-to-End-Flow durch die Feeds-App: Login → Public-News → Private-Feeds → Settings → Logout.
+**Ziel:** Du führst Fixture, Page Object und Assertions aus den Übungen 7–9 zu einem einzigen End-to-End-Test zusammen: Login → Public News → Private Feeds → Settings → Logout.
+**Zeit:** 60 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/17-capstone` · **Datei:** `e2e/17-capstone.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** allem – **kein neuer Stoff**. Du kombinierst die Trägerartefakte: die **`authenticatedPage`-Fixture** (Übung 8, nutzt den API-Login aus Übung 7), die **`NewsPage`-POM** (Übung 9/10) und deine Assertions (Übung 4–6).
-> **Zurückgefallen?** `git switch ex/17-capstone` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/17-capstone ex/18-ai-assisted`. Die komplette Musterlösung liegt in `e2e/17-capstone.spec.ts`.
+> Roter Faden: Baut auf Übung 7 (API-Login), Übung 8 (`authenticatedPage`-Fixture) und Übung 9 (`NewsPage`) auf. Neuer Stoff nur für den Test Lock (Aufgabe 1). · Du gibst weiter: einen Smoke-Test der kritischen User-Journey. · Zurückgefallen? `git switch ex/17-capstone` (enthält die Lösungen aller früheren Übungen, nicht die dieser Übung). Die Lösung dieser Übung steht im Folgebranch: `git diff ex/17-capstone ex/18-ai-assisted`.
 
-**Hinweis:** Diese Übung ist als **optionaler Abschluss** gedacht (~30–40 Min). Wenn die Zeit knapp ist, kann sie übersprungen oder gemeinsam als Live-Demo durchgegangen werden.
+## Vorbereitung
 
-**Aufgaben:**
+- `.env` ist angelegt (Übung 1) und enthält `RSS_OFFLINE_MODE=true`. Nur dann sind die festen Zahlen unten gültig (20 Artikel, 5 in „Business“).
+- Diese Dateien existieren schon auf dem Startbranch, du nutzt sie nur:
+  - `e2e/fixtures/auth.fixture.ts` – exportiert `test` und `expect` mit der Fixture `authenticatedPage` (eingeloggte Page).
+  - `e2e/pages/NewsPage.ts` – Page Object mit `goto()`, `searchNews()`, `clearSearch()`, `filterByCategory()`, `resultsCount`, `newsFeed`.
+- Die Lösung dieser Übung liegt **nicht** auf dem Startbranch. Du legst `e2e/17-capstone.spec.ts` selbst an.
 
-1. **Test-Setup mit Auth-Fixture:**
-   - Importiere `test`/`expect` aus deiner Auth-Fixture (Übung 8) und die `NewsPage`-POM (Übung 9).
+## Aufgaben
 
-   ```typescript
-   import { test, expect } from './fixtures/auth.fixture';
-   import { NewsPage } from './pages/NewsPage';
+### Aufgabe 1 – Gerüst mit Fixture und Test Lock
+Lege `e2e/17-capstone.spec.ts` an. Importiere `test`/`expect` aus der Auth-Fixture (nicht aus `@playwright/test`) und `NewsPage`. Schreibe einen einzigen Test, der `authenticatedPage` nutzt.
 
-   test('kompletter User-Flow', async ({ authenticatedPage: page }) => {
-     // page ist bereits eingeloggt (API-Login aus Übung 7)
-   });
-   ```
+Feeds und Profil hängen am gemeinsamen Test-User auf dem Server. Läuft der Test parallel in mehreren Projekten (z. B. chromium und webkit), verfälschen sich die Zahlen. Ein **Test Lock** sorgt dafür, dass Tests mit gleichem Lock-Namen nie gleichzeitig laufen. Syntax (neu, ab Playwright 1.63):
 
-2. **Public-News: Suche + Kategorie-Filter (NewsPage-POM):**
-   - Mocke vorher `/api/news/public` mit dem Offline-Feed der App (Übung 11), damit die Zahlen unabhängig von Live-RSS-Feeds stimmen: `await page.route('**/api/news/public', (route) => route.fulfill({ path: 'app/api/feed.json' }));`
-   - Navigiere mit `newsPage.goto()` zu `/news/public`.
-   - Prüfe den Ergebniszähler `"{n} articles found"` **und** die Anzahl der Artikel im `role="feed"`.
-   - Führe eine Suche ohne Treffer aus (`0` Artikel), setze zurück, filtere dann nach Kategorie **Business** (→ 5 Artikel).
-
-3. **Private-Feeds (`/news/private`): anlegen → auswählen → löschen:**
-   - Lege über das `AddFeedForm` einen Feed mit **eindeutigem Namen** an (`Name`, gültige `URL`).
-   - Nutze `pressSequentially()` statt `fill()` – die react-aria-Felder setzen ihren State in WebKit sonst nicht zuverlässig (wie in Übung 8).
-   - Prüfe, dass der Feed erscheint (Count-Chip / `Select feed:`-Button), wähle ihn aus und lösche ihn wieder. Prüfe, dass die Anzahl wieder sinkt.
-   - Feeds und Profil liegen serverseitig am Test-User. Läuft der Test parallel in mehreren Projekten (z.B. chromium und webkit), verfälschen sich die Counts gegenseitig. Ein **Test Lock** (ab v1.63) verhindert das – Tests mit gleichem Lock-Namen laufen nie gleichzeitig:
-
-   ```typescript
-   test('kompletter User-Flow', { lock: 'test-user-account' }, async ({ authenticatedPage: page }) => {
-     // …
-   });
-   ```
-
-4. **Settings (`/settings`): Name ändern (cross-component Session-Update):**
-   - Ändere im Profil-Formular den Namen und sende ab.
-   - Prüfe das **Success-Banner** („Profile updated successfully!").
-   - Prüfe, dass sich die **Initialen in der Navbar** aktualisiert haben – das beweist das `update()` der Session über Komponentengrenzen hinweg.
-
-5. **Logout über das Navbar-Dropdown:**
-   - Öffne das User-Menü (`User profile actions menu`), klicke **Log Out**.
-   - Prüfe, dass der Login-Zustand weg ist (der „Sign in"-Link ist wieder sichtbar).
-
-**Ausführen:**
-
-```bash
-npx playwright test 17-capstone.spec.ts --project=chromium
+```typescript
+test('Titel', { lock: 'test-user-account' }, async ({ authenticatedPage: page }) => { /* … */ });
 ```
 
-**Was du zusammenführst:**
+**Fertig, wenn:** `npx playwright test e2e/17-capstone.spec.ts --project=chromium` läuft und der (noch leere) Test grün ist.
 
-- Auth/Fixtures (Übung 7/8) · Page Objects (Übung 9/10) · Assertions (Übung 4–6)
-- Ein durchgehender, realistischer Flow statt isolierter Einzeltests
+<details><summary>Tipp</summary>
+Der Import-Pfad ist relativ zu `e2e/`: `./fixtures/auth.fixture` und `./pages/NewsPage`.
+</details>
 
-**Zeit:** 30–40 Minuten (optional)
+### Aufgabe 2 – Public News: Zähler, Suche, Kategorie
+Mocke vorher `/api/news/public` mit dem Offline-Feed der App (Technik aus Übung 11: `page.route` + `route.fulfill({ path })`, Datei `app/api/feed.json`). Gehe mit `newsPage.goto()` auf `/news/public` und prüfe der Reihe nach:
 
----
+| Schritt | Erwartung |
+|---|---|
+| Nach dem Laden | Zähler `20 articles found`, 20 `article` im Feed (`role="feed"`) |
+| Suche `zzz-kein-treffer-xyz` | 0 Artikel |
+| Suche zurücksetzen (`clearSearch()`) | wieder 20 Artikel |
+| Kategorie **Business** | `5 articles found`, 5 Artikel |
 
-> **Tipp:** Genau so sieht ein wartbarer Smoke-Test in echten Projekten aus: wenige, aussagekräftige Schritte, die die kritische User-Journey abdecken – aufgebaut aus wiederverwendbaren POMs und Fixtures.
+**Fertig, wenn:** Test grün, alle vier Prüfungen stehen im Code. Du wartest nur über Assertions (`toHaveCount`, `toContainText`), nie über `waitForTimeout`.
+
+<details><summary>Tipp</summary>
+`page.route(...)` muss **vor** `newsPage.goto()` stehen. Zähler: `newsPage.resultsCount`, Artikel: `newsPage.newsFeed.getByRole('article')`.
+</details>
+
+### Aufgabe 3 – Private Feeds: anlegen, auswählen, löschen
+Gehe auf `/news/private` (Überschrift „Your Private News Feeds“). Lege über das Formular einen Feed an, wähle ihn aus und lösche ihn wieder. Wichtig:
+
+- Eindeutiger Name pro Lauf (z. B. mit `Date.now()`), gültige URL (z. B. `https://example.com/rss.xml`).
+- Felder: `Name for the new feed`, `URL for the new feed`, Button `Add new feed`.
+- Befülle die Felder mit `pressSequentially()` statt `fill()`: die react-aria-Felder übernehmen den Wert in WebKit sonst nicht zuverlässig (Hintergrund wie in Übung 8).
+- Nach dem Anlegen erscheint der Button `Select feed: <Name>`. Die Liste heißt `Your RSS feeds`; der **Count-Chip** neben der Überschrift „Your Feeds“ zeigt die Anzahl der Einträge.
+- Merke dir die Anzahl **nach** dem Anlegen und prüfe nach dem Löschen (`Delete feed: <Name>`), dass sie um 1 gesunken ist und der `Select feed:`-Button verschwunden ist.
+
+**Fertig, wenn:** Der Test legt den Feed an, wählt ihn aus, löscht ihn und prüft: Feed sichtbar → Feed weg → Anzahl = vorher − 1. Zweimal hintereinander ausgeführt bleibt er grün.
+
+<details><summary>Tipp</summary>
+Einträge zählst du mit `page.getByRole('list', { name: 'Your RSS feeds' }).getByRole('listitem')` und `toHaveCount`. Feste Zahlen gehen nicht, der Test-User kann schon Feeds haben: vergleiche relativ.
+</details>
+
+### Aufgabe 4 – Settings: Name ändern, Session-Update prüfen
+Gehe auf `/settings`. Ändere im Feld `Your name` den Namen auf `Capstone Tester` und sende mit `Submit profile update` ab. Prüfe zwei Dinge: das Success-Banner **und** die Initialen im Avatar der Navbar. Die Initialen stehen im Button `User profile actions menu`; sie beweisen, dass sich die Session über Komponentengrenzen hinweg aktualisiert hat.
+
+**Fertig, wenn:** Der Test sieht `Profile updated successfully!` und der Navbar-Button enthält `CT`.
+
+<details><summary>Tipp</summary>
+Das Feld ist vorbefüllt. Leere es erst (klicken, `ControlOrMeta+a`, `Delete`) und tippe dann mit `pressSequentially()`. Die Initialen sind der erste Buchstabe jedes Namensteils.
+</details>
+
+### Aufgabe 5 – Logout
+Öffne das User-Menü (`User profile actions menu`) und wähle `Log Out` (Rolle `menuitem`).
+
+**Fertig, wenn:** Der Link `Sign in to your account` ist sichtbar. Der gesamte Test läuft mit `npx playwright test e2e/17-capstone.spec.ts --project=chromium` grün durch (dein 1 Test; das Auth-Setup läuft vorher mit und wird zusätzlich gezählt).
+
+## Bonus (optional)
+
+### Bonus A – Zweiter Browser
+Lass den Test mit `--project=webkit` laufen. Überlege, was ohne den Test Lock passieren würde, wenn chromium und webkit gleichzeitig laufen (`--project=chromium --project=webkit`).
+
+### Bonus B – Aufräumen
+Der Namenswechsel in Aufgabe 4 bleibt am Test-User hängen. Setze den Namen am Ende des Tests zurück oder lege dafür eine Fixture mit Cleanup an (Übung 8).
+
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/17-capstone ex/18-ai-assisted` · oder `git switch ex/18-ai-assisted` und `e2e/17-capstone.spec.ts` lesen.

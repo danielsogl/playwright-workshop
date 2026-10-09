@@ -1,123 +1,56 @@
 # Übung 14 – Clock API für zeitbasierte Tests
 
-**Ziel:** Du lernst die Clock API zu nutzen, um zeitabhängige Features zu testen.
+**Ziel:** Du steuerst mit der Clock API die Uhrzeit der Seite und testest Zeitanzeigen, ohne zu warten.
+**Zeit:** 30 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/14-clock` · **Datei:** `e2e/14-clock.spec.ts`
 
-> **🧵 Roter Faden**
-> **Nächster Winkel derselben App:** `/clock` – eigenständige Technik, kein Reuse nötig.
-> **Zurückgefallen?** `git switch ex/14-clock` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/14-clock ex/15-visual-regression`. Vollständig eigenständig. Die Musterlösung liegt in `e2e/14-clock.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf nichts Bestimmtem auf, die Übung ist eigenständig (neue Seite `/clock`) · Du gibst weiter: die Technik, Zeit in Tests zu kontrollieren · Zurückgefallen? `git switch ex/14-clock` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 14). Musterlösung: `git diff ex/14-clock ex/15-visual-regression`.
 
-**Website:** http://localhost:3000/clock (Clock & Timer Testing Page)
+## Vorbereitung
 
-**Aufgaben:**
+Die Seite http://localhost:3000/clock zeigt Uhrzeit, Session-Dauer und Countdown. Sie nutzt `setInterval`, also Timer, die sich selbst wiederholen. Die Uhrzeit hat die Test-ID `current-time` und das Format `HH:MM:SS`.
 
-1. **Clock installieren und Zeit setzen:**
+Die **Clock API** ersetzt `Date` und die Timer (`setTimeout`, `setInterval`) der Seite durch eine Test-Uhr, die du steuerst. Datumsangaben ohne `Z` (`new Date('2024-01-15 14:30:00')`) sind lokale Zeit. Die Config setzt keine `timezoneId`, deshalb zeigt die Seite genau diese Uhrzeit an.
 
-   ```typescript
-   // e2e/clock-api.spec.ts
-   test('Clock API - Zeit setzen', async ({ page }) => {
-     // WICHTIG: Clock VOR page.goto() installieren!
-     await page.clock.install({ time: new Date('2024-01-15 14:30:00') });
+Lege `e2e/14-clock.spec.ts` an und schreibe die Tests selbst.
 
-     await page.goto('/clock');
+## Aufgaben
 
-     // Zeit sollte in der Uhrzeitanzeige erscheinen
-     await expect(page.getByTestId('current-time')).toContainText('14:30');
-   });
-   ```
+### Aufgabe 1 – Clock installieren und Zeit setzen
+Schreibe einen Test, der die Uhr auf den 15.01.2024, 14:30 Uhr setzt und die Seite `/clock` öffnet. Die Uhrzeitanzeige soll diese Zeit zeigen.
+**Fertig, wenn:** der Test grün ist und `current-time` den Text `14:30` enthält.
+<details><summary>Tipp</summary>
 
-2. **Zeit vorspulen mit fastForward:**
+`page.clock.install({ time: … })` muss **vor** `page.goto()` stehen, sonst läuft die Seite schon mit der echten Zeit. Prüfen mit `toContainText`.
+</details>
 
-   ```typescript
-   test('Zeit vorspulen', async ({ page }) => {
-     await page.clock.install({ time: new Date('2024-01-15 10:00:00') });
-     await page.goto('/clock');
+### Aufgabe 2 – Zeit vorspulen
+Starte die Uhr bei 10:00, prüfe `10:00` und spule dann 2 Stunden vor.
+**Fertig, wenn:** der Test grün ist und `current-time` nach dem Vorspulen `12:00` enthält.
+<details><summary>Tipp</summary>
 
-     // Initial: 10:00
-     await expect(page.getByTestId('current-time')).toContainText('10:00');
+`page.clock.fastForward('02:00:00')`. Das Format ist `HH:MM:SS`. Ein String ohne Doppelpunkt zählt als **Sekunden** (`'08'` = 8 Sekunden), eine Zahl als Millisekunden.
+</details>
 
-     // 2 Stunden vorspulen
-     await page.clock.fastForward('02:00:00');
+### Aufgabe 3 – Pausieren und fortsetzen
+Starte bei 15:00, spule 1 Stunde vor (`16:00`), halte die Uhr bei 16:15:00 an und prüfe, dass die Anzeige stehen bleibt. Setze die Uhr fort, spule 30 Minuten vor und prüfe `16:45`.
+**Fertig, wenn:** der Test grün ist, die Anzeige nach dem Pausieren genau `16:15:00` zeigt (`toHaveText`) und am Ende `16:45` enthält.
+<details><summary>Tipp</summary>
 
-     // Sollte jetzt 12:00 anzeigen
-     await expect(page.getByTestId('current-time')).toContainText('12:00');
-   });
-   ```
+`page.clock.pauseAt(new Date(…))` springt zur Zeit und hält die Uhr an. Es springt nur **vorwärts**: Eine Zeit in der Vergangenheit endet mit „Cannot fast-forward to the past". `page.clock.resume()` lässt die Zeit wieder laufen.
+</details>
 
-3. **Zeit pausieren und fortsetzen:**
+Alle drei Tests: `npx playwright test e2e/14-clock.spec.ts --project=chromium` meldet keine `failed`. Das Auth-Setup aus Übung 7 läuft vorher mit und wird zusätzlich gezählt, deine drei Tests sind alle grün.
 
-   ```typescript
-   test('Clock pausieren und fortsetzen', async ({ page }) => {
-     await page.clock.install({ time: new Date('2024-01-15 15:00:00') });
-     await page.goto('/clock');
+## Bonus (optional)
 
-     // Initial Zeit prüfen
-     await expect(page.getByTestId('current-time')).toContainText('15:00');
+### Bonus A – `setFixedTime`
+Starte um 08:00 (`2024-02-02T08:00:00`), öffne `/clock`, prüfe `08:00`. Rufe danach `setFixedTime` mit 09:15:00 auf. Die Anzeige soll `09:15:00` zeigen.
+**Fertig, wenn:** `current-time` den Text `09:15:00` hat. `setFixedTime` ändert nur `Date`, die Timer der Seite laufen weiter und zeichnen die Uhr neu. Rufe es **nach** dem Laden auf: Davor liest die Seite beim Start eine feste Zeit und zeichnet die Uhr nicht neu.
 
-     // Zeit 1 Stunde vorspulen
-     await page.clock.fastForward('01:00:00');
-     await expect(page.getByTestId('current-time')).toContainText('16:00');
+### Bonus B – `runFor`
+Starte um 10:00, öffne `/clock`, pausiere bei 10:05:00 und prüfe `10:05:00`. Rufe dann `runFor(2000)` auf. Erwartet: `10:05:02`.
+**Fertig, wenn:** `current-time` den Text `10:05:02` hat.
+Hintergrund: `fastForward` springt direkt zum Ziel, ein sekündlicher Timer feuert dabei **höchstens einmal**, auch wenn viele Sekunden vergangen sind. `runFor` lässt die Zeit simuliert ablaufen, jeder Timer feuert so oft, wie er fällig wäre. Der Puffer von 5 Minuten bei `pauseAt` ist nötig: Beim ersten Aufruf kompiliert der Dev-Server die Seite, das dauert echte Sekunden, und `pauseAt` springt nie zurück.
 
-     // Bei 16:15 pausieren (pauseAt springt nur vorwärts, nie in die Vergangenheit)
-     await page.clock.pauseAt(new Date('2024-01-15 16:15:00'));
-
-     // Zeit bleibt bei 16:15:00 stehen, die Sekunden laufen nicht weiter
-     await expect(page.getByTestId('current-time')).toHaveText('16:15:00');
-
-     // Zeit fortsetzen und nochmal vorspulen
-     await page.clock.resume();
-     await page.clock.fastForward('00:30:00');
-
-     // Sollte jetzt 16:45 anzeigen
-     await expect(page.getByTestId('current-time')).toContainText('16:45');
-   });
-   ```
-
-4. **Bonus: `setFixedTime` und `runFor`:**
-
-   ```typescript
-   test('setFixedTime springt auf eine feste Zeit', async ({ page }) => {
-     await page.clock.install({ time: new Date('2024-02-02T08:00:00') });
-     await page.goto('/clock');
-     await expect(page.getByTestId('current-time')).toContainText('08:00');
-
-     // Date ist ab jetzt fix, die Timer der Seite laufen normal weiter
-     await page.clock.setFixedTime(new Date('2024-02-02T09:15:00'));
-     await expect(page.getByTestId('current-time')).toHaveText('09:15:00');
-   });
-
-   test('runFor lässt alle Timer der Reihe nach feuern', async ({ page }) => {
-     await page.clock.install({ time: new Date('2024-01-15 10:00:00') });
-     await page.goto('/clock');
-     // Puffer von 5 Minuten: Das erste Laden der Seite (Dev-Server kompiliert) kostet echte Sekunden
-     await page.clock.pauseAt(new Date('2024-01-15 10:05:00'));
-     await expect(page.getByTestId('current-time')).toHaveText('10:05:00');
-
-     await page.clock.runFor(2000);
-     await expect(page.getByTestId('current-time')).toHaveText('10:05:02');
-   });
-   ```
-
-   Hinweis: Setze `setFixedTime` nach dem Laden der Seite. Vor dem Laden fixiert es die Zeit schon beim Hydrieren, die Uhr der Seite zeigt dann die Server-Zeit, weil sich der Wert nie ändert.
-
-**Clock API Methoden:**
-
-- `page.clock.install({ time: new Date() })` - VOR page.goto() und vor allen anderen Clock-Aufrufen!
-- `page.clock.fastForward('HH:MM:SS')` - Zeit vorspulen, fällige Timer feuern höchstens einmal
-- `page.clock.runFor('MM:SS')` - Zeit vorspulen, alle Timer feuern der Reihe nach
-- `page.clock.pauseAt(date)` - Zeit pausieren
-- `page.clock.resume()` - Zeit weiterlaufen lassen
-- `page.clock.setFixedTime(date)` - nur `Date` fixieren, Timer laufen normal weiter
-
-**Best Practices:**
-
-- ✅ Clock VOR Navigation installieren
-- ✅ Web-first Assertions (`toHaveText`, `toContainText`) statt `waitForTimeout`
-- ✅ Lesbare Zeitsprünge: `'02:30:00'` statt `9000000` (Zahl = Millisekunden)
-- ⚠️ Ein String ohne Doppelpunkt zählt als **Sekunden**: `fastForward('08')` = 8 Sekunden
-- ⚠️ `new Date('2024-01-15 14:30:00')` ist lokale Zeit, `new Date('2024-01-15T14:30:00Z')` ist UTC
-
-**Zeit:** 30 Minuten
-
----
-
-> **Tipp:** Die `/clock`-Seite nutzt `setInterval` für Uhrzeit, Session-Dauer und Countdown – perfekt für Clock API Tests. Mit `page.evaluate(() => Date.now())` liest du beim Debugging die aktuelle Mock-Zeit aus.
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/14-clock ex/15-visual-regression` · oder `git switch ex/15-visual-regression`.

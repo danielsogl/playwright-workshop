@@ -1,286 +1,67 @@
 # Übung 8 – Playwright Fixtures
 
-**Ziel:**
-Du lernst die Grundlagen von Playwright Fixtures kennen – ein System für wiederverwendbare Test-Setups. Fixtures machen Tests sauberer und wartbarer.
+**Ziel:** Du baust drei Fixtures: Testdaten, einen Seiten-Helfer und einen eingeloggten Page-Zugang. Damit werden deine Tests kürzer und wiederverwendbar.
+**Zeit:** 35 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/08-fixtures` · **Dateien:** `e2e/08-fixtures.spec.ts`, `e2e/fixtures/auth.fixture.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 7 – der API-Login wird zur wiederverwendbaren Fixture gekapselt.
-> **Du gibst weiter:** eine **`authenticatedPage`-Fixture** (`e2e/fixtures/auth.fixture.ts`), die der Capstone (Übung 17) importiert. Die Daten-Fixture übst du weiter auf `/fixtures-demo`.
-> **Zurückgefallen?** `git switch ex/08-fixtures` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/08-fixtures ex/09-page-objects`. Das komplette Fixture-Snippet steht im Handout und in `e2e/fixtures/auth.fixture.ts`. Die Musterlösung liegt in `e2e/08-fixtures.spec.ts` und `e2e/fixtures/auth.fixture.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf: Übung 7, den Login (CSRF, dann `credentials`) kapselst du jetzt als Fixture. · Du gibst weiter: `e2e/fixtures/auth.fixture.ts`, die der Capstone (Übung 17) importiert. · Zurückgefallen? → `git switch ex/08-fixtures` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/08-fixtures ex/09-page-objects`. Die Dateien dort heißen genau wie in dieser Übung.
 
-## Was sind Fixtures?
+## Was ist eine Fixture?
 
-Fixtures sind **wiederverwendbare Bausteine** für Tests, die:
+Eine **Fixture** liefert einem Test fertig vorbereitete Dinge: `page` und `request` kennst du bereits. Eigene Fixtures definierst du mit `base.extend({ … })`. Der Test bekommt sie, indem er ihren Namen im Parameter nennt. In der Fixture-Funktion läuft alles **vor** `await use(wert)` als Vorbereitung. `use(wert)` reicht den Wert an den Test weiter. Was **nach** `use()` steht, läuft nach dem Test als Aufräumen, auch wenn er scheitert.
 
-- Test-Daten vorbereiten
-- Setup und Cleanup automatisieren
-- Zwischen Tests geteilt werden können
+```typescript
+const test = base.extend<{ meinWert: string }>({
+  meinWert: async ({}, use) => { await use('Hallo'); },
+});
+```
 
 ## Aufgaben
 
-### 1. **Vorbereitung**
-
-1. **Starte die Anwendung und erkunde die Demo-Seite:**
-   ```bash
-   npm run dev
-   ```
-
-   - Öffne `http://localhost:3000/fixtures-demo`
-   - Die Seite startet mit 2 Standard-Benutzern
-   - Teste das Hinzufügen von Benutzern
-
-### 2. **Einfache Test-Data Fixture**
-
-1. **Erstelle `e2e/fixtures-basic.spec.ts`:**
-
-   ```typescript
-   import { test as base, expect } from '@playwright/test';
-
-   // Definiere eine einfache Fixture für Test-Daten
-   const test = base.extend<{
-     testUser: { name: string; email: string; role: string };
-   }>({
-     testUser: async ({}, use) => {
-       // Setup: Erstelle eindeutige Test-Daten
-       const userData = {
-         name: `Test User ${Date.now()}`,
-         email: `test-${Date.now()}@example.com`,
-         role: 'user',
-       };
-
-       console.log('✅ Test user data prepared:', userData.name);
-
-       // Fixture bereitstellen
-       await use(userData);
-
-       // Teardown (hier optional)
-       console.log('🧹 Test user data cleanup completed');
-     },
-   });
-
-   test('fügt einen Benutzer mit Fixture-Daten hinzu', async ({
-     page,
-     testUser,
-   }) => {
-     await page.goto('/fixtures-demo');
-
-     // Verwende die Fixture-Daten mit semantischen Locators.
-     // pressSequentially() tippt echte Tastenanschläge – nötig, weil fill()
-     // den State dieser React-Aria-Felder in WebKit nicht zuverlässig setzt.
-     await page.getByLabel('Name').pressSequentially(testUser.name);
-     await page.getByLabel('Email').pressSequentially(testUser.email);
-     await page.getByLabel('Role').selectOption(testUser.role);
-
-     await page.getByRole('button', { name: /add user/i }).click();
-
-     // Prüfe, dass der Benutzer hinzugefügt wurde
-     await expect(page.getByText(testUser.name)).toBeVisible();
-     await expect(page.getByText(/3 users/)).toBeVisible();
-   });
-   ```
-
-### 3. **Page Helper Fixture**
-
-1. **Erweitere den Test mit einer Page-Helper Fixture:**
-
-   ```typescript
-   // Erweitere das Interface
-   interface FixturesDemo {
-     testUser: { name: string; email: string; role: string };
-     userPage: {
-       addUser: (user: {
-         name: string;
-         email: string;
-         role: string;
-       }) => Promise<void>;
-       getUserCount: () => Promise<number>;
-     };
-   }
-
-   const test = base.extend<FixturesDemo>({
-     testUser: async ({}, use) => {
-       const userData = {
-         name: `Test User ${Date.now()}`,
-         email: `test-${Date.now()}@example.com`,
-         role: 'moderator',
-       };
-       await use(userData);
-     },
-
-     userPage: async ({ page }, use) => {
-       // Navigate to the fixtures demo page
-       await page.goto('/fixtures-demo');
-
-       const userPage = {
-         addUser: async (user) => {
-           await page.getByLabel('Name').pressSequentially(user.name);
-           await page.getByLabel('Email').pressSequentially(user.email);
-           await page.getByLabel('Role').selectOption(user.role);
-           await page.getByRole('button', { name: /add user/i }).click();
-
-           // Warte bis der User hinzugefügt wurde
-           await expect(page.getByText(user.name)).toBeVisible();
-         },
-
-         getUserCount: async () => {
-           const countText = await page.getByText(/\d+ users/).textContent();
-           return parseInt(countText?.match(/(\d+)/)?.[1] || '0');
-         },
-       };
-
-       await use(userPage);
-     },
-   });
-
-   test('verwendet Page Helper Fixture', async ({ testUser, userPage }) => {
-     const initialCount = await userPage.getUserCount();
-
-     await userPage.addUser(testUser);
-
-     const finalCount = await userPage.getUserCount();
-     expect(finalCount).toBe(initialCount + 1);
-   });
-
-   test('fügt mehrere Benutzer hinzu', async ({ userPage }) => {
-     const user1 = {
-       name: 'Alice Test',
-       email: 'alice@test.com',
-       role: 'admin',
-     };
-     const user2 = { name: 'Bob Test', email: 'bob@test.com', role: 'user' };
-
-     const initialCount = await userPage.getUserCount();
-
-     await userPage.addUser(user1);
-     await userPage.addUser(user2);
-
-     const finalCount = await userPage.getUserCount();
-     expect(finalCount).toBe(initialCount + 2);
-   });
-   ```
-
-### 4. **Auth-Fixture `authenticatedPage`**
-
-Jetzt kapselst du den API-Login aus Übung 7 in eine Fixture. Jeder Test, der sie anfordert, bekommt eine bereits eingeloggte `page`.
-
-1. **Erstelle `e2e/fixtures/auth.fixture.ts`:**
-
-   ```typescript
-   import { test as base, expect, type Page } from '@playwright/test';
-
-   export const test = base.extend<{ authenticatedPage: Page }>({
-     authenticatedPage: async ({ page }, use) => {
-       // page.request teilt den Cookie-Jar mit der Page (siehe Übung 7/13)
-       const api = page.request;
-
-       const csrf = await api.get('/api/auth/csrf');
-       const { csrfToken } = await csrf.json();
-
-       const login = await api.post('/api/auth/callback/credentials', {
-         form: {
-           email: process.env.TEST_USER_EMAIL || 'test@example.com',
-           password: process.env.TEST_USER_PASSWORD || 'password',
-           csrfToken,
-           callbackUrl: '/',
-           json: 'true',
-         },
-       });
-       await expect(login).toBeOK();
-
-       await use(page);
-     },
-   });
-
-   export { expect };
-   ```
-
-2. **Nutze die Fixture in `e2e/private-news-fixture.spec.ts`:**
-
-   ```typescript
-   import { test, expect } from './fixtures/auth.fixture';
-
-   test('eingeloggt auf private News', async ({ authenticatedPage: page }) => {
-     await page.goto('/news/private');
-
-     await expect(
-       page.getByRole('heading', { name: 'Your Private News Feeds' }),
-     ).toBeVisible();
-   });
-   ```
-
-3. **Überlege:** Wann ist diese Fixture besser als der `storageState` aus Übung 7? (Tipp: Tests, die einen frischen Login oder einen anderen User brauchen.)
-
-Referenz: `e2e/fixtures/auth.fixture.ts`. Der Capstone (Übung 17) importiert genau diese Datei.
-
-### 5. **Bonus: Option-Fixture**
-
-1. **`defaultRole` als Option-Fixture** definieren und in `testUser` verwenden. Der Default gilt für alle Tests, `test.use()` überschreibt ihn:
-
-   ```typescript
-   const testWithOption = base.extend<{
-     defaultRole: string;
-     testUser: { name: string; email: string; role: string };
-   }>({
-     defaultRole: ['user', { option: true }],
-     testUser: async ({ defaultRole }, use) => {
-       await use({
-         name: `Option User ${Date.now()}`,
-         email: `option-${Date.now()}@example.com`,
-         role: defaultRole,
-       });
-     },
-   });
-
-   testWithOption.describe('als Admin', () => {
-     testWithOption.use({ defaultRole: 'admin' });
-
-     testWithOption('überschreibt die Rolle per test.use()', async ({ testUser }) => {
-       expect(testUser.role).toBe('admin');
-     });
-   });
-   ```
-
-### 6. **Tests ausführen**
-
-1. **Führe die Tests aus:**
-
-   ```bash
-   npx playwright test fixtures-basic.spec.ts private-news-fixture.spec.ts --reporter=line
-   ```
-
-2. **Beobachte die Console-Ausgaben:**
-   - Setup und Teardown Nachrichten
-   - Eindeutige Test-Daten für jeden Test
-
-## Key Takeaways
-
-### ✅ Fixtures sind gut für:
-
-- **Test-Daten**: Eindeutige Daten für jeden Test
-- **Page Helpers**: Wiederverwendbare Seitenoperationen
-- **Setup/Cleanup**: Automatische Vor- und Nachbereitung
-
-### 💡 Einfache Regeln:
-
-1. **Eine Fixture, eine Verantwortung**
-2. **Klare Namen**: `testUser` statt `data1`
-3. **TypeScript nutzen** für bessere Entwicklererfahrung
-4. **Semantische Locators**: `getByLabel()`, `getByRole()` zuerst, `getByTestId()` als Ausweg
-
-### 🎯 Locator Best Practices:
-
-- **✅ Zuerst user-facing**: `page.getByLabel('Name')`, `page.getByRole('button')`
-- **✅ Test-IDs** (`getByTestId`) nur, wenn es keinen sinnvollen user-facing Locator gibt
-- **❌ CSS-/XPath-Selektoren** auf Implementierungsdetails
-- **Warum?** Tests werden aus Benutzersicht geschrieben und sind robuster
-
-### 🔄 Fixture Lebensdauer:
-
-- **test-scoped**: Neue Instanz für jeden Test (Standard)
-- **worker-scoped**: Eine Instanz pro Worker (für teure Setups)
-
-**Zeit:** 30-35 Minuten
-
----
-
-> **💡 Tipp:** Beginne mit einfachen Test-Daten Fixtures. Erweitere sie schrittweise zu Helper-Funktionen, wenn du Wiederholung in deinen Tests siehst!
+### Aufgabe 1 – Demo-Seite erkunden
+Starte die App (`npm run dev`) und öffne `/fixtures-demo`. Füge von Hand einen Benutzer hinzu.
+**Fertig, wenn:** du die zwei Start-Benutzer (John Doe, Jane Smith), den Zähler „2 users“ und danach „3 users“ gesehen hast. Der Button heißt „Add User“, im Bearbeiten-Modus „Update User“.
+
+### Aufgabe 2 – Fixture `testUser`
+Lege `e2e/08-fixtures.spec.ts` an. Definiere eine Fixture `testUser`, die pro Test eindeutige Daten (Name, E-Mail, Rolle `user`) liefert. Schreibe einen Test, der damit auf `/fixtures-demo` einen Benutzer hinzufügt. Logge in der Fixture eine Meldung vor und eine nach `use()`.
+**Fertig, wenn:** der Test grün ist, „3 users“ sichtbar ist und die Konsole beide Meldungen zeigt (`--reporter=line`).
+<details><summary>Tipp</summary>
+Eindeutig wird der Name mit `Date.now()`. Felder: `getByLabel('Name')`, `getByLabel('Email')`, `getByLabel('Role')` mit `selectOption(...)`. Die Textfelder füllst du mit `pressSequentially(...)`, weil `fill()` den State dieser React-Aria-Felder in WebKit nicht zuverlässig setzt. Der Button: `getByRole('button', { name: /add user|update user/i })`, die Regex deckt beide Beschriftungen ab. Die Fixture-Typen gibst du an `base.extend<{ testUser: { name: string; email: string; role: string } }>` mit.
+</details>
+
+### Aufgabe 3 – Fixture `userPage` als Seiten-Helfer
+Erweitere um eine Fixture `userPage`, die `/fixtures-demo` öffnet und zwei Funktionen liefert: `addUser(user)` und `getUserCount()`. Schreibe zwei Tests: Mit `testUser` steigt der Zähler um 1, beim Hinzufügen von zwei festen Benutzern um 2.
+**Fertig, wenn:** beide Tests grün sind. Sie vergleichen den Zähler vor und nach dem Hinzufügen und fest kodieren die Startzahl nicht.
+<details><summary>Tipp</summary>
+Die Fixture bekommt `page` und baut ein Objekt mit den beiden Funktionen, das sie per `use(...)` weitergibt. `addUser` wiederholt die Schritte aus Aufgabe 2 und wartet am Ende, bis der Name sichtbar ist. `getUserCount` liest den Text `getByText(/\d+ users/)` und gibt die Zahl zurück. Warte vorher, bis der Zähler nicht mehr „0 users“ zeigt: `toContainText(/[1-9]\d* users/)`. Lege dafür ein zweites `base.extend<…>` an (z. B. `testWithHelpers`), das `testUser` und `userPage` enthält.
+</details>
+
+### Aufgabe 4 – Auth-Fixture `authenticatedPage`
+Lege `e2e/fixtures/auth.fixture.ts` an. Sie exportiert ein `test` mit der Fixture `authenticatedPage`, einer `page`, die bereits eingeloggt ist. Der Login läuft per API wie im Bonus A aus Übung 7: `GET /api/auth/csrf`, dann `POST /api/auth/callback/credentials` mit `email`, `password`, `csrfToken`, `callbackUrl: '/'` und `json: 'true'`. Exportiere außerdem `expect`. Nutze die Fixture in `e2e/08-fixtures.spec.ts`, um `/news/private` zu öffnen.
+**Fertig, wenn:** der Test grün ist und die Überschrift „Your Private News Feeds“ sichtbar ist, ohne dass er das Login-Formular benutzt.
+<details><summary>Tipp</summary>
+Sende die Requests über `page.request`, nicht über die separate Fixture `request`: `page.request` teilt den Cookie-Speicher mit der Seite, so landet der Session-Cookie direkt im Browser. Prüfe die Antwort mit `await expect(login).toBeOK()`. Importiere in der Spec `test as authTest` aus `./fixtures/auth.fixture`, damit sich beide `test`-Objekte nicht in die Quere kommen. Der Capstone (Übung 17) importiert genau diese Datei.
+</details>
+
+**Alles fertig, wenn:** `npx playwright test e2e/08-fixtures.spec.ts --project=chromium --reporter=line` grün ist.
+
+**Überlege:** Wann ist die Fixture besser als der `storageState` aus Übung 7? (Tipp: Tests, die einen frischen Login oder einen anderen User brauchen.)
+
+## Bonus (optional)
+
+### Bonus A – Option-Fixture
+Definiere `defaultRole` als **Option-Fixture** (Standardwert `user`) und nutze sie in `testUser`. Ein `describe` überschreibt den Wert für seine Tests per `test.use({ defaultRole: 'admin' })`.
+**Fertig, wenn:** ein Test ohne Override die Rolle `user` sieht und ein Test im `describe` die Rolle `admin`.
+<details><summary>Tipp</summary>
+Eine Option-Fixture schreibst du als Array: `[wert, { option: true }]`.
+</details>
+
+### Bonus B – Fixture-Lebensdauer
+Fixtures sind standardmäßig **test-scoped**: Für jeden Test entsteht eine neue Instanz. Mit `{ scope: 'worker' }` entsteht sie nur einmal pro Worker, sinnvoll für teure Vorbereitung.
+**Fertig, wenn:** du in einer Fixture mit `scope: 'worker'` eine Meldung loggst und siehst, dass sie bei mehreren Tests im selben Worker nur einmal erscheint (`--workers=1`).
+
+## Faustregeln
+- Eine Fixture, eine Verantwortung. Klare Namen: `testUser`, nicht `data1`.
+- Locators zuerst nutzerorientiert (`getByLabel`, `getByRole`), `getByTestId` nur als Ausweg.
+
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/08-fixtures ex/09-page-objects` · oder `git switch ex/09-page-objects`.

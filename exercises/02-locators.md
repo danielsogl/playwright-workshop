@@ -1,76 +1,53 @@
 # Übung 2 – Locators kennenlernen
 
-**Ziel:**
-Du wendest verschiedene Locator-Strategien praktisch an. Fokus: Elemente **finden** – noch keine Assertions, nur finden und loggen.
+**Ziel:** Du findest Elemente mit verschiedenen Locator-Strategien und gibst die Ergebnisse im Log aus.
+**Zeit:** 15 Min. (Pflicht) · Bonus: +5 Min. · **Startbranch:** `git switch ex/02-locators` · **Datei:** `e2e/02-locators.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 1 – lauffähiges Setup.
-> **Du gibst weiter:** dein Locator-Vokabular für die Seiten `/` und `/news/public`, die Tag 1 tragen (eingelöst in Übung 4).
-> **Zurückgefallen?** `git switch ex/02-locators` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/02-locators ex/03-interaktionen`. Kein Vorarbeit nötig – die App läuft über den `webServer` automatisch, nur `npm install`. Die Musterlösung liegt in `e2e/02-locators.spec.ts` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf: Übung 1, lauffähiges Setup mit `.env` (`RSS_OFFLINE_MODE=true`). · Du gibst weiter: dein Locator-Vokabular für `/` und `/news/public`, das du in Übung 4 mit Assertions einsetzt. · Zurückgefallen? → `git switch ex/02-locators` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/02-locators ex/03-interaktionen`. Keine Vorarbeit nötig, die App startet über den `webServer` automatisch.
 
-**Aufgaben:**
+Ein **Locator** beschreibt, wie Playwright ein Element auf der Seite findet. In dieser Übung nutzt du noch keine Assertions, sondern nur `console.log`. Die Soll-Werte siehst du in der Konsole.
 
-1. **Neuer Test:** Erstelle `e2e/locators-practice.spec.ts` und übe auf der Startseite verschiedene Locator-Typen.
+## Aufgaben
 
-   ```typescript
-   import { test } from '@playwright/test';
+### Aufgabe 1 – Startseite: drei Locators
+Lege `e2e/02-locators.spec.ts` an und öffne darin `/`. Finde und logge:
+- den Link „View Public News“ per Rolle und Name,
+- den Text „Welcome to“ per sichtbarem Text,
+- den Theme-Umschalter („Switch to dark mode“ bzw. „Switch to light mode“) per Label.
 
-   test('verschiedene Locator-Strategien verwenden', async ({ page }) => {
-     await page.goto('/');
+**Fertig, wenn:** der Test grün ist und die Konsole für Link und Theme-Umschalter `1` bzw. `true` zeigt.
 
-     // Nach Rolle + Name
-     const publicNewsLink = page.getByRole('link', { name: /view public news/i });
-     console.log('Public-News-Link gefunden:', await publicNewsLink.count());
+<details><summary>Tipp</summary>
+`getByRole('link', { name: /view public news/i })`, `getByText('Welcome to')`, `getByLabel(/switch to (dark|light) mode/i)`. Mit `await locator.count()` bekommst du die Trefferzahl, mit `await locator.isVisible()` einen Boolean.
+Den Theme-Umschalter gibt es zweimal (Desktop und Mobile). `.visible()` am Locator behält nur die sichtbaren Elemente, danach bleibt genau einer übrig.
+</details>
 
-     // Nach sichtbarem Text
-     const welcome = page.getByText('Welcome to');
-     console.log('Welcome-Text sichtbar:', await welcome.isVisible());
+### Aufgabe 2 – News-Seite: vier Locators
+Öffne `/news/public` in einem zweiten Test. Finde und logge:
+- die Überschrift „News Feed“ per Text,
+- das Suchfeld über seinen Platzhalter („Search news…“),
+- alle Artikel per Rolle `article` (logge die Anzahl),
+- die Überschrift des ersten Artikels per Verkettung.
 
-     // Theme-Umschalter über sein Label ("Switch to dark mode" / "Switch to light mode")
-     // Den Toggle gibt es für Desktop und Mobile, visible() nimmt nur den sichtbaren
-     const themeToggle = page.getByLabel(/switch to (dark|light) mode/i).visible();
-     console.log('Theme-Toggle gefunden:', await themeToggle.count());
-   });
-   ```
+**Fertig, wenn:** die Konsole `20` als Artikelanzahl und den Titel des ersten Artikels zeigt. Die 20 gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true`).
 
-2. **Auf der News-Seite weitere Locators üben:**
+<details><summary>Tipp</summary>
+Verkettung heißt: ein Locator startet am anderen, z. B. `articles.first().getByRole('heading')`. Den Titel liest du mit `textContent()`. Der Feed lädt kurz: Warte vor `count()` mit `await articles.first().waitFor()`, denn `count()` wartet nicht von selbst.
+</details>
 
-   ```typescript
-   test('Locators auf der News-Seite', async ({ page }) => {
-     await page.goto('/news/public');
+### Aufgabe 3 – Locator-Playground
+Starte `npx playwright test --ui`, öffne die Seite im Tab „Locator“ und nutze „Pick locator“. Klicke einige Elemente an und vergleiche die Vorschläge mit deinen eigenen Locators.
 
-     // Überschrift über den sichtbaren Text
-     const heading = page.getByText('News Feed');
-     console.log('Überschrift sichtbar:', await heading.isVisible());
+**Fertig, wenn:** du für den Link „View Public News“ den vorgeschlagenen Locator gesehen hast.
 
-     // Suchfeld über den Platzhalter
-     const searchBox = page.getByPlaceholder('Search news');
-     console.log('Suchfeld gefunden:', await searchBox.count());
+### Aufgabe 4 – Locator benennen
+Gib dem Link-Locator mit `describe()` einen sprechenden Namen (z. B. „Link zu den Public News“) und logge den Locator. Die Beschreibung ersetzt ab Playwright 1.57 die Selektor-Darstellung in Log, Trace und Report.
 
-     // Alle Artikel über die Rolle
-     const articles = page.getByRole('article');
-     console.log('Anzahl Artikel:', await articles.count());
+**Fertig, wenn:** die Konsole „Link zu den Public News“ ausgibt statt des Selektors.
 
-     // Verkettung: Überschrift des ersten Artikels
-     const firstTitle = articles.first().getByRole('heading');
-     console.log('Erster Titel:', await firstTitle.textContent());
-   });
-   ```
+## Bonus (optional)
+### Bonus A – Filter
+Nimm das erste Wort des ersten Artikels als Suchtext und zähle mit `articles.filter({ hasText: … })`, wie viele Artikel es enthalten. **Fertig, wenn:** die Konsole eine Zahl größer 0 zeigt.
 
-3. **Experiment:** Öffne den UI-Mode (`npx playwright test --ui`) und nutze den **Locator-Playground** („Pick locator"), um live zu sehen, welche Locators Playwright vorschlägt.
-
-4. **Locator benennen:** Gib einem Locator mit `describe()` einen sprechenden Namen und logge ihn. Die Beschreibung ersetzt ab v1.57 die Selektor-Darstellung in Log, Trace und Report.
-
-   ```typescript
-   const namedLink = publicNewsLink.describe('Link zu den Public News');
-   console.log('Benannter Locator:', namedLink); // Link zu den Public News
-   ```
-
-**Best Practices:**
-
-- ✅ Bevorzuge User-facing Locators (`getByRole`, `getByText`, `getByLabel`, `getByPlaceholder`)
-- ❌ Vermeide CSS-/XPath-Selektoren
-
-**Hinweis:** Noch KEINE Assertions – nur Elemente finden und loggen. Assertions kommen in Übung 4.
-
-**Zeit:** 15 Minuten
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/02-locators ex/03-interaktionen` · oder `git switch ex/03-interaktionen`.

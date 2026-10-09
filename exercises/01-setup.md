@@ -1,90 +1,71 @@
 # Übung 1 – Projekt-Setup
 
-**Ziel:**
-Du richtest ein Playwright-Testprojekt für die Next.js Feed Demo App ein mit automatischem Server-Start und Umgebungsvariablen.
+**Ziel:** Du richtest das Playwright-Projekt für die Feed Demo App ein und bringst einen ersten Smoke-Test zum Laufen.
+**Zeit:** 15 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/01-setup` · **Datei:** `e2e/01-setup.spec.ts`
 
-> **🧵 Roter Faden**
-> **Das baust du:** Über die drei Tage entsteht Schritt für Schritt eine professionelle E2E-Test-Suite für genau diese **Feeds**-App – jede Übung fügt ein Stück hinzu oder verbessert Bestehendes (Login → Public-News/Suche → Private-Feeds → Settings → Logout). Ein Projekt, ein wachsender `e2e/`-Ordner, ein `e2e/pages/`-Ordner.
-> **Du gibst weiter:** ein lauffähiges Setup (`.env`, `webServer`), auf dem alle folgenden Übungen aufbauen.
+> Roter Faden: Baut auf: nichts, das hier ist der Grundstein. · Du gibst weiter: ein lauffähiges Setup (`.env`, `webServer`, Smoke-Test), auf dem alle folgenden Übungen aufbauen. · Zurückgefallen? → `git switch ex/01-setup` (Startpunkt). Die Musterlösung zeigt `git diff ex/01-setup ex/02-locators`.
 
-**Aufgaben:**
+Ein **Smoke-Test** ist ein minimaler Test, der nur prüft, ob die App grundsätzlich läuft.
 
-1. **Projektverzeichnis vorbereiten:**
+## Aufgaben
 
-   ```bash
-   cd playwright-workshop
-   npm install
-   npx playwright install  # Chromium, Firefox und WebKit
-   ```
+### Aufgabe 1 – Abhängigkeiten installieren
+Wechsle in den Ordner `playwright-workshop` und installiere die Pakete und die Browser (Chromium, Firefox, WebKit).
 
-2. **Umgebungsvariablen einrichten:**
-   - Kopiere die Beispiel-Datei nach `.env`:
+**Fertig, wenn:** `npm install` und `npx playwright install` ohne Fehler durchgelaufen sind.
 
-   ```bash
-   cp .env.example .env
-   ```
+<details><summary>Tipp</summary>
+Beide Befehle brauchen ein paar Minuten, der Browser-Download ist am größten. Lies in der Zwischenzeit Aufgabe 3.
+</details>
 
-   Sie enthält bereits Test-Zugangsdaten (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`), den Offline-Modus für die News-Feeds (`RSS_OFFLINE_MODE=true`) und ein `AUTH_SECRET`.
+### Aufgabe 2 – `.env` anlegen und die App starten
+Kopiere `.env.example` nach `.env`. Die Datei enthält die Test-Zugangsdaten, ein `AUTH_SECRET` und `RSS_OFFLINE_MODE=true`.
 
-3. **Playwright-Konfiguration lesen:**
-   - Öffne `playwright.config.ts`. Der `webServer`-Block ist bereits aktiv:
+Der **Offline-Feed** liefert immer dieselben 20 statische Artikel statt Live-RSS-Daten. Alle festen Zahlen im Workshop (z. B. 20 Artikel) gelten nur damit. Lass die Variable auf `true`.
 
-   ```typescript
-   webServer: {
-     command: 'npm run dev',
-     url: 'http://localhost:3000',
-     reuseExistingServer: !process.env.CI,
-     timeout: 120 * 1000,
-   },
-   ```
+Starte die App einmal selbst mit `npm run dev` und öffne `http://localhost:3000` im Browser.
 
-   - Beantworte für dich: Welcher Befehl startet die App? Woran erkennt Playwright, dass sie bereit ist? Was passiert, wenn die App schon läuft?
+**Fertig, wenn:** `.env` existiert und du im Browser die Startseite mit „Welcome to the Playwright Demo App“ siehst. Stoppe den Server danach mit `Ctrl+C`.
 
-   <details><summary>Antworten</summary>
+### Aufgabe 3 – Playwright-Konfiguration lesen
+Öffne `playwright.config.ts` und suche den Block `webServer`. Beantworte für dich:
+1. Welcher Befehl startet die App?
+2. Woran erkennt Playwright, dass sie bereit ist?
+3. Was passiert, wenn die App schon läuft?
 
-   `command` startet die App, Playwright wartet, bis `url` antwortet (höchstens `timeout` ms). Lokal wird ein bereits laufender Server wiederverwendet, auf CI (`CI` gesetzt) startet Playwright immer einen frischen.
+**Fertig, wenn:** du alle drei Fragen beantworten kannst.
 
-   </details>
+<details><summary>Antworten</summary>
+`command` startet die App. Playwright wartet, bis `url` antwortet (höchstens `timeout` ms). Lokal wird ein bereits laufender Server wiederverwendet (`reuseExistingServer`), auf CI (Variable `CI` gesetzt) startet Playwright immer einen frischen.
+</details>
 
-4. **Ersten Smoke-Test erstellen:**
-   - Erstelle `e2e/setup.spec.ts`:
+### Aufgabe 4 – Smoke-Test schreiben
+Lege `e2e/01-setup.spec.ts` an und schreibe einen Test „App ist erreichbar“: Öffne die Startseite, prüfe den Seitentitel (er enthält „Playwright Demo“) und prüfe, dass die Hauptnavigation sichtbar ist.
 
-   ```typescript
-   import { test, expect } from '@playwright/test';
+**Fertig, wenn:** die Datei einen Test mit zwei `expect`-Aufrufen enthält.
 
-   test('App ist erreichbar', async ({ page }) => {
-     await page.goto('/');
+<details><summary>Tipp</summary>
+Importiere `test` und `expect` aus `@playwright/test`. Mit `page.goto('/')` öffnest du die Startseite, `baseURL` steht schon in der Config. Nutze `toHaveTitle()` mit einem RegExp. Für die Navigation: `getByRole('navigation')`. Es gibt mehrere, hänge `.first()` an.
+</details>
 
-     // Prüfe ob die App lädt
-     await expect(page).toHaveTitle(/Playwright Demo/);
+### Aufgabe 5 – Test ausführen und Report ansehen
+Führe nur deine Datei aus und öffne danach den HTML-Report.
 
-     // Prüfe ob Hauptnavigation vorhanden ist
-     await expect(page.getByRole('navigation').first()).toBeVisible();
-   });
-   ```
+**Fertig, wenn:** die Ausgabe `3 passed` zeigt (ein Test, drei Browser) und sich der Report im Browser öffnet.
 
-5. **Test ausführen und verifizieren:**
+<details><summary>Tipp</summary>
+`npx playwright test 01-setup` startet den Server automatisch. `npx playwright show-report` öffnet den Report.
+</details>
 
-   ```bash
-   npx playwright test setup.spec.ts
-   # Server startet automatisch!
-   ```
+## Bonus (optional)
+### Bonus A – Mehrere Seiten prüfen
+Schreibe einen zweiten Test, der `/`, `/news/public` und `/auth/signin` in einer Schleife aufruft. Prüfe pro Seite Titel und URL. **Fertig, wenn:** der Test grün ist.
 
-6. **Playwright UI kennenlernen:**
-   ```bash
-   npx playwright test --ui
-   # Erkunde die interaktive Test-Oberfläche
-   ```
+### Bonus B – Umgebungsvariablen geprüft
+Prüfe in einem dritten Test, dass `process.env.TEST_USER_EMAIL` und `process.env.TEST_USER_PASSWORD` gesetzt sind (`toBeDefined()`). Die Config lädt die `.env` per `dotenv`. **Fertig, wenn:** der Test grün ist.
 
-**Projekt-Struktur nach Setup:**
+### Bonus C – UI-Mode
+Starte `npx playwright test --ui` und klicke dich durch die Oberfläche. **Fertig, wenn:** du einen Testlauf im UI-Mode gesehen hast.
 
-```
-playwright-workshop/
-├── .env                   # Umgebungsvariablen
-├── playwright.config.ts   # Hauptkonfiguration
-├── e2e/
-│   └── setup.spec.ts     # Erster Test
-└── playwright/.auth/     # (wird später für Auth genutzt)
-```
-
-**Zeit:** 10 Minuten
+## Wenn du nicht weiterkommst
+Musterlösung ansehen: `git diff ex/01-setup ex/02-locators` · oder `git switch ex/02-locators`.

@@ -1,202 +1,89 @@
 # Übung 9 – Page Object Model (POM)
 
-**Ziel:**
-Du refaktorierst die Tests aus Übung 5 mit dem Page Object Pattern. Dies verbessert die Wartbarkeit und Wiederverwendbarkeit deines Test-Codes.
+**Ziel:** Du kapselst Locators und Aktionen der Seiten News, Startseite und Login in Page Objects und schreibst Tests, die nur noch diese Klassen benutzen.
+**Zeit:** 35 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/09-page-objects` · **Datei:** `e2e/09-page-objects.spec.ts`
 
-> **🧵 Roter Faden**
-> **Baut auf:** Übung 5 – du refactorierst genau deinen Suchtest ins Page Object Model.
-> **Du gibst weiter:** die POMs **`NewsPage`**, **`HomePage`** und **`LoginPage`** – das Rückgrat für die Übungen 10, 11, 15, 16 und den Capstone (Übung 17).
-> **Zurückgefallen?** `git switch ex/09-page-objects` = Startpunkt dieser Übung, mit den Musterlösungen aller vorherigen Übungen. Die Musterlösung dieser Übung zeigt `git diff ex/09-page-objects ex/10-erweiterte-page-objects`. Die fertigen POMs liegen in `e2e/pages/`. Die Musterlösung liegt in `e2e/09-page-objects.spec.ts` und `e2e/pages/` (der Dateiname weicht von dem in der Aufgabe ab).
+> Roter Faden: Baut auf Übung 5 (Suchtest auf `/news/public`) und Übung 7 (Login-Seite) · Du gibst weiter: `NewsPage`, `HomePage`, `LoginPage` in `e2e/pages/` für die Übungen 10, 16 und 17 · Zurückgefallen? `git switch ex/09-page-objects`. Der Startbranch enthält die Lösungen aller früheren Übungen, aber nicht die Lösung dieser Übung. Musterlösung: `git diff ex/09-page-objects ex/10-erweiterte-page-objects`.
 
-**Warum Page Objects?**
+Ein **Page Object** ist eine Klasse, die eine Seite beschreibt: Locators und Aktionen stehen an einer Stelle, der Test liest sich wie eine Beschreibung des Nutzerverhaltens. Ändert sich die UI, passt du eine Klasse an statt vieler Tests.
 
-- Trennung von Test-Logik und UI-Details
-- Zentrale Stelle für Selektoren
-- Wiederverwendbare Aktionen
-- Einfachere Wartung bei UI-Änderungen
+## Vorbereitung
 
-**Aufgaben:**
+- App läuft mit `RSS_OFFLINE_MODE=true` (steht in `.env.example`, Übung 1 legt `.env` an). Die Übung läuft gegen den Offline-Feed mit 20 Artikeln, der Test bleibt dadurch stabil.
+- Alle Locators kennst du schon aus den Übungen 5 und 7. Übernimm sie von dort.
 
-1. **Einfaches Page Object erstellen:**
+## Aufgaben
 
-   ```typescript
-   // e2e/pages/NewsPage.ts
-   import { Page, expect } from '@playwright/test';
-
-   export class NewsPage {
-     // Speichere Page-Referenz
-     constructor(private page: Page) {}
-
-     // Definiere Locators als Getter (aufgelöst wird erst bei der Aktion)
-     get searchInput() {
-       return this.page.getByRole('textbox', { name: 'Search news articles' });
-     }
-
-     get newsList() {
-       return this.page.getByRole('feed', { name: 'News articles' });
-     }
-
-     get newsItems() {
-       return this.newsList.getByRole('article');
-     }
-
-     get newsTitles() {
-       return this.newsItems.getByRole('heading', { level: 2 });
-     }
-
-     get loadingIndicator() {
-       return this.page.getByRole('status', { name: /loading/i });
-     }
-
-     // Navigations-Methode
-     async goto() {
-       await this.page.goto('/news/public');
-       // Web-First-Assertion statt waitForLoadState('networkidle')
-       await expect(this.newsItems.first()).toBeVisible();
-     }
-
-     // Aktions-Methoden: die Suche filtert clientseitig, kein Warten nötig
-     async searchNews(searchTerm: string) {
-       await this.searchInput.fill(searchTerm);
-     }
-
-     async clearSearch() {
-       await this.searchInput.clear();
-     }
-
-     // Helper-Methoden für Werte, die du im Test weiterverwenden willst.
-     // Für Assertions lieber die Locators mit toHaveCount/toHaveText nutzen.
-     async getNewsCount(): Promise<number> {
-       return await this.newsItems.count();
-     }
-
-     async getFirstNewsTitle(): Promise<string | null> {
-       return await this.newsTitles.first().textContent();
-     }
-   }
-   ```
-
-2. **Tests mit Page Object refaktorieren:**
-
-   ```typescript
-   // e2e/news-with-pom.spec.ts
-   import { test, expect } from '@playwright/test';
-   import { NewsPage } from './pages/NewsPage';
-
-   test.describe('News Feed mit Page Objects', () => {
-     let newsPage: NewsPage;
-
-     test.beforeEach(async ({ page }) => {
-       newsPage = new NewsPage(page);
-       await newsPage.goto();
-     });
-
-     test('zeigt alle News initial', async () => {
-       // Verwende Page Object Locators für Assertions
-       await expect(newsPage.newsItems.first()).toBeVisible();
-
-       // Helper-Methode, wenn du den Wert weiterverwenden willst
-       expect(await newsPage.getNewsCount()).toBeGreaterThan(0);
-     });
-
-     test('kann nach News suchen', async () => {
-       // Initiale Anzahl merken
-       const initialCount = await newsPage.getNewsCount();
-
-       // Suche durchführen
-       await newsPage.searchNews('Technology');
-
-       // Ergebnisse prüfen: toHaveCount wartet, bis die Liste gefiltert ist
-       await expect(newsPage.newsItems).not.toHaveCount(initialCount);
-
-       // Suche zurücksetzen
-       await newsPage.clearSearch();
-       await expect(newsPage.newsItems).toHaveCount(initialCount);
-     });
-
-     test('findet spezifischen Artikel', async () => {
-       await newsPage.searchNews('Cybersecurity');
-
-       await expect(newsPage.newsItems).toHaveCount(1);
-       await expect(newsPage.newsTitles.first()).toContainText('Cybersecurity');
-     });
-   });
-   ```
-
-3. **Page Object erweitern (optional):**
-
-   ```typescript
-   export class NewsPage {
-     // ... vorherige Definitionen ...
-
-     // Erweiterte Funktionalität
-     get categoryFilter() {
-       return this.page.getByLabel('Filter news by category');
-     }
-
-     async filterByCategory(category: string) {
-       await this.categoryFilter.selectOption(category);
-     }
-
-     // Assertions im Page Object (optional, Konvention im Team festlegen)
-     async expectNewsLoaded() {
-       await expect(this.loadingIndicator).toBeHidden();
-       await expect(this.newsList).toBeVisible();
-     }
-
-     async expectNewsCount(count: number) {
-       await expect(this.newsItems).toHaveCount(count);
-     }
-   }
-   ```
-
-4. **Best Practices für Page Objects:**
-   - ✅ Ein Page Object pro Seite/Komponente
-   - ✅ Klare, beschreibende Methoden-Namen
-   - ✅ Locators als Getter oder `readonly` Properties
-   - ✅ Locators für Assertions freigeben (`toHaveCount`, `toHaveText`) statt `count()`/`textContent()` zu prüfen
-   - ✅ Methoden, die navigieren, können das nächste Page Object zurückgeben
-   - ✅ Assertions: Konvention im Team festlegen (die offizielle Doku nutzt `expect` im Page Object, etwa zum Warten auf die Zielseite)
-   - ❌ Kein `waitForLoadState('networkidle')` oder `waitForTimeout()`, Bereitschaft per `expect(...)` prüfen
-   - ❌ Keine test-spezifische Logik
-   - ❌ Nicht zu viele Details verstecken
-
-5. **Bonus: `NewsPage` als Fixture** (Muster aus Übung 8): Der Test bekommt das Page Object fertig geöffnet.
-
-   ```typescript
-   const testWithPages = test.extend<{ newsPage: NewsPage }>({
-     newsPage: async ({ page }, use) => {
-       const newsPage = new NewsPage(page);
-       await newsPage.goto();
-       await newsPage.waitForNewsItems();
-       await use(newsPage);
-     },
-   });
-
-   testWithPages('News-Suche mit newsPage-Fixture', async ({ newsPage }) => {
-     const firstTitle = (await newsPage.getFirstNewsTitle())?.trim() ?? '';
-     await newsPage.searchNews(firstTitle);
-     await expect(newsPage.newsTitles.first()).toHaveText(firstTitle);
-   });
-   ```
-
-6. **Tests ausführen:**
-   ```bash
-   npx playwright test news-with-pom.spec.ts
-   ```
-
-**Vergleich Vorher/Nachher:**
+### Aufgabe 1 – `NewsPage`
+Lege `e2e/pages/NewsPage.ts` an. Skelett:
 
 ```typescript
-// Ohne POM:
-await page.getByRole('textbox', { name: 'Search news articles' }).fill('Tech');
-
-// Mit POM:
-await newsPage.searchNews('Tech');
+export class NewsPage {
+  constructor(private page: Page) {}
+  // TODO: Locators (Getter oder readonly): searchInput, newsFeed, newsItems, newsTitles
+  // TODO: goto() · waitForNewsItems() · searchNews(term) · clearSearch()
+  // TODO: getNewsCount() · getFirstNewsTitle()
+}
 ```
 
-**Zeit:** 25 Minuten
+`goto()` öffnet `/news/public` und ruft `waitForNewsItems()` auf. `waitForNewsItems()` prüft per Web-First-Assertion, dass der erste Artikel sichtbar ist.
 
----
+**Fertig, wenn:** die Klasse ohne TypeScript-Fehler kompiliert und `newsPage.goto()` danach mindestens einen Artikel zeigt.
 
-> **Tipp:** Beginne mit einfachen Page Objects und erweitere sie schrittweise. Nicht alles muss von Anfang an perfekt abstrahiert sein!
+<details><summary>Tipp</summary>
+
+`getByRole('textbox', { name: 'Search news articles' })`, `getByRole('feed', { name: 'News articles' })`, darin `getByRole('article')` und `getByRole('heading', { level: 2 })`. Für `expect` importierst du es aus `@playwright/test`. Kein `waitForLoadState('networkidle')`, die Suche filtert clientseitig.
+</details>
+
+### Aufgabe 2 – `HomePage`
+Lege `e2e/pages/HomePage.ts` an. Sie braucht Locators für die Hauptnavigation (`navigation`, Name „Main navigation“), den Link „View Public News“, den Link „Sign in to your account“ und das Logo („Go to homepage“). Methoden: `goto()` (öffnet `/`), `navigateToNews()`, `navigateToSignIn()`, `navigateTo(label)` und `navigateToHome()`.
+
+`navigateToNews()` und `navigateToSignIn()` klicken den Link, warten auf die neue URL und geben das nächste Page Object (`NewsPage` bzw. `LoginPage`) zurück.
+
+**Fertig, wenn:** `(await new HomePage(page).goto()).navigateToNews()` ein `NewsPage`-Objekt liefert und die URL `/news/public` ist.
+
+<details><summary>Tipp</summary>
+
+Die Links der Hauptnavigation haben den Namen `Navigate to <Label>`, z. B. `Navigate to Clock`. Rückgabetyp: `Promise<NewsPage>`. `await this.page.waitForURL('/news/public')` wartet auf den Seitenwechsel.
+</details>
+
+### Aufgabe 3 – `LoginPage`
+Lege `e2e/pages/LoginPage.ts` an. Locators: E-Mail-Feld („Email address for sign in“), Passwort-Feld („Password for sign in“), Button „Submit sign in form“ und die Fehlermeldung (Text „Invalid email or password“). Methoden: `goto()` (öffnet `/auth/signin`), `login(email, password)` und `submitEmptyForm()`.
+
+**Fertig, wenn:** `login('wrong@example.com', 'wrongpassword')` die Fehlermeldung sichtbar macht und die URL auf `/auth/signin` bleibt.
+
+<details><summary>Tipp</summary>
+
+`login()` füllt beide Felder und klickt den Button. Es prüft das Ergebnis nicht, das macht der Test mit `expect`. Weil `goto()` `this` zurückgeben kann (`Promise<this>`), geht `await new LoginPage(page).goto()`.
+</details>
+
+### Aufgabe 4 – Tests schreiben
+Lege `e2e/09-page-objects.spec.ts` an. Der Test benutzt keine direkten Selektoren, nur Page Objects. Drei Tests:
+
+1. **News-Suche:** über `HomePage` zu News navigieren, Anzahl merken, Titel des ersten Artikels suchen, danach zeigt der erste Titel genau diesen Text. Suche leeren: Anzahl wie vorher (20).
+2. **Login mit falschen Daten:** Fehlermeldung sichtbar, URL enthält `auth/signin`.
+3. **Navigation:** `navigateTo('Clock')` führt zu `/clock`, `navigateToHome()` zurück zu `/`.
+
+**Fertig, wenn:** `npx playwright test e2e/09-page-objects.spec.ts` drei grüne Tests meldet (das Auth-Setup aus Übung 7 läuft vorher mit und wird zusätzlich gezählt) und in der Spec-Datei kein `page.getByRole(...)` mehr vorkommt.
+
+<details><summary>Tipp</summary>
+
+Locators nutzt du direkt in Assertions: `expect(newsPage.newsItems).toHaveCount(20)` wartet automatisch. `getNewsCount()` brauchst du nur, um einen Wert zu merken. Suchbegriff aus den Daten holen (`getFirstNewsTitle()`) statt hartzucodieren.
+</details>
+
+## Bonus (optional)
+
+### Bonus A – Kompletter Nutzerfluss
+Ein vierter Test: Startseite, zu News, Suche ohne Treffer (`zzz-kein-treffer`) zeigt 0 Artikel und den Text „0 articles found“, dann über die Navigation zur Login-Seite und falscher Login. Ergänze dafür in `NewsPage` einen Locator `resultsCount` (Text `/\d+ articles found/`).
+
+**Fertig, wenn:** der Test grün ist.
+
+### Bonus B – `NewsPage` als Fixture
+Stelle `newsPage` wie in Übung 8 per `test.extend` bereit: Der Test bekommt das Page Object fertig geöffnet (`goto()` und `waitForNewsItems()` in der Fixture). Schreibe darauf einen Suchtest.
+
+**Fertig, wenn:** der Test `newsPage` als Parameter bekommt und grün ist.
+
+## Wenn du nicht weiterkommst
+
+Musterlösung ansehen: `git diff ex/09-page-objects ex/10-erweiterte-page-objects` oder `git switch ex/10-erweiterte-page-objects`.
+Alles fertig, wenn `npx playwright test e2e/09-page-objects.spec.ts` grün ist.
