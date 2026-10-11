@@ -58,3 +58,4 @@ Rufe nach dem Login in Aufgabe 2 `page.goto('/')` auf und prüfe, dass der Butto
 ## Wenn du nicht weiterkommst
 
 Musterlösung ansehen: `git diff ex/13-api-testing ex/14-clock` oder `git switch ex/14-clock`.
+Alles fertig, wenn `npx playwright test e2e/13-api-testing.spec.ts` grün ist.

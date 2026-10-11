@@ -25,17 +25,17 @@
 
 ### Aufgabe 2 – Responsive Navigation
 Lege `e2e/16-mobile.spec.ts` an und schreibe zwei Tests:
-- **Desktop** (Viewport 1280 × 720): Die `navigation` „Main navigation" (`exact: true`) ist sichtbar, der Button „Open menu" ist nicht sichtbar.
-- **Mobile** (Viewport 375 × 667): Die Desktop-Navigation ist unsichtbar, „Open menu" ist sichtbar. Nach dem Klick erscheint die `navigation` „Mobile navigation" mit dem Link „Navigate to Public News" und der Button „Close menu".
+- **Desktop** (Viewport 1280 × 720): Die `navigation` „Main navigation“ (`exact: true`) ist sichtbar, der Button „Open menu“ ist nicht sichtbar.
+- **Mobile** (Viewport 375 × 667): Die Desktop-Navigation ist unsichtbar, „Open menu“ ist sichtbar. Nach dem Klick erscheint die `navigation` „Mobile navigation“ mit dem Link „Navigate to Public News“ und der Button „Close menu“.
 
 **Fertig, wenn:** beide Tests mit `npx playwright test e2e/16-mobile.spec.ts` in allen fünf Projekten (chromium, firefox, webkit, Mobile Chrome, Mobile Safari) grün sind.
 <details><summary>Tipp</summary>
 
-`getByRole('navigation', { name: 'Main navigation', exact: true })` unterscheidet sie von „Main navigation bar". Unsichtbare Elemente prüfst du mit `toBeHidden()`.
+`getByRole('navigation', { name: 'Main navigation', exact: true })` unterscheidet sie von „Main navigation bar“. Unsichtbare Elemente prüfst du mit `toBeHidden()`.
 </details>
 
 ### Aufgabe 3 – News-Grid auf drei Viewports
-Prüfe die Spaltenzahl des Grids (`feed`, Name „News articles") auf `/news/public`: 3 Spalten bei 1280 px, 2 bei 768 px, 1 bei 375 px. Mocke den Feed wie in Übung 11 (`route.fulfill({ path: 'app/api/feed.json' })`) und warte auf den ersten `article`.
+Prüfe die Spaltenzahl des Grids (`feed`, Name „News articles“) auf `/news/public`: 3 Spalten bei 1280 px, 2 bei 768 px, 1 bei 375 px. Mocke den Feed wie in Übung 11 (`route.fulfill({ path: 'app/api/feed.json' })`) und warte auf den ersten `article`.
 **Fertig, wenn:** drei Tests grün sind, in allen fünf Projekten.
 <details><summary>Tipp</summary>
 
@@ -49,7 +49,7 @@ Starte nacheinander `npx playwright test e2e/16-mobile.spec.ts --project=chromiu
 ## Bonus (optional)
 
 ### Bonus A – Touch-Gesten
-Ergänze in derselben Datei einen `describe`-Block mit `test.use({ …devices['iPhone 13'] })`. Tippe in einem Test mit `tap()` auf „Open menu", dann auf den Link „Navigate to Public News". Erwartet: URL `/news/public`, erster `article` sichtbar.
+Ergänze in derselben Datei einen `describe`-Block mit `test.use({ …devices['iPhone 13'] })`. Tippe in einem Test mit `tap()` auf „Open menu“, dann auf den Link „Navigate to Public News“. Erwartet: URL `/news/public`, erster `article` sichtbar.
 **Fertig, wenn:** der Test grün ist. `tap()` braucht `hasTouch: true`, das setzt die Geräte-Emulation.
 <details><summary>Tipp</summary>
 
@@ -65,7 +65,7 @@ Seit Playwright 1.64 liefert `window.screen` in der Emulation die Größe aus de
 
 ### Bonus C – `isMobile`
 Die Test-Variable `isMobile` ist in Mobile-Projekten wahr. Schreibe einen Test, der mit `test.skip(!isMobile, …)` nur dort läuft und das Handy von Hoch- auf Querformat (667 × 375) dreht: Die Artikelzahl bleibt gleich. (`isMobile` wird in Firefox nicht unterstützt.)
-**Fertig, wenn:** der Test in `Mobile Chrome` grün ist und in den Desktop-Projekten als „skipped" erscheint.
+**Fertig, wenn:** der Test in `Mobile Chrome` grün ist und in den Desktop-Projekten als „skipped“ erscheint.
 
 ## Wenn du nicht weiterkommst
 Musterlösung ansehen: `git diff ex/16-mobile ex/16b-ci-lokal` · oder `git switch ex/16b-ci-lokal`.

@@ -36,7 +36,7 @@ Starte bei 15:00, spule 1 Stunde vor (`16:00`), halte die Uhr bei 16:15:00 an un
 **Fertig, wenn:** der Test grün ist, die Anzeige nach dem Pausieren genau `16:15:00` zeigt (`toHaveText`) und am Ende `16:45` enthält.
 <details><summary>Tipp</summary>
 
-`page.clock.pauseAt(new Date(…))` springt zur Zeit und hält die Uhr an. Es springt nur **vorwärts**: Eine Zeit in der Vergangenheit endet mit „Cannot fast-forward to the past". `page.clock.resume()` lässt die Zeit wieder laufen.
+`page.clock.pauseAt(new Date(…))` springt zur Zeit und hält die Uhr an. Es springt nur **vorwärts**: Eine Zeit in der Vergangenheit endet mit „Cannot fast-forward to the past“. `page.clock.resume()` lässt die Zeit wieder laufen.
 </details>
 
 Alle drei Tests: `npx playwright test e2e/14-clock.spec.ts --project=chromium` meldet keine `failed`. Das Auth-Setup aus Übung 7 läuft vorher mit und wird zusätzlich gezählt, deine drei Tests sind alle grün.

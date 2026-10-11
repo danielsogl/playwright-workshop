@@ -37,7 +37,7 @@ Lege `e2e/06b-file-download.spec.ts` an. Öffne `/file-download`, warte auf das 
 Das Event startest du **vor** dem Klick: `const downloadPromise = page.waitForEvent('download')`, danach klicken und `await downloadPromise`. `download.suggestedFilename()` ist synchron. `download.failure()` prüfst du vor `path()` oder `saveAs()`, denn die werfen bei einem fehlgeschlagenen Download.
 </details>
 
-## Zusatz (noch optional)
+## Bonus (optional)
 
 ### Bonus A – `beforeunload`
 Klicke „Add BeforeUnload“ und prüfe, dass der Status „Beforeunload event listener added“ zeigt. Löse dann den Dialog aus, indem du die Seite schließt. Prüfe, dass ein Dialog vom Typ `beforeunload` kam.

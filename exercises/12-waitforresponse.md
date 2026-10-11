@@ -40,3 +40,4 @@ Mocke den Feed mit Status 500 und prüfe per `waitForResponse`, dass `response.s
 ## Wenn du nicht weiterkommst
 
 Musterlösung ansehen: `git diff ex/12-waitforresponse ex/13-api-testing` oder `git switch ex/13-api-testing`.
+Alles fertig, wenn `npx playwright test e2e/12-waitforresponse.spec.ts` grün ist.

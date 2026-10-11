@@ -1,9 +1,9 @@
 # Übung 16b – CI lokal simulieren
 
 **Ziel:** Du lässt deine Tests wie in einer Pipeline laufen und baust ein lokales Quality Gate, ohne GitHub oder CI-Server.
-**Zeit:** 45 Min. (Pflicht: Aufgaben 1 bis 5) · Bonus: +25 Min. (Aufgaben 6 und 7, Vorlage) · **Startbranch:** `git switch ex/16b-ci-lokal` · **Datei:** Config und `package.json`, Hilfsdatei `e2e/flaky.spec.ts`
+**Zeit:** 45 Min. (Pflicht: Aufgaben 1 bis 5) · Bonus: +25 Min. (Bonus A bis C) · **Startbranch:** `git switch ex/16b-ci-lokal` · **Datei:** Config und `package.json`, Hilfsdatei `e2e/flaky.spec.ts`
 
-> Roter Faden: Baut auf deiner Suite aus den Übungen 1 bis 16 auf. Aufgaben 1 bis 5 laufen mit `e2e/example.spec.ts` (und für Aufgabe 4 zusätzlich `e2e/01-setup.spec.ts`), Aufgaben 6 und 7 brauchen ein Git-Repo mit Branch `main` und deine Page Objects aus Übung 9 · Du gibst weiter: ein `ci`-Script, das du in jedes CI-System übernehmen kannst (Vorlagen in `exercises/ci-templates/`) · Zurückgefallen? `git switch ex/16b-ci-lokal` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 16b). Musterlösung: `git diff ex/16b-ci-lokal ex/17-capstone`.
+> Roter Faden: Baut auf deiner Suite aus den Übungen 1 bis 16 auf. Aufgaben 1 bis 5 laufen mit `e2e/example.spec.ts` (und für Aufgabe 4 zusätzlich `e2e/01-setup.spec.ts`), Bonus A und B brauchen ein Git-Repo mit Branch `main` und deine Page Objects aus Übung 9 · Du gibst weiter: ein `ci`-Script, das du in jedes CI-System übernehmen kannst (Vorlagen in `exercises/ci-templates/`) · Zurückgefallen? `git switch ex/16b-ci-lokal` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 16b). Musterlösung: `git diff ex/16b-ci-lokal ex/17-capstone`.
 
 ## Vorbereitung: Begriffe
 - **Pipeline:** Eine Shell, die auf einem Server deine Befehle ausführt. Sie setzt die Umgebungsvariable `CI`.
@@ -78,8 +78,8 @@ Wechsle in einen Branch (`git switch -c feature/suche`), ändere ein Page Object
 `--only-changed` kennt nur die Imports der Tests, nicht die App. Es taugt für schnelles Feedback im Branch, ein vollständiger Lauf gehört auf `main`.
 </details>
 
-### Bonus B – Lokaler Quality Gate beim Push
-Lege ein lokales Bare-Repo als „Server" an (`git init --bare ../ci-remote.git`, `git remote add ci ../ci-remote.git`). Schreibe `.githooks/pre-push`, der `npx playwright test --project=chromium --only-changed=main` ausführt, mache ihn ausführbar (`chmod +x`, unter Windows nicht nötig) und aktiviere ihn mit `git config core.hooksPath .githooks`.
+### Bonus B – Lokales Quality Gate beim Push
+Lege ein lokales Bare-Repo als „Server“ an (`git init --bare ../ci-remote.git`, `git remote add ci ../ci-remote.git`). Schreibe `.githooks/pre-push`, der `npx playwright test --project=chromium --only-changed=main` ausführt, mache ihn ausführbar (`chmod +x`, unter Windows nicht nötig) und aktiviere ihn mit `git config core.hooksPath .githooks`.
 **Fertig, wenn:** `git push ci feature/suche` mit einem absichtlich roten Test abgebrochen wird und nach der Reparatur durchgeht.
 <details><summary>Erwartete Antwort: Reine App-Änderung?</summary>
 

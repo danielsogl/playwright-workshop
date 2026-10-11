@@ -67,7 +67,7 @@ Setze diese Testseite und lade eine Datei hoch, die nur im Speicher existiert.
 `getByLabel('Datei').setInputFiles(...)` nimmt ein Objekt mit `name`, `mimeType` und `buffer` (`Buffer.from('Text')`). Eine Datei auf der Platte brauchst du nicht.
 </details>
 
-## Zusatz (noch optional)
+## Bonus (optional)
 
 ### Bonus A – Verschachtelte iframes
 Baue eine Seite mit einem iframe, der einen weiteren iframe mit einem Button „Deep Button“ enthält. Prüfe, dass der Button sichtbar ist.
