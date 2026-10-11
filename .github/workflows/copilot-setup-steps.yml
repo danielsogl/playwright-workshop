@@ -31,4 +31,5 @@ jobs:
 
     # Customize this step as needed
     - name: Build application
-      run: npm run build
+      # auth.config.ts verlangt im Production-Build ein Secret
+      run: AUTH_SECRET=$(openssl rand -base64 32) npm run build
