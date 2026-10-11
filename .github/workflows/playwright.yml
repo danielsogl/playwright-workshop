@@ -12,7 +12,7 @@ jobs:
     outputs:
       branches: ${{ steps.list.outputs.branches }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
     - id: list
@@ -38,10 +38,10 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.checkpoints.outputs.branches) }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         ref: ${{ matrix.branch }}
-    - uses: actions/setup-node@v6
+    - uses: actions/setup-node@v7
       with:
         node-version: lts/*
     - name: Install dependencies
@@ -60,7 +60,7 @@ jobs:
       run: |
         AUTH_SECRET=$(openssl rand -base64 32) \
           npx playwright test --project=chromium --grep-invert "Visual Regression Testing"
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@v7
       if: ${{ !cancelled() }}
       with:
         name: playwright-report-${{ strategy.job-index }}
