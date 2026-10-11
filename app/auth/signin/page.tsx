@@ -7,6 +7,7 @@ import { TextField, Label, Input, Button, Card, Separator } from '@heroui/react'
 import NextLink from 'next/link';
 import clsx from 'clsx';
 import { LogIn } from 'lucide-react';
+import { useIsSSR } from '@react-aria/ssr';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -14,6 +15,9 @@ export default function SignInPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  // Vor der Hydration würde ein Klick das Formular nativ abschicken (ohne signIn).
+  // Deaktiviert wartet Playwright beim Klick automatisch, bis der Button bereit ist.
+  const isSSR = useIsSSR();
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -77,7 +81,7 @@ export default function SignInPage() {
             <TextField
               isRequired
               aria-label="Email address for sign in"
-              isDisabled={isLoading}
+              isDisabled={isLoading || isSSR}
               type="email"
               value={email}
               name="email"
@@ -93,7 +97,7 @@ export default function SignInPage() {
             <TextField
               isRequired
               aria-label="Password for sign in"
-              isDisabled={isLoading}
+              isDisabled={isLoading || isSSR}
               type="password"
               value={password}
               name="password"
@@ -109,7 +113,7 @@ export default function SignInPage() {
               className="w-full font-semibold"
               variant="primary"
               size="lg"
-              isDisabled={isLoading}
+              isDisabled={isLoading || isSSR}
               isPending={isLoading}
               type="submit"
               aria-label={
