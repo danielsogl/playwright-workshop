@@ -54,10 +54,10 @@ Du musst das YAML nicht von Hand schreiben: `await expect(locator).toMatchAriaSn
 ## Bonus (optional)
 
 ### Bonus A – Dark und Light Mode
-Die Feed App startet per `next-themes` immer dunkel. `test.use({ colorScheme: 'dark' })` setzt nur `prefers-color-scheme` und schaltet das Theme **nicht** um. Prüfe die Kontraste (`color-contrast`, Tag `wcag2aa`) in beiden Modi.
+Die Feed App folgt per `next-themes` dem System-Theme. Playwright emuliert standardmäßig `colorScheme: 'light'`, mit `test.use({ colorScheme: 'dark' })` startet die App dunkel. Prüfe die Kontraste (`color-contrast`, Tag `wcag2aa`) in beiden Modi.
 **Fertig, wenn:** der Dark-Mode-Test grün ist. Der Light-Mode-Test hat einen bekannten Befund: `.text-muted` hat nur 4.43:1 statt 4.5:1. Markiere ihn mit `test.fail()`, dann gilt „Test scheitert“ als Erfolg, und er schlägt Alarm, sobald die App den Kontrast behebt.
 <details><summary>Tipp</summary>
-Light Mode erzwingst du vor dem Laden: `page.addInitScript(() => localStorage.setItem('theme', 'light'))`, dann `goto`. Prüfe vorher, dass `html` die Klasse `dark` nicht hat. Warte vor dem Scan, bis keine CSS-Übergänge mehr laufen (`document.getAnimations().length` ist 0), sonst misst Axe Zwischenfarben. `test.fail(true, 'Grund')` setzt du am Anfang des Tests.
+Lege je Modus einen `describe`-Block mit `test.use({ colorScheme: 'dark' })` bzw. `'light'` an. Prüfe vor dem Scan, dass `html` die Klasse `dark` bzw. `light` hat. Warte vor dem Scan, bis keine CSS-Übergänge mehr laufen (`document.getAnimations().length` ist 0), sonst misst Axe Zwischenfarben. `test.fail(true, 'Grund')` setzt du am Anfang des Tests.
 </details>
 
 ### Bonus B – Mobile und Tastatur

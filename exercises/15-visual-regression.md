@@ -29,11 +29,11 @@ Die Navbar zeigt „Loading…“, bis die Session geladen ist. Warte vor dem Ho
 </details>
 
 ### Aufgabe 2 – Dark Mode und Light Mode
-Die App startet im Dark Mode. Mache einen Screenshot (`dark-mode.png`), schalte auf Light Mode um und mache einen zweiten (`light-mode.png`).
-**Fertig, wenn:** der Test grün ist und zwei verschiedene Baselines (dark, light) existieren. Vor dem zweiten Screenshot hat `html` die Klasse `light`.
+Die App folgt dem System-Theme, Playwright emuliert standardmäßig Light Mode. Mache einen Screenshot (`light-mode.png`), schalte auf Dark Mode um und mache einen zweiten (`dark-mode.png`).
+**Fertig, wenn:** der Test grün ist und zwei verschiedene Baselines (light, dark) existieren. Vor dem zweiten Screenshot hat `html` die Klasse `dark`.
 <details><summary>Tipp</summary>
 
-Der Schalter heißt nach dem Laden „Switch to light mode“ (`getByRole('switch', …)`). Warte mit `expect(page.locator('html')).toHaveClass(/light/)`, bevor du fotografierst.
+Der Schalter heißt nach dem Laden „Switch to dark mode“ (`getByRole('switch', …)`). Warte mit `expect(page.locator('html')).toHaveClass(/dark/)`, bevor du fotografierst.
 </details>
 
 ### Aufgabe 3 – Dynamischen Inhalt maskieren

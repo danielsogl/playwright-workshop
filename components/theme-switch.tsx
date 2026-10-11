@@ -9,9 +9,10 @@ import { SunFilledIcon, MoonFilledIcon } from '@/components/icons';
 
 // HeroUI v3 removed the useSwitch hook; a theme toggle is just a button.
 export const ThemeSwitch: FC = () => {
-  const { theme, setTheme } = useTheme();
+  // resolvedTheme: with defaultTheme 'system', theme is just 'system'.
+  const { resolvedTheme, setTheme } = useTheme();
   const isSSR = useIsSSR();
-  const isLight = theme === 'light' || isSSR;
+  const isLight = resolvedTheme === 'light' || isSSR;
 
   return (
     <button
