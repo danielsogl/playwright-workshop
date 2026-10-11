@@ -3,7 +3,7 @@
 **Ziel:** Du führst Fixture, Page Object und Assertions aus den Übungen 7–9 zu einem einzigen End-to-End-Test zusammen: Login → Public News → Private Feeds → Settings → Logout.
 **Zeit:** 60 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/17-capstone` · **Datei:** `e2e/17-capstone.spec.ts`
 
-> Roter Faden: Baut auf Übung 7 (API-Login), Übung 8 (`authenticatedPage`-Fixture) und Übung 9 (`NewsPage`) auf. Neuer Stoff nur für den Test Lock (Aufgabe 1). · Du gibst weiter: einen Smoke-Test der kritischen User-Journey. · Zurückgefallen? `git switch ex/17-capstone` (enthält die Lösungen aller früheren Übungen, nicht die dieser Übung). Die Lösung dieser Übung steht im Folgebranch: `git diff ex/17-capstone ex/18-ai-assisted`.
+> Roter Faden: Baut auf Übung 7 (API-Login), Übung 8 (`authenticatedPage`-Fixture) und Übung 9 (`NewsPage`) auf. · Du gibst weiter: einen Smoke-Test der kritischen User-Journey. · Zurückgefallen? `git switch ex/17-capstone` (enthält die Lösungen aller früheren Übungen, nicht die dieser Übung). Die Lösung dieser Übung steht im Folgebranch: `git diff ex/17-capstone ex/18-ai-assisted`.
 
 ## Vorbereitung
 
@@ -18,7 +18,7 @@
 ### Aufgabe 1 – Gerüst mit Fixture und Test Lock
 Lege `e2e/17-capstone.spec.ts` an. Importiere `test`/`expect` aus der Auth-Fixture (nicht aus `@playwright/test`) und `NewsPage`. Schreibe einen einzigen Test, der `authenticatedPage` nutzt.
 
-Feeds und Profil hängen am gemeinsamen Test-User auf dem Server. Läuft der Test parallel in mehreren Projekten (z. B. chromium und webkit), verfälschen sich die Zahlen. Ein **Test Lock** sorgt dafür, dass Tests mit gleichem Lock-Namen nie gleichzeitig laufen. Syntax (neu, ab Playwright 1.63):
+Feeds und Profil hängen am gemeinsamen Test-User auf dem Server. Läuft der Test parallel in mehreren Projekten (z. B. chromium und webkit), verfälschen sich die Zahlen. Ein **Test Lock** sorgt dafür, dass Tests mit gleichem Lock-Namen nie gleichzeitig laufen. Syntax (seit Playwright 1.63):
 
 ```typescript
 test('Titel', { lock: 'test-user-account' }, async ({ authenticatedPage: page }) => { /* … */ });
