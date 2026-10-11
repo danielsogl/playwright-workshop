@@ -3,7 +3,7 @@
 **Ziel:** Du zerlegst wiederkehrende Elemente (einzelne Artikel) in ein Komponenten-Objekt und lässt Aktionen `this` zurückgeben.
 **Zeit:** 35 Min. (optional für Fortgeschrittene) · **Startbranch:** `git switch ex/10-erweiterte-page-objects` · **Datei:** `e2e/10-erweiterte-page-objects.spec.ts`
 
-> Roter Faden: Baut auf Übung 9 (harte Voraussetzung: `NewsPage`, `e2e/09-page-objects.spec.ts`) · Du gibst weiter: das Komponenten-Muster `NewsItemComponent` · Zurückgefallen? `git switch ex/10-erweiterte-page-objects`. Der Startbranch enthält die Lösungen der Übungen 1–9, aber nicht die dieser Übung. Musterlösung: `git diff ex/10-erweiterte-page-objects ex/11-api-mocking`.
+> Roter Faden: Baut auf Übung 9 (harte Voraussetzung: `NewsPage`, `e2e/09-page-objects.spec.ts`) · Du gibst weiter: das Komponenten-Muster `NewsItemComponent` · Zurückgefallen? `git switch ex/10-erweiterte-page-objects`. Der Startbranch enthält die Lösungen der Übungen 1–9, aber nicht die dieser Übung. Musterlösung: `git diff ex/10-erweiterte-page-objects ex/10b-pom-fixtures`.
 
 Ein **Komponenten-Objekt** ist ein Page Object für einen Teil der Seite, der mehrfach vorkommt (hier: ein Artikel). Es bekommt als Wurzel einen Locator, alle Locators darin sind relativ zu ihm.
 
@@ -67,5 +67,5 @@ Ergänze `description` und `getData()` (alle Werte als Objekt) im Komponenten-Ob
 
 ## Wenn du nicht weiterkommst
 
-Musterlösung ansehen: `git diff ex/10-erweiterte-page-objects ex/11-api-mocking` oder `git switch ex/11-api-mocking`.
+Musterlösung ansehen: `git diff ex/10-erweiterte-page-objects ex/10b-pom-fixtures` oder `git switch ex/10b-pom-fixtures`.
 Alles fertig, wenn `npx playwright test e2e/10-erweiterte-page-objects.spec.ts` grün ist.
