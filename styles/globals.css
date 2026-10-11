@@ -15,3 +15,11 @@
   --accent: #0068d6;
   --accent-hover: #0057b8;
 }
+
+/*
+ * Light mode: HeroUI's muted text (zinc-500, #71717a) only reaches ~4.43:1 on
+ * the light surfaces. zinc-600 meets WCAG AA (4.5:1). Dark mode stays default.
+ */
+:root:not(.dark) {
+  --muted: #52525b;
+}

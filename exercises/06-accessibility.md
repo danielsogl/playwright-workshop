@@ -7,7 +7,7 @@
 
 **Axe** (`@axe-core/playwright`, im Workshop-Repo installiert) prüft eine geladene Seite gegen Barrierefreiheits-Regeln und liefert eine Liste von **Violations**. Jede Violation hat Regel-ID, Auswirkung (`impact`), Hilfe-Link (`helpUrl`) und die betroffenen Elemente (`nodes`). Automatische Scans finden nur einen Teil der Probleme, ein manueller Test mit Screenreader bleibt nötig.
 
-> **Rote Violations: Befund oder Fehler?** Ein roter Axe-Test heißt: Die **App** hat ein Problem, nicht dein Test. Lies den Report (Regel, Selektor, `helpUrl`) und halte den Befund fest. Ändere nicht die Erwartung und schalte die Regel nicht ab. Ist ein Problem bekannt und wird später behoben, markierst du den Test mit `test.fail()` (siehe Bonus A). Die Demo-App ist so gebaut, dass die Pflichtaufgaben grün werden.
+> **Rote Violations: Befund oder Fehler?** Ein roter Axe-Test heißt: Die **App** hat ein Problem, nicht dein Test. Lies den Report (Regel, Selektor, `helpUrl`) und halte den Befund fest. Ändere nicht die Erwartung und schalte die Regel nicht ab. Ist ein Problem bekannt und wird später behoben, markierst du den Test mit `test.fail()`: Dann gilt „Test scheitert“ als Erfolg, und er schlägt Alarm, sobald die App das Problem behebt. Die Demo-App ist so gebaut, dass die Pflichtaufgaben grün werden.
 
 ## Aufgaben
 
@@ -54,10 +54,10 @@ Du musst das YAML nicht von Hand schreiben: `await expect(locator).toMatchAriaSn
 ## Bonus (optional)
 
 ### Bonus A – Dark und Light Mode
-Die Feed App folgt per `next-themes` dem System-Theme. Playwright emuliert standardmäßig `colorScheme: 'light'`, mit `test.use({ colorScheme: 'dark' })` startet die App dunkel. Prüfe die Kontraste (`color-contrast`, Tag `wcag2aa`) in beiden Modi.
-**Fertig, wenn:** der Dark-Mode-Test grün ist. Der Light-Mode-Test hat einen bekannten Befund: `.text-muted` hat nur 4.43:1 statt 4.5:1. Markiere ihn mit `test.fail()`, dann gilt „Test scheitert“ als Erfolg, und er schlägt Alarm, sobald die App den Kontrast behebt.
+Die Feed App folgt per `next-themes` dem System-Theme. Playwright emuliert standardmäßig `colorScheme: 'light'`, mit `test.use({ colorScheme: 'dark' })` startet die App dunkel. Scanne die Startseite auf Kontraste (`color-contrast`, Tag `wcag2aa`) in beiden Farbschemata.
+**Fertig, wenn:** beide Tests (Light und Dark) grün sind.
 <details><summary>Tipp</summary>
-Lege je Modus einen `describe`-Block mit `test.use({ colorScheme: 'dark' })` bzw. `'light'` an. Prüfe vor dem Scan, dass `html` die Klasse `dark` bzw. `light` hat. Warte vor dem Scan, bis keine CSS-Übergänge mehr laufen (`document.getAnimations().length` ist 0), sonst misst Axe Zwischenfarben. `test.fail(true, 'Grund')` setzt du am Anfang des Tests.
+Erzeuge die Tests mit einer `for`-Schleife über `['light', 'dark'] as const`: je ein `describe`-Block mit `test.use({ colorScheme })`. Prüfe vor dem Scan, dass `html` die passende Klasse (`light` bzw. `dark`) hat. Warte vor dem Scan, bis keine CSS-Übergänge mehr laufen (`document.getAnimations().length` ist 0), sonst misst Axe Zwischenfarben.
 </details>
 
 ### Bonus B – Mobile und Tastatur
