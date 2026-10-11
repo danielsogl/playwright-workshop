@@ -3,7 +3,7 @@
 **Ziel:** Du findest Elemente mit verschiedenen Locator-Strategien und gibst die Ergebnisse im Log aus.
 **Zeit:** 15 Min. (Pflicht) · Bonus: +5 Min. · **Startbranch:** `git switch ex/02-locators` · **Datei:** `e2e/02-locators.spec.ts`
 
-> Roter Faden: Baut auf: Übung 1, lauffähiges Setup mit `.env` (`RSS_OFFLINE_MODE=true`). · Du gibst weiter: dein Locator-Vokabular für `/` und `/news/public`, das du in Übung 4 mit Assertions einsetzt. · Zurückgefallen? → `git switch ex/02-locators` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/02-locators ex/03-interaktionen`. Keine Vorarbeit nötig, die App startet über den `webServer` automatisch.
+> Roter Faden: Baut auf: Übung 1, lauffähiges Setup mit `.env` (`RSS_OFFLINE_MODE=true`). · Du gibst weiter: dein Locator-Vokabular für `/` und `/news/public`, das du in Übung 4 mit Assertions einsetzt. · Zurückgefallen? → `git switch ex/02-locators` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/02-locators ex/02b-locators-aufraeumen`. Keine Vorarbeit nötig, die App startet über den `webServer` automatisch.
 
 Ein **Locator** beschreibt, wie Playwright ein Element auf der Seite findet. In dieser Übung nutzt du noch keine Assertions, sondern nur `console.log`. Die Soll-Werte siehst du in der Konsole.
 
@@ -50,4 +50,4 @@ Gib dem Link-Locator mit `describe()` einen sprechenden Namen (z. B. „Link zu 
 Nimm das erste Wort des ersten Artikels als Suchtext und zähle mit `articles.filter({ hasText: … })`, wie viele Artikel es enthalten. **Fertig, wenn:** die Konsole eine Zahl größer 0 zeigt.
 
 ## Wenn du nicht weiterkommst
-Musterlösung ansehen: `git diff ex/02-locators ex/03-interaktionen` · oder `git switch ex/03-interaktionen`.
+Musterlösung ansehen: `git diff ex/02-locators ex/02b-locators-aufraeumen` · oder `git switch ex/02b-locators-aufraeumen`.

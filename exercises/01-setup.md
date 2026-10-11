@@ -3,7 +3,7 @@
 **Ziel:** Du richtest das Playwright-Projekt für die Feed Demo App ein und bringst einen ersten Smoke-Test zum Laufen.
 **Zeit:** 15 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/01-setup` · **Datei:** `e2e/01-setup.spec.ts`
 
-> Roter Faden: Baut auf: nichts, das hier ist der Grundstein. · Du gibst weiter: ein lauffähiges Setup (`.env`, `webServer`, Smoke-Test), auf dem alle folgenden Übungen aufbauen. · Zurückgefallen? → `git switch ex/01-setup` (Startpunkt). Die Musterlösung zeigt `git diff ex/01-setup ex/02-locators`.
+> Roter Faden: Baut auf: nichts, das hier ist der Grundstein. · Du gibst weiter: ein lauffähiges Setup (`.env`, `webServer`, Smoke-Test), auf dem alle folgenden Übungen aufbauen. · Zurückgefallen? → `git switch ex/01-setup` (Startpunkt). Die Musterlösung zeigt `git diff ex/01-setup ex/01b-codegen`.
 
 Ein **Smoke-Test** ist ein minimaler Test, der nur prüft, ob die App grundsätzlich läuft.
 
@@ -68,4 +68,4 @@ Prüfe in einem dritten Test, dass `process.env.TEST_USER_EMAIL` und `process.en
 Starte `npx playwright test --ui` und klicke dich durch die Oberfläche. **Fertig, wenn:** du einen Testlauf im UI-Mode gesehen hast.
 
 ## Wenn du nicht weiterkommst
-Musterlösung ansehen: `git diff ex/01-setup ex/02-locators` · oder `git switch ex/02-locators`.
+Musterlösung ansehen: `git diff ex/01-setup ex/01b-codegen` · oder `git switch ex/01b-codegen`.
