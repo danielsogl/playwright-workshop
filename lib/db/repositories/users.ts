@@ -1,7 +1,8 @@
 import { hash, compare } from 'bcryptjs';
 
 import { User } from '../models/user';
-import { loadSeedData } from '../services/data-service';
+
+import data from '@/config/data.json';
 
 const users = new Map<string, User>();
 
@@ -65,14 +66,13 @@ export const addUser = async (
  * @param userId - The ID of the user to update.
  * @param currentPassword - The user's current password.
  * @param newPassword - The new password to set.
- * @returns True if the update was successful, false otherwise.
  * @throws Error if the user is not found or current password doesn't match.
  */
 export const updateUserPassword = async (
   userId: string,
   currentPassword: string,
   newPassword: string,
-): Promise<boolean> => {
+): Promise<void> => {
   const user = await findUserById(userId);
 
   if (!user) {
@@ -85,15 +85,7 @@ export const updateUserPassword = async (
     throw new Error('Incorrect current password');
   }
 
-  const newPasswordHash = await hash(newPassword, 10);
-  const updatedUser: User = {
-    ...user,
-    passwordHash: newPasswordHash,
-  };
-
-  users.set(userId, updatedUser);
-
-  return true;
+  users.set(userId, { ...user, passwordHash: await hash(newPassword, 10) });
 };
 
 /**
@@ -124,31 +116,13 @@ export const updateUserProfile = async (
 };
 
 const seedUsers = async () => {
-  const seedData = loadSeedData();
-
-  if (!seedData?.users) {
-    return;
-  }
-
-  for (const seedUser of seedData.users) {
-    const existingUser = await findUserByEmail(seedUser.email);
-
-    if (!existingUser) {
-      try {
-        const hashedPassword = await hash(seedUser.password, 10);
-        const userId = seedUser.id || crypto.randomUUID();
-        const newUser: User = {
-          id: userId,
-          email: seedUser.email,
-          name: seedUser.name,
-          passwordHash: hashedPassword,
-        };
-
-        users.set(userId, newUser);
-      } catch (error) {
-        console.error(`Failed to seed user ${seedUser.email}:`, error);
-      }
-    }
+  for (const { id, email, name, password } of data.users) {
+    users.set(id, {
+      id,
+      email,
+      name,
+      passwordHash: await hash(password, 10),
+    });
   }
 };
 

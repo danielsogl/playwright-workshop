@@ -55,9 +55,6 @@ const postHandler = async (req: NextRequest, session: Session) => {
     return jsonSuccess(newFeed, 201);
   } catch (error) {
     console.error('Failed to add private feed:', error);
-    if (error instanceof z.ZodError) {
-      return jsonValidationError(error);
-    }
 
     return jsonError('Failed to add private feed');
   }

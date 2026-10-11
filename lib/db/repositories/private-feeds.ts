@@ -1,28 +1,10 @@
 import type { RSSFeed } from '@/types/rss';
 
+import data from '@/config/data.json';
 
-import { loadSeedData } from '../services/data-service';
-
-const privateFeeds = new Map<string, RSSFeed[]>();
-
-const seedPrivateFeeds = () => {
-  const seedData = loadSeedData();
-
-  if (!seedData?.privateNewsFeeds) {
-    return;
-  }
-
-  Object.entries(seedData.privateNewsFeeds).forEach(([userId, feeds]) => {
-    const feedsWithCategories = feeds.map((feed) => ({
-      ...feed,
-      category: feed.category || 'Uncategorized',
-    }));
-
-    privateFeeds.set(userId, feedsWithCategories);
-  });
-};
-
-seedPrivateFeeds();
+const privateFeeds = new Map<string, RSSFeed[]>(
+  Object.entries(data.privateNewsFeeds),
+);
 
 export const getPrivateFeedsByUserId = async (
   userId: string,

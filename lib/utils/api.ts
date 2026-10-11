@@ -15,21 +15,10 @@ export const jsonSuccess = <T>(data: T, status = 200): NextResponse => {
  * Creates a standardized error JSON response.
  * @param message - The error message.
  * @param status - The HTTP status code (default: 500).
- * @param details - Optional additional details or error object.
  * @returns A NextResponse object with the error message and status.
  */
-export const jsonError = (
-  message: string,
-  status = 500,
-  details?: unknown,
-): NextResponse => {
-  const responsePayload: { message: string; details?: unknown } = { message };
-
-  if (details) {
-    responsePayload.details = details;
-  }
-
-  return NextResponse.json(responsePayload, { status });
+export const jsonError = (message: string, status = 500): NextResponse => {
+  return NextResponse.json({ message }, { status });
 };
 
 /**
