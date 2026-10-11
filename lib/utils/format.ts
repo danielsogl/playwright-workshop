@@ -12,19 +12,13 @@ export const cleanHtml = (text?: string): string => {
 
 /**
  * Formats a date string into a localized date string (e.g., MM/DD/YYYY).
- * Returns the original string if formatting fails.
  * @param dateStr - The date string to format.
- * @returns The formatted date string or the original string on error.
+ * @returns The formatted date string.
  */
 export const formatDate = (dateStr?: string): string => {
   if (!dateStr) return '';
-  try {
-    // Use default locale and date style
-    return new Date(dateStr).toLocaleDateString();
-  } catch {
-    // Return original string if parsing or formatting fails
-    return dateStr;
-  }
+
+  return new Date(dateStr).toLocaleDateString();
 };
 
 /**
