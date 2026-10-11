@@ -7,7 +7,7 @@
 
 **Axe** (`@axe-core/playwright`, im Workshop-Repo installiert) prüft eine geladene Seite gegen Barrierefreiheits-Regeln und liefert eine Liste von **Violations**. Jede Violation hat Regel-ID, Auswirkung (`impact`), Hilfe-Link (`helpUrl`) und die betroffenen Elemente (`nodes`). Automatische Scans finden nur einen Teil der Probleme, ein manueller Test mit Screenreader bleibt nötig.
 
-> **Rote Violations: Befund oder Fehler?** Ein roter Axe-Test heißt: Die **App** hat ein Problem, nicht dein Test. Lies den Report (Regel, Selektor, `helpUrl`), halte den Befund fest und ändere weder die Erwartung noch schaltest du die Regel ab. Ist ein Problem bekannt und wird später behoben, markierst du den Test mit `test.fail()` (siehe Bonus A). Die Demo-App ist so gebaut, dass die Pflichtaufgaben grün werden.
+> **Rote Violations: Befund oder Fehler?** Ein roter Axe-Test heißt: Die **App** hat ein Problem, nicht dein Test. Lies den Report (Regel, Selektor, `helpUrl`) und halte den Befund fest. Ändere nicht die Erwartung und schalte die Regel nicht ab. Ist ein Problem bekannt und wird später behoben, markierst du den Test mit `test.fail()` (siehe Bonus A). Die Demo-App ist so gebaut, dass die Pflichtaufgaben grün werden.
 
 ## Aufgaben
 
@@ -67,7 +67,7 @@ Light Mode erzwingst du vor dem Laden: `page.addInitScript(() => localStorage.se
 **Fertig, wenn:** beide Tests grün sind. WebKit fokussiert Links per Tab nur mit macOS Full Keyboard Access: Überspringe den Tastatur-Test dort mit `test.skip(browserName === 'webkit')`.
 
 ### Bonus C – Ausnahmen dokumentieren
-Mit `.exclude(selector)` und `.disableRules([...])` nimmst du bewusst Teile aus einem Scan. Schreibe einen Test, der das nutzt, und erkläre in einem Kommentar, warum die Ausnahme gilt. Ohne Begründung ist eine Ausnahme versteckter Befund.
+Mit `.exclude(selector)` und `.disableRules([...])` nimmst du bewusst Teile aus einem Scan. Schreibe einen Test, der das nutzt, und erkläre in einem Kommentar, warum die Ausnahme gilt. Ohne Begründung ist eine Ausnahme ein versteckter Befund.
 
 ## Wenn du nicht weiterkommst
 Musterlösung ansehen: `git diff ex/06-accessibility ex/06b-dialoge-downloads` · oder `git switch ex/06b-dialoge-downloads`.

@@ -41,7 +41,7 @@ Das Suchfeld („Search news articles“, Rolle `textbox`) filtert schon beim Ti
 </details>
 
 ### Aufgabe 4 – Fehlgeschlagenen Test im Trace analysieren
-Ein **Trace** ist eine Aufzeichnung des Testlaufs mit Screenshots, Aktionen und Netzwerk. Die Config zeichnet nur beim Retry auf (`trace: 'on-first-retry'`), lokal gibt es keine Retries, deshalb entsteht dort kein Trace. Schalte ihn per CLI an: Brich einen Test absichtlich (z. B. 21 statt 20 Artikel erwarten) und starte `npx playwright test e2e/05-suche.spec.ts --trace retain-on-failure`. Öffne danach `npx playwright show-report` und dort den Trace des fehlgeschlagenen Tests. Mache die Änderung anschließend rückgängig.
+Ein **Trace** ist eine Aufzeichnung des Testlaufs mit Screenshots, Aktionen und Netzwerk. Die Config zeichnet nur beim Retry auf (`trace: 'on-first-retry'`). Lokal gibt es keine Retries, also entsteht dort kein Trace. Schalte ihn per CLI an: Brich einen Test absichtlich (z. B. 21 statt 20 Artikel erwarten) und starte `npx playwright test e2e/05-suche.spec.ts --trace retain-on-failure`. Öffne danach `npx playwright show-report` und dort den Trace des fehlgeschlagenen Tests. Mache die Änderung anschließend rückgängig.
 
 **Fertig, wenn:** du im Trace den fehlgeschlagenen Schritt gefunden hast, und `npx playwright test e2e/05-suche.spec.ts` wieder grün ist.
 

@@ -1,9 +1,9 @@
 # Übung 18 – KI-gestütztes Testen: Agents, Seed, Planner, Generator, Healer
 
-**Ziel:** Du richtest das offizielle Playwright-KI-Setup ein und lässt dir einen Test planen, generieren und heilen. Dabei erkennst du, wo die KI hilft und wo dein Testing-Know-how gebraucht wird.
+**Ziel:** Du richtest das offizielle Playwright-KI-Setup ein und lässt dir einen Test planen, generieren und heilen. Dabei erkennst du, wo die KI hilft und wo es dein Testing-Know-how braucht.
 **Zeit:** 50 Min. (Kern: Aufgaben 1–4) · Bonus: +20 Min. · **Startbranch:** `git switch ex/18-ai-assisted` · **Dateien:** `e2e/seed.spec.ts`, `specs/*.md`, `e2e/news-search.spec.ts` (frei benennbar)
 
-> Roter Faden: Baut auf der App auf, die du von Hand getestet hast. Genau deshalb erkennst du, ob ein generierter Test gut ist. · Du gibst weiter: ein Repo, in dem ein Coding Agent Playwright bedienen kann. · Zurückgefallen? `git switch ex/18-ai-assisted` (Startbranch: enthält die Lösungen der Übungen 1–17, aber noch kein KI-Setup). Die Lösung der Übung (Agent-Dateien, `.mcp.json`, Seed) zeigt `git diff ex/18-ai-assisted ex/end`. Du brauchst keine früheren Übungen, nur die laufende App.
+> Roter Faden: Baut auf der App auf, die du von Hand getestet hast. Deshalb erkennst du, ob ein generierter Test gut ist. · Du gibst weiter: ein Repo, in dem ein Coding Agent Playwright bedienen kann. · Zurückgefallen? `git switch ex/18-ai-assisted` (Startbranch: enthält die Lösungen der Übungen 1–17, aber noch kein KI-Setup). Die Lösung der Übung (Agent-Dateien, `.mcp.json`, Seed) zeigt `git diff ex/18-ai-assisted ex/end`. Du brauchst keine früheren Übungen, nur die laufende App.
 
 ## Begriffe in Kürze
 

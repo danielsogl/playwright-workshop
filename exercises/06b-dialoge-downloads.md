@@ -13,7 +13,7 @@ Ein **Dialog** ist ein natives Browser-Fenster (`alert`, `confirm`, `prompt`). P
 Lege `e2e/06b-dialoge.spec.ts` an. Öffne `/dialog-demo`, registriere den Handler, klicke „Show alert dialog“ und bestätige den Dialog. Prüfe im Handler, dass der Typ `alert` ist.
 **Fertig, wenn:** der Test grün ist und der Bereich mit Rolle `status` den Text „Alert dialog was shown“ enthält.
 <details><summary>Tipp</summary>
-`page.on('dialog', async (dialog) => { … })`, darin `dialog.type()` und `await dialog.accept()`. Der Button ist `getByRole('button', { name: 'Show alert dialog' })`. Kommt der Dialog nicht, klickst du zu früh: Die Seite reagiert erst nach der Hydration (React hängt dann seine Handler an). Das `beforeEach` der Musterlösung zeigt, wie man darauf wartet.
+`page.on('dialog', async (dialog) => { … })`, darin `dialog.type()` und `await dialog.accept()`. Der Button ist `getByRole('button', { name: 'Show alert dialog' })`. Kommt der Dialog nicht, klickst du zu früh: Die Seite reagiert erst nach der Hydration (React hängt dann seine Handler an). Das `beforeEach` der Musterlösung zeigt, wie du darauf wartest.
 </details>
 
 ### Aufgabe 2 – Confirm ablehnen
@@ -41,7 +41,7 @@ Das Event startest du **vor** dem Klick: `const downloadPromise = page.waitForEv
 
 ### Bonus A – `beforeunload`
 Klicke „Add BeforeUnload“ und prüfe, dass der Status „Beforeunload event listener added“ zeigt. Löse dann den Dialog aus, indem du die Seite schließt. Prüfe, dass ein Dialog vom Typ `beforeunload` kam.
-**Fertig, wenn:** der Test grün ist. Tipp: `page.close({ runBeforeUnload: true })`, ohne die Option führt Playwright keine Unload-Handler aus. Der Dialog kommt nach dem Schließen, nutze `expect.poll(() => …)` auf eine Variable.
+**Fertig, wenn:** der Test grün ist. Tipp: `page.close({ runBeforeUnload: true })`. Ohne die Option führt Playwright keine Unload-Handler aus. Der Dialog kommt nach dem Schließen, nutze `expect.poll(() => …)` auf eine Variable.
 
 ### Bonus B – `dialogclosed` mitloggen
 Das Event `page.on('dialogclosed', …)` (seit v1.63) feuert, nachdem ein Dialog beantwortet wurde. Sammle damit die Dialog-Typen in einem Array und löse einen Alert aus.

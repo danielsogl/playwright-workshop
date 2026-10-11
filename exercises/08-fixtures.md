@@ -29,8 +29,8 @@ Eindeutig wird der Name mit `Date.now()`. Felder: `getByLabel('Name')`, `getByLa
 </details>
 
 ### Aufgabe 3 – Fixture `userPage` als Seiten-Helfer
-Erweitere um eine Fixture `userPage`, die `/fixtures-demo` öffnet und zwei Funktionen liefert: `addUser(user)` und `getUserCount()`. Schreibe zwei Tests: Mit `testUser` steigt der Zähler um 1, beim Hinzufügen von zwei festen Benutzern um 2.
-**Fertig, wenn:** beide Tests grün sind. Sie vergleichen den Zähler vor und nach dem Hinzufügen und fest kodieren die Startzahl nicht.
+Ergänze eine Fixture `userPage`, die `/fixtures-demo` öffnet und zwei Funktionen liefert: `addUser(user)` und `getUserCount()`. Schreibe zwei Tests: Mit `testUser` steigt der Zähler um 1, beim Hinzufügen von zwei festen Benutzern um 2.
+**Fertig, wenn:** beide Tests grün sind. Sie vergleichen den Zähler vor und nach dem Hinzufügen und kodieren die Startzahl nicht fest.
 <details><summary>Tipp</summary>
 Die Fixture bekommt `page` und baut ein Objekt mit den beiden Funktionen, das sie per `use(...)` weitergibt. `addUser` wiederholt die Schritte aus Aufgabe 2 und wartet am Ende, bis der Name sichtbar ist. `getUserCount` liest den Text `getByText(/\d+ users/)` und gibt die Zahl zurück. Warte vorher, bis der Zähler nicht mehr „0 users“ zeigt: `toContainText(/[1-9]\d* users/)`. Lege dafür ein zweites `base.extend<…>` an (z. B. `testWithHelpers`), das `testUser` und `userPage` enthält.
 </details>

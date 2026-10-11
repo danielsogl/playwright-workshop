@@ -10,7 +10,7 @@ API-Tests sind schnell, weil kein Browser eine Seite rendert. Die App läuft mit
 ## Begriffe
 
 - `request`: eine Playwright-Fixture (`APIRequestContext`) für HTTP-Aufrufe wie `request.get(url)` und `request.post(url, { data })`. `baseURL` aus der Config gilt, du schreibst nur den Pfad.
-- **Cookie-Jar:** der Speicher für Cookies. Die `request`-Fixture hat einen eigenen, getrennten Jar. `page.request` teilt ihn mit der Seite, so sieht die Seite einen Login, den du per API gemacht hast.
+- **Cookie-Jar:** der Speicher für Cookies. Die `request`-Fixture hat einen eigenen, getrennten Jar. `page.request` teilt ihn mit der Seite, so sieht die Seite deinen API-Login.
 - **CSRF-Token:** Auth.js verlangt vor dem Login einen einmaligen Token, der vor Cross-Site-Formularen schützt. Du holst ihn mit `GET /api/auth/csrf` und schickst ihn beim Login mit.
 - `data` sendet einen JSON-Body, `form` einen URL-kodierten Formular-Body.
 

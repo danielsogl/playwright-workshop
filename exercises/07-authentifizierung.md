@@ -23,7 +23,7 @@ Lege `e2e/auth.setup.ts` an. Der Test `authenticate as user` loggt dich über di
 **Fertig, wenn:** `npx playwright test --project=setup` meldet `1 passed` und die Datei `playwright/.auth/user.json` existiert.
 <details><summary>Tipp</summary>
 `import { test as setup, expect } from '@playwright/test'` (Alias `setup` ist Konvention). Felder `getByLabel('Email')` und `getByLabel('Password')`, Button `getByRole('button', { name: 'Submit sign in form' })`. Zugangsdaten aus `process.env.TEST_USER_EMAIL` und `process.env.TEST_USER_PASSWORD`. Warte nach dem Klick auf `page.waitForURL('/')` und prüfe, dass der Button „User profile actions menu“ sichtbar ist. Speichern: `await page.context().storageState({ path: 'playwright/.auth/user.json' })`.
-Stolperstein: Auth.js setzt das CSRF-Cookie beim Laden der Session. Wer vor `/api/auth/session` absendet, bekommt auf einem kalten Dev-Server den Fehler `MissingCSRF`. Starte `page.waitForResponse('**/api/auth/session')` **vor** `goto` und warte danach darauf.
+Stolperstein: Auth.js setzt das CSRF-Cookie beim Laden der Session. Sendest du vor `/api/auth/session` ab, bekommst du auf einem kalten Dev-Server den Fehler `MissingCSRF`. Starte `page.waitForResponse('**/api/auth/session')` **vor** `goto` und warte danach darauf.
 </details>
 
 ### Aufgabe 3 – Tests mit gespeichertem Login
@@ -39,7 +39,7 @@ Der Pfad zu `user.json` ist relativ zum Projekt-Root. `test.use({ storageState: 
 
 ### Aufgabe 4 – Abmelden und Setup beobachten
 Schreibe einen vierten Test: Menü öffnen, „Log out“ wählen. Danach ist der Link „Sign in to your account“ sichtbar. Lösche anschließend `playwright/.auth/user.json` und starte die Spec erneut.
-**Fertig, wenn:** der Abmelde-Test grün ist, und nach dem Löschen der Datei der erneute Lauf zuerst `setup` ausführt und `user.json` wieder existiert.
+**Fertig, wenn:** der Abmelde-Test grün ist und nach dem Löschen der Datei der erneute Lauf zuerst `setup` ausführt und `user.json` wieder existiert.
 <details><summary>Tipp</summary>
 Der Menüpunkt ist `getByRole('menuitem', { name: /log out/i })`. Abmelden ändert nur den Browser, nicht die Datei: Folgetests sind weiter eingeloggt, weil jeder Test den Zustand frisch aus `user.json` lädt.
 </details>

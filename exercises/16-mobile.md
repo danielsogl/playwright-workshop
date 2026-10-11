@@ -44,7 +44,7 @@ Prüfe die Spaltenzahl des Grids (`feed`, Name „News articles") auf `/news/pub
 
 ### Aufgabe 4 – Ausführen
 Starte nacheinander `npx playwright test e2e/16-mobile.spec.ts --project=chromium`, dann `--project="Mobile Chrome"`, dann ohne `--project`.
-**Fertig, wenn:** alle drei Läufe ohne `failed` enden. Der Lauf ohne `--project` nutzt alle Projekte, auch die Mobile-Projekte, und das ist nur wegen `testMatch` (Aufgabe 1) und der festen Viewports (Aufgaben 2 und 3) grün.
+**Fertig, wenn:** alle drei Läufe ohne `failed` enden. Der Lauf ohne `--project` nutzt alle Projekte, auch die Mobile-Projekte. Grün ist er nur wegen `testMatch` (Aufgabe 1) und der festen Viewports (Aufgaben 2 und 3).
 
 ## Bonus (optional)
 

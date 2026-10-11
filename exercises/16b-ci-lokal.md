@@ -7,10 +7,10 @@
 
 ## Vorbereitung: Begriffe
 - **Pipeline:** Eine Shell, die auf einem Server deine Befehle ausführt. Sie setzt die Umgebungsvariable `CI`.
-- **Quality Gate:** Eine Sperre, die schlechten Code nicht durchlässt, z. B. ein roter Test blockiert den Push.
+- **Quality Gate:** Eine Sperre, die schlechten Code nicht durchlässt, z. B. blockiert ein roter Test den Push.
 - **`forbidOnly`:** Config-Option. Ist sie an, bricht der Lauf ab, wenn ein `test.only` im Code steht.
 - **Flaky:** Ein Test, der mal grün und mal rot ist. Playwright meldet `flaky`, wenn er erst im Retry besteht.
-- **Sharding:** Die Test-Suite wird in Teile (Shards) geteilt, die auf getrennten Maschinen laufen.
+- **Sharding:** Playwright teilt die Test-Suite in Teile (Shards), die auf getrennten Maschinen laufen.
 - **Blob-Report:** Zwischenformat eines Shards. `merge-reports` führt mehrere Blob-Reports zu einem Report zusammen.
 
 ## Aufgaben
@@ -21,13 +21,13 @@ Starte `CI=1 npx playwright test e2e/example.spec.ts --project=chromium` (Window
 <details><summary>Erwartete Antworten</summary>
 
 - `workers`: 1 statt automatisch (Tests laufen nacheinander, stabiler auf kleinen Runnern).
-- `retries`: 2 statt 0 (fehlgeschlagene Tests werden wiederholt).
+- `retries`: 2 statt 0 (Playwright wiederholt fehlgeschlagene Tests).
 - `forbidOnly`: an. Der Lauf bricht mit einem Fehler ab, weil ein vergessenes `test.only` sonst fast alle Tests still überspringt.
 - `reuseExistingServer`: aus. Die Config startet immer einen eigenen Server. Läuft schon einer auf Port 3000, scheitert der Start. Eine Pipeline hat keinen Server vom Vortag.
 </details>
 
 ### Aufgabe 2 – Flaky Tests erkennen
-Lege `e2e/flaky.spec.ts` an mit einem Test, der **nur im Retry** besteht: Er öffnet `/` und fordert `testInfo.retry` größer als 0. Starte ihn mit `CI=1` (nur diese Datei, Projekt chromium). Öffne den Trace aus `test-results/…-retry1/trace.zip`. Starte den Lauf dann mit `--fail-on-flaky-tests`.
+Lege `e2e/flaky.spec.ts` an mit einem Test, der **nur im Retry** besteht: Er öffnet `/` und prüft, dass `testInfo.retry` größer als 0 ist. Starte ihn mit `CI=1` (nur diese Datei, Projekt chromium). Öffne den Trace aus `test-results/…-retry1/trace.zip`. Starte den Lauf dann mit `--fail-on-flaky-tests`.
 **Fertig, wenn:** der erste Lauf grün ist und `1 flaky` meldet, der zweite Lauf rot ist. Lösche die Datei danach (ohne `CI` ist der Test immer rot).
 <details><summary>Tipp</summary>
 
@@ -52,7 +52,7 @@ JUnit-XML lesen GitLab, Jenkins und Azure DevOps ein, um Testergebnisse anzuzeig
 
 ### Aufgabe 4 – Sharding und Reports zusammenführen
 Teile den Lauf in 2 Shards: `npx playwright test e2e/01-setup.spec.ts e2e/example.spec.ts --project=chromium --shard=1/2 --reporter=blob`, danach `--shard=2/2`. Mit nur einer Spec-Datei hätte ein Shard nichts zu tun. Jeder Lauf leert `blob-report/`: Verschiebe die Dateien nach jedem Lauf in einen Ordner `all-blob-reports/`. Führe sie mit `npx playwright merge-reports --reporter=html ./all-blob-reports` zusammen und öffne den Report mit `npx playwright show-report`.
-**Fertig, wenn:** der zusammengeführte Report alle 4 Tests (3 aus `01-setup`, 1 aus `example`) zeigt (die Auth-Setup-Tests aus Übung 7 erscheinen zusätzlich, weil jeder Shard sie als Abhängigkeit mitlaufen lässt). Die Shards laufen nacheinander, sonst konkurrieren sie um Port 3000.
+**Fertig, wenn:** der zusammengeführte Report alle 4 Tests (3 aus `01-setup`, 1 aus `example`) zeigt. Die Auth-Setup-Tests aus Übung 7 erscheinen zusätzlich, weil jeder Shard sie als Abhängigkeit mitlaufen lässt. Die Shards laufen nacheinander, sonst konkurrieren sie um Port 3000.
 <details><summary>Tipp</summary>
 
 `mkdir all-blob-reports`, dann nach jedem Lauf `mv blob-report/* all-blob-reports/`. In einer echten Pipeline laufen die Shards parallel als Matrix-Jobs, ein Merge-Job lädt alle Blob-Reports herunter und führt sie zusammen.

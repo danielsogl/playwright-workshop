@@ -39,7 +39,7 @@ Assertions: `toBeEditable()`, `toBeEmpty()`, `toHaveValue()`. Die Artikelzahl li
 ### Aufgabe 4 – Debuggen
 Starte deine Datei mit `npx playwright test e2e/04-erster-test.spec.ts --debug`. Gehe mit dem Step-Button durch den ersten Test und beobachte die Actionability-Logs. Starte dann `--ui` und klicke im Zeitstrahl auf einen Schritt.
 
-**Fertig, wenn:** du im Inspector mindestens einen Schritt ausgeführt hast und im UI-Mode den DOM-Snapshot eines Schritts gesehen hast.
+**Fertig, wenn:** du im Inspector mindestens einen Schritt ausgeführt und im UI-Mode den DOM-Snapshot eines Schritts gesehen hast.
 
 <details><summary>Tipp</summary>
 Der Inspector zeigt dir, worauf Playwright vor einem Klick wartet (sichtbar, stabil, aktiviert). Im UI-Mode gehst du per „Time-Travel“ durch die Aktionen.

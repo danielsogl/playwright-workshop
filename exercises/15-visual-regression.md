@@ -9,7 +9,7 @@
 
 **Visual Regression:** Ein Test vergleicht einen Screenshot mit einem gespeicherten Referenzbild, der **Baseline**. Weicht das Bild ab, schlägt der Test fehl. Das findet CSS- und Layoutfehler, die funktionale Tests übersehen.
 
-`expect(page).toHaveScreenshot('name.png')` und `expect(locator).toHaveScreenshot(…)` wartet selbst, bis das Bild stabil ist, und schaltet Animationen ab. Warte vorher nur auf den erwarteten Inhalt (web-first), nie mit `networkidle` oder `waitForTimeout`.
+`expect(page).toHaveScreenshot('name.png')` und `expect(locator).toHaveScreenshot(…)` warten selbst, bis das Bild stabil ist, und schalten Animationen ab. Warte vorher nur auf den erwarteten Inhalt (web-first), nie mit `networkidle` oder `waitForTimeout`.
 
 Die Zahlen und Daten gelten mit `RSS_OFFLINE_MODE=true` (siehe `.env`, Übung 1). Zusätzlich mockst du den Feed, damit sich die Bilder nicht ändern.
 

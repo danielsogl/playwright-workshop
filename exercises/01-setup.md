@@ -21,7 +21,7 @@ Beide Befehle brauchen ein paar Minuten, der Browser-Download ist am größten. 
 ### Aufgabe 2 – `.env` anlegen und die App starten
 Kopiere `.env.example` nach `.env`. Die Datei enthält die Test-Zugangsdaten, ein `AUTH_SECRET` und `RSS_OFFLINE_MODE=true`.
 
-Der **Offline-Feed** liefert immer dieselben 20 statische Artikel statt Live-RSS-Daten. Alle festen Zahlen im Workshop (z. B. 20 Artikel) gelten nur damit. Lass die Variable auf `true`.
+Der **Offline-Feed** liefert immer dieselben 20 statischen Artikel statt Live-RSS-Daten. Alle festen Zahlen im Workshop (z. B. 20 Artikel) gelten nur damit. Lass die Variable auf `true`.
 
 Starte die App einmal selbst mit `npm run dev` und öffne `http://localhost:3000` im Browser.
 

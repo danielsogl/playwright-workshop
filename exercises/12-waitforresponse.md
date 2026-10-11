@@ -5,7 +5,7 @@
 
 > Roter Faden: Baut auf Übung 11 (`e2e/mocks/news-mocks.ts` mit `mockSearchFeed`) · Du gibst weiter: das Muster „Response abfangen und gegen das UI abgleichen“ · Zurückgefallen? `git switch ex/12-waitforresponse`. Der Startbranch enthält die Lösungen der Übungen 1–11 (also die Mock-Datei), aber nicht die dieser Übung. Musterlösung: `git diff ex/12-waitforresponse ex/13-api-testing`.
 
-`page.waitForResponse(url)` liefert ein Promise, das erfüllt wird, sobald eine passende Antwort eintrifft. Du kannst dann `status()` und `json()` der Antwort prüfen.
+`page.waitForResponse(url)` liefert ein Promise, das erfüllt wird, sobald eine passende Antwort eintrifft. Danach prüfst du `status()` und `json()` der Antwort.
 
 ## Aufgaben
 
@@ -19,7 +19,7 @@ Lege `e2e/12-waitforresponse.spec.ts` an. Importiere `mockSearchFeed` aus `./moc
 </details>
 
 ### Aufgabe 2 – Response abfangen und prüfen
-Hole die Antwort mit `page.waitForResponse('**/api/news/public')`. Wichtig: Lege das Promise **vor** `page.goto()` an und warte erst danach darauf, sonst kommt die Antwort, bevor du zuhörst. Prüfe Status 200, dass `items` die Länge 1 hat und der Titel „Gemockte News“ ist.
+Hole die Antwort mit `page.waitForResponse('**/api/news/public')`. Lege das Promise **vor** `page.goto()` an und warte erst danach darauf, sonst kommt die Antwort, bevor du zuhörst. Prüfe Status 200, dass `items` die Länge 1 hat und der Titel „Gemockte News“ ist.
 
 **Fertig, wenn:** alle drei Prüfungen auf der Response grün sind.
 

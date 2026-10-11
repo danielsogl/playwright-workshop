@@ -7,7 +7,7 @@
 
 Feste Zahlen (20 Artikel, 5 in „Business“) gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true` in deiner `.env`, siehe Übung 1).
 
-Lege `e2e/03-interaktionen.spec.ts` an. Packe die vier Tests in einen gemeinsamen `test.describe`-Block. Die Tests sind von eng angeleitet bis offen geordnet.
+Lege `e2e/03-interaktionen.spec.ts` an. Packe die vier Tests in einen gemeinsamen `test.describe`-Block. Von Aufgabe zu Aufgabe bekommst du weniger Anleitung.
 
 ## Aufgaben
 

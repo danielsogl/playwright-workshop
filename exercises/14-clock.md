@@ -3,7 +3,7 @@
 **Ziel:** Du steuerst mit der Clock API die Uhrzeit der Seite und testest Zeitanzeigen, ohne zu warten.
 **Zeit:** 30 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/14-clock` · **Datei:** `e2e/14-clock.spec.ts`
 
-> Roter Faden: Baut auf nichts Bestimmtem auf, die Übung ist eigenständig (neue Seite `/clock`) · Du gibst weiter: die Technik, Zeit in Tests zu kontrollieren · Zurückgefallen? `git switch ex/14-clock` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 14). Musterlösung: `git diff ex/14-clock ex/15-visual-regression`.
+> Roter Faden: Baut auf keiner früheren Übung auf (neue Seite `/clock`) · Du gibst weiter: die Technik, Zeit in Tests zu kontrollieren · Zurückgefallen? `git switch ex/14-clock` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 14). Musterlösung: `git diff ex/14-clock ex/15-visual-regression`.
 
 ## Vorbereitung
 
@@ -20,7 +20,7 @@ Schreibe einen Test, der die Uhr auf den 15.01.2024, 14:30 Uhr setzt und die Sei
 **Fertig, wenn:** der Test grün ist und `current-time` den Text `14:30` enthält.
 <details><summary>Tipp</summary>
 
-`page.clock.install({ time: … })` muss **vor** `page.goto()` stehen, sonst läuft die Seite schon mit der echten Zeit. Prüfen mit `toContainText`.
+`page.clock.install({ time: … })` muss **vor** `page.goto()` stehen, sonst läuft die Seite schon mit der echten Zeit. Prüfe mit `toContainText`.
 </details>
 
 ### Aufgabe 2 – Zeit vorspulen

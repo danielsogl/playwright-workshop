@@ -32,7 +32,7 @@ export class NewsPage {
 
 <details><summary>Tipp</summary>
 
-`getByRole('textbox', { name: 'Search news articles' })`, `getByRole('feed', { name: 'News articles' })`, darin `getByRole('article')` und `getByRole('heading', { level: 2 })`. Für `expect` importierst du es aus `@playwright/test`. Kein `waitForLoadState('networkidle')`, die Suche filtert clientseitig.
+`getByRole('textbox', { name: 'Search news articles' })`, `getByRole('feed', { name: 'News articles' })`, darin `getByRole('article')` und `getByRole('heading', { level: 2 })`. `expect` importierst du aus `@playwright/test`. Kein `waitForLoadState('networkidle')`, die Suche filtert clientseitig.
 </details>
 
 ### Aufgabe 2 – `HomePage`
@@ -58,7 +58,7 @@ Lege `e2e/pages/LoginPage.ts` an. Locators: E-Mail-Feld („Email address for si
 </details>
 
 ### Aufgabe 4 – Tests schreiben
-Lege `e2e/09-page-objects.spec.ts` an. Der Test benutzt keine direkten Selektoren, nur Page Objects. Drei Tests:
+Lege `e2e/09-page-objects.spec.ts` an. Die Tests benutzen keine direkten Selektoren, nur Page Objects. Drei Tests:
 
 1. **News-Suche:** über `HomePage` zu News navigieren, Anzahl merken, Titel des ersten Artikels suchen, danach zeigt der erste Titel genau diesen Text. Suche leeren: Anzahl wie vorher (20).
 2. **Login mit falschen Daten:** Fehlermeldung sichtbar, URL enthält `auth/signin`.
@@ -68,7 +68,7 @@ Lege `e2e/09-page-objects.spec.ts` an. Der Test benutzt keine direkten Selektore
 
 <details><summary>Tipp</summary>
 
-Locators nutzt du direkt in Assertions: `expect(newsPage.newsItems).toHaveCount(20)` wartet automatisch. `getNewsCount()` brauchst du nur, um einen Wert zu merken. Suchbegriff aus den Daten holen (`getFirstNewsTitle()`) statt hartzucodieren.
+Locators nutzt du direkt in Assertions: `expect(newsPage.newsItems).toHaveCount(20)` wartet automatisch. `getNewsCount()` brauchst du nur, um einen Wert zu merken. Hol den Suchbegriff aus den Daten (`getFirstNewsTitle()`), statt ihn hartzucodieren.
 </details>
 
 ## Bonus (optional)

@@ -5,7 +5,7 @@
 
 > Roter Faden: Baut auf Übung 5 und 9 (`/news/public`, Suche) · Du gibst weiter: `e2e/mocks/news-mocks.ts`, Übung 12 importiert daraus · Zurückgefallen? `git switch ex/11-api-mocking`. Der Startbranch enthält die Lösungen der Übungen 1–10, aber nicht die dieser Übung. Musterlösung: `git diff ex/11-api-mocking ex/12-waitforresponse`.
 
-**Mock:** Der Browser fragt die API wie gewohnt an, Playwright fängt den Request ab und antwortet selbst. Das macht Tests schnell, unabhängig vom Backend und erlaubt Fehlerfälle, die du sonst kaum auslösen kannst.
+**Mock:** Der Browser fragt die API wie gewohnt an, Playwright fängt den Request ab und antwortet selbst. Das macht Tests schnell und unabhängig vom Backend und erlaubt Fehlerfälle, die du sonst kaum auslösen kannst.
 
 Die Seite `/news/public` lädt ihre Artikel von `GET /api/news/public`. Alle Abfragen laufen gegen diese URL.
 
@@ -80,7 +80,7 @@ Die Suche filtert clientseitig, sie löst keinen API-Call aus. Mocke `success`, 
 **Fertig, wenn:** der Test grün ist.
 
 ### Bonus B – Rate Limit (429) zur Laufzeit umschalten
-**429** („Too Many Requests“) ist der Status, mit dem eine API sagt: zu viele Anfragen (Rate Limit). Lass die API beim ersten Laden normal antworten und nach `page.reload()` mit 429. Dazu setzt du eine Variable `rateLimited`, die der Handler liest. Wenn der Request keine GET-Anfrage ist, gibst du ihn mit `route.fallback()` weiter (`fallback` reicht den Request an andere Handler oder das Netzwerk durch, statt ihn selbst zu beantworten).
+Mit **429** („Too Many Requests“) meldet eine API: zu viele Anfragen (Rate Limit). Lass die API beim ersten Laden normal antworten und nach `page.reload()` mit 429. Dazu setzt du eine Variable `rateLimited`, die der Handler liest. Ist der Request keine GET-Anfrage, gibst du ihn mit `route.fallback()` weiter (`fallback` reicht den Request an andere Handler oder das Netzwerk durch, statt ihn selbst zu beantworten).
 
 **Fertig, wenn:** nach dem Reload der „Failed to load RSS feeds“-Alert sichtbar ist und kein `article` mehr da ist.
 

@@ -64,7 +64,7 @@ Setze diese Testseite und lade eine Datei hoch, die nur im Speicher existiert.
 
 **Fertig, wenn:** der Test grün ist und der Status „hallo.txt“ zeigt.
 <details><summary>Tipp</summary>
-`getByLabel('Datei').setInputFiles(...)` nimmt ein Objekt mit `name`, `mimeType` und `buffer` (`Buffer.from('Text')`). Es braucht keine Datei auf der Platte.
+`getByLabel('Datei').setInputFiles(...)` nimmt ein Objekt mit `name`, `mimeType` und `buffer` (`Buffer.from('Text')`). Eine Datei auf der Platte brauchst du nicht.
 </details>
 
 ## Zusatz (noch optional)

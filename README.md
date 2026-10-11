@@ -1,13 +1,13 @@
 # Playwright Workshop – Demo-App
 
-Next.js Feed-App, die als Testobjekt für den 3-tägigen Playwright-Workshop dient.
+Next.js-Feed-App als Testobjekt für den 3-tägigen Playwright-Workshop.
 Die App zeigt öffentliche und private News-Feeds, Login/Auth, Einstellungen und
-weitere Seiten, gegen die die Übungen geschrieben werden.
+weitere Seiten, gegen die du in den Übungen testest.
 
 ## Voraussetzungen
 
 - **Node.js 22.x, 24.x oder 26.x**
-- npm (im Repo enthaltenes `package-lock.json` wird genutzt)
+- npm (nutzt das mitgelieferte `package-lock.json`)
 
 ## Setup
 
@@ -24,7 +24,7 @@ cp .env.example .env
 
 Die `.env` enthält:
 
-- `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` – Zugangsdaten des Test-Users, die von den Tests gelesen werden
+- `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` – Zugangsdaten des Test-Users für die Tests
 - `RSS_OFFLINE_MODE=true` – nutzt statische Feed-Daten (kein Live-Fetch, WLAN-unabhängig)
 - `AUTH_SECRET` – Secret für Auth.js
 
