@@ -71,7 +71,7 @@ Referenziere das Szenario per **Nummer**, nicht per Name. Der Generator prüft L
 
 ### Bonus A – Healer: Locator kaputt, App kaputt
 1. Ändere im generierten Test einen Locator absichtlich falsch (z. B. `'Search news articles'` → `'Suche'`). Prompt: *Nutze den **playwright-test-healer**, um die fehlschlagenden Tests in `e2e/` zu reparieren.* Erwartung: Der Healer korrigiert den Locator, Test wird grün.
-2. Mach den Test wieder heil und ändere stattdessen in der **App** (`app/news/public/page.tsx`) das `aria-label` des Suchfelds. Erwartung: Der Healer soll den Test **nicht** an die Änderung anpassen, sondern skippen oder den App-Bug melden. Ein Healer, der echte App-Fehler wegpatcht, macht den Test wertlos. Nimm die App-Änderung danach zurück (`git restore app/`).
+2. Mach den Test wieder heil und ändere stattdessen in der **App** (`app/(site)/news/public/page.tsx`) das `aria-label` des Suchfelds. Erwartung: Der Healer soll den Test **nicht** an die Änderung anpassen, sondern skippen oder den App-Bug melden. Ein Healer, der echte App-Fehler wegpatcht, macht den Test wertlos. Nimm die App-Änderung danach zurück (`git restore app/`).
 
 Gut genug: Du hast beide Fälle beobachtet und kannst erklären, warum der zweite nicht „geheilt“ werden darf. Verhält sich die KI anders, ist das ebenfalls ein Ergebnis.
 

@@ -12,12 +12,12 @@ import { test, expect } from '@playwright/test';
 
 test('News suchen', async ({ page }) => {
   await page.goto('/');
-  await page.locator('a.button--primary').click();
+  await page.locator('a.bg-accent').click();
   await expect(page.locator('h1')).toHaveText('News Feed');
-  await expect(page.locator('div[role=feed] > div').first()).toBeVisible();
+  await expect(page.locator('div[role=feed] > article').first()).toBeVisible();
   await page.locator('#search-news').fill('Playwright');
   await page.locator('#filter-category').selectOption('Technology');
-  await expect(page.locator('span.text-muted').first()).toContainText('found');
+  await expect(page.locator('p.font-mono.text-sm')).toContainText('found');
 });
 ```
 
@@ -53,7 +53,7 @@ Lege deinen aufgenommenen Test aus Übung 1b daneben.
 
 ## Bonus (optional)
 ### Bonus A – Brüchigkeit beweisen
-Ändere in `app/news/public/page.tsx` testweise die Klasse `text-muted` des Trefferzählers. Lass beide Versionen laufen und mach die Änderung danach rückgängig. **Fertig, wenn:** der Startcode rot und dein Test grün war.
+Ändere in `app/(site)/news/public/page.tsx` testweise die Klasse `text-sm` des Trefferzählers. Lass beide Versionen laufen und mach die Änderung danach rückgängig. **Fertig, wenn:** der Startcode rot und dein Test grün war.
 
 ## Wenn du nicht weiterkommst
 Musterlösung ansehen: `git diff ex/02b-locators-aufraeumen ex/03-interaktionen` · oder `git switch ex/03-interaktionen`.
