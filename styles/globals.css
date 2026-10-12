@@ -6,20 +6,100 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Darken the accent so white text on an accent background meets WCAG AA (4.5:1).
- * HeroUI v3's default accent (#0485f7) only reaches ~3.58:1. Applied to both
- * themes (accent buttons use white text in light and dark).
+ * "Testbench" theme: neutral ground, near-black ink, green = pass, orange = fail.
+ * Overrides HeroUI's theme variables; all pairs meet WCAG AA (4.5:1) for text.
  */
 :root,
-.dark {
-  --accent: #0068d6;
-  --accent-hover: #0057b8;
+.light {
+  --background: #f3f4f1;
+  --foreground: #121613;
+  --surface: #ffffff;
+  --surface-secondary: #e6e8e3;
+  --surface-tertiary: #dadcd6;
+  --overlay: #ffffff;
+  --default: #e6e8e3;
+  --default-foreground: #121613;
+  --muted: #545b56;
+  --border: #dadcd8;
+  --separator: #e3e5e0;
+
+  --accent: #146c3a;
+  --accent-foreground: #ffffff;
+  --accent-hover: #0e4f2a;
+  --accent-soft: #e3f1e8;
+  --accent-soft-foreground: #0e4f2a;
+  --success: #146c3a;
+  --success-foreground: #ffffff;
+  --success-soft: #e3f1e8;
+  --success-soft-foreground: #0e4f2a;
+  --warning: #9a3412;
+  --warning-foreground: #ffffff;
+  --warning-soft: #fbe9dd;
+  --warning-soft-foreground: #7c2d12;
+  --danger: #9a3412;
+  --danger-foreground: #ffffff;
+  --danger-soft: #fbe9dd;
+  --danger-soft-foreground: #7c2d12;
+
+  --field-background: #ffffff;
+  --field-border: #c9cdc7;
+  /* HeroUI fields are borderless by default; the design outlines them */
+  --field-border-width: 1px;
+  --focus: var(--accent);
+
+  /* Dark "terminal" panels (hero, clock, hints) */
+  --terminal: #121613;
+  --terminal-foreground: #eef1ee;
+  --terminal-muted: #9aa39d;
+  --terminal-accent: #5ee39a;
+  --terminal-border: #2a302c;
 }
 
-/*
- * Light mode: HeroUI's muted text (zinc-500, #71717a) only reaches ~4.43:1 on
- * the light surfaces. zinc-600 meets WCAG AA (4.5:1). Dark mode stays default.
- */
-:root:not(.dark) {
-  --muted: #52525b;
+.dark {
+  --background: #0e110f;
+  --foreground: #eef1ee;
+  --surface: #171b18;
+  --surface-secondary: #1f2420;
+  --surface-tertiary: #2a302c;
+  --overlay: #171b18;
+  --default: #1f2420;
+  --default-foreground: #eef1ee;
+  --muted: #a3aca6;
+  --border: #2a302c;
+  --separator: #232823;
+
+  --accent: #5ee39a;
+  --accent-foreground: #0e110f;
+  --accent-hover: #8ef0b8;
+  --accent-soft: #173323;
+  --accent-soft-foreground: #8ef0b8;
+  --success: #5ee39a;
+  --success-foreground: #0e110f;
+  --success-soft: #173323;
+  --success-soft-foreground: #8ef0b8;
+  --warning: #ff9b6a;
+  --warning-foreground: #0e110f;
+  --warning-soft: #3a2216;
+  --warning-soft-foreground: #ffb38a;
+  --danger: #ff9b6a;
+  --danger-foreground: #0e110f;
+  --danger-soft: #3a2216;
+  --danger-soft-foreground: #ffb38a;
+
+  --field-background: #0e110f;
+  --field-border: #3a413c;
+
+  --terminal: #050706;
+  --terminal-foreground: #eef1ee;
+  --terminal-muted: #9aa39d;
+  --terminal-accent: #5ee39a;
+  --terminal-border: #2a302c;
+}
+
+@theme inline {
+  --color-terminal: var(--terminal);
+  --color-terminal-foreground: var(--terminal-foreground);
+  --color-terminal-muted: var(--terminal-muted);
+  --color-terminal-accent: var(--terminal-accent);
+  --color-terminal-border: var(--terminal-border);
 }

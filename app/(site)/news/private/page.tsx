@@ -2,15 +2,13 @@
 
 import type { RSSItem, RSSFeed } from '@/types/rss';
 
-import { Card, Spinner, Separator } from '@heroui/react';
-import { buttonVariants } from '@heroui/styles';
-import NextLink from 'next/link';
+import { Spinner } from '@heroui/react';
 import React, { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { useSession } from 'next-auth/react';
-import { Shield } from 'lucide-react';
 
-import { subtitle, title } from '@/components/primitives';
+import { AccessDenied } from '@/components/access-denied';
+import { PageHeader } from '@/components/page-header';
 import { fetcher } from '@/lib/utils/fetchers';
 import { AddFeedForm } from '@/components/news/AddFeedForm';
 import { FeedList } from '@/components/news/FeedList';
@@ -149,91 +147,59 @@ export default function PrivateNewsPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
-        <Card className="w-full max-w-md shadow-lg border border-border">
-          <Card.Header className="flex flex-col items-center gap-2 pt-8 pb-0">
-            <div className="w-14 h-14 rounded-2xl bg-danger/10 flex items-center justify-center mb-2">
-              <Shield className="w-7 h-7 text-danger" aria-hidden="true" />
-            </div>
-            <h1 className="text-2xl font-bold" id="access-denied-title">
-              Access Denied
-            </h1>
-            <p className="text-muted text-sm">
-              You must be signed in to view this page.
-            </p>
-          </Card.Header>
-          <Separator className="mt-4" />
-          <Card.Content className="px-8 py-6 flex justify-center">
-            <NextLink
-              aria-label="Sign in to view private feeds"
-              href="/auth/signin"
-              id="btn-signin-private"
-              className={buttonVariants({ variant: 'primary', size: 'lg' }) + ' font-semibold'}
-            >
-              Sign In
-            </NextLink>
-          </Card.Content>
-        </Card>
-      </div>
+      <AccessDenied
+        linkId="btn-signin-private"
+        linkLabel="Sign in to view private feeds"
+      />
     );
   }
 
   return (
-    <div
-      className="flex flex-col gap-10 py-8 md:py-10"
-      role="main"
-      aria-label="Private RSS feeds manager"
-    >
-      {/* Header */}
-      <section className="flex flex-col items-center justify-center gap-4">
-        <div className="inline-block max-w-2xl text-center">
-          <h1 className={title()} id="private-news-title">
-            Your Private News Feeds
-          </h1>
-          <p className={subtitle({ class: 'mt-4' })}>
-            Manage and view your RSS feed subscriptions.
-          </p>
-        </div>
-      </section>
-
-      {/* Add Feed Form */}
-      <AddFeedForm
-        addingFeed={addingFeed}
-        feedError={feedError}
-        handleAddFeed={handleAddFeed}
-        newFeedCategory={newFeedCategory}
-        newFeedName={newFeedName}
-        newFeedUrl={newFeedUrl}
-        setNewFeedCategory={setNewFeedCategory}
-        setNewFeedName={setNewFeedName}
-        setNewFeedUrl={setNewFeedUrl}
+    <div className="flex flex-col gap-9 pt-14 pb-24">
+      <PageHeader
+        id="private-news-title"
+        label="02 · API Integration · protected route"
+        title="Your Private News Feeds"
+        subtitle="Manage and view your RSS feed subscriptions."
       />
 
-      {/* Feed List & Content */}
-      <div
-        className="grid grid-cols-1 lg:grid-cols-12 gap-6"
-        id="feeds-container"
-      >
-        <FeedList
-          deletingFeedId={deletingFeedId}
-          error={feedsError}
-          feeds={userFeeds}
-          isLoading={feedsLoading}
-          refreshingFeed={refreshingFeed}
-          selectedFeed={selectedFeed}
-          onDeleteFeed={handleDeleteFeed}
-          onRefreshFeed={refreshFeed}
-          onSelectFeed={handleSelectFeed}
-        />
+      {/* Feed List & Add Form | Content */}
+      <div className="flex flex-wrap items-start gap-6" id="feeds-container">
+        <aside className="flex max-w-full flex-[1_1_320px] flex-col gap-4">
+          <FeedList
+            deletingFeedId={deletingFeedId}
+            error={feedsError}
+            feeds={userFeeds}
+            isLoading={feedsLoading}
+            refreshingFeed={refreshingFeed}
+            selectedFeed={selectedFeed}
+            onDeleteFeed={handleDeleteFeed}
+            onRefreshFeed={refreshFeed}
+            onSelectFeed={handleSelectFeed}
+          />
+          <AddFeedForm
+            addingFeed={addingFeed}
+            feedError={feedError}
+            handleAddFeed={handleAddFeed}
+            newFeedCategory={newFeedCategory}
+            newFeedName={newFeedName}
+            newFeedUrl={newFeedUrl}
+            setNewFeedCategory={setNewFeedCategory}
+            setNewFeedName={setNewFeedName}
+            setNewFeedUrl={setNewFeedUrl}
+          />
+        </aside>
 
-        <FeedContent
-          error={feedItemsError}
-          feedItemsData={feedItemsData}
-          isLoading={isLoadingFeedItems}
-          refreshingFeedId={refreshingFeed}
-          selectedFeed={selectedFeed}
-          onRefreshFeed={refreshFeed}
-        />
+        <div className="min-w-0 flex-[999_1_560px]">
+          <FeedContent
+            error={feedItemsError}
+            feedItemsData={feedItemsData}
+            isLoading={isLoadingFeedItems}
+            refreshingFeedId={refreshingFeed}
+            selectedFeed={selectedFeed}
+            onRefreshFeed={refreshFeed}
+          />
+        </div>
       </div>
     </div>
   );

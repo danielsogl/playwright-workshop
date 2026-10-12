@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, TextField, Label, Input, Button } from '@heroui/react';
+import { TextField, Label, Input, Button } from '@heroui/react';
 import { Plus } from 'lucide-react';
 
 interface AddFeedFormProps {
@@ -28,20 +28,21 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
   feedError,
 }) => {
   return (
-    <Card
-      className="border border-border"
+    <section
+      className="rounded-2xl border border-border bg-surface p-5"
       aria-label="Add new RSS feed"
     >
-      <Card.Content className="p-6">
+      <div>
+        <h2 className="mb-3.5 text-[15px] font-semibold">Add a feed</h2>
         <form
           aria-label="Add new RSS feed form"
-          className="flex flex-col md:flex-row gap-4 items-end"
+          className="flex flex-col gap-3.5"
           onSubmit={handleAddFeed}
           name="add-feed-form"
         >
           <TextField
             aria-label="Name for the new feed"
-            className="grow"
+            className="flex flex-col gap-1.5"
             isDisabled={addingFeed}
             value={newFeedName}
             name="feed-name"
@@ -52,7 +53,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </TextField>
           <TextField
             aria-label="URL for the new feed"
-            className="grow"
+            className="flex flex-col gap-1.5"
             isDisabled={addingFeed}
             type="url"
             value={newFeedUrl}
@@ -64,7 +65,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </TextField>
           <TextField
             aria-label="Optional category for the new feed"
-            className="grow"
+            className="flex flex-col gap-1.5"
             isDisabled={addingFeed}
             value={newFeedCategory}
             name="feed-category"
@@ -75,7 +76,7 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </TextField>
           <Button
             aria-label={addingFeed ? 'Adding new feed' : 'Add new feed'}
-            className="min-w-30 font-semibold"
+            className="w-full rounded-full font-semibold"
             variant="primary"
             isPending={addingFeed}
             type="submit"
@@ -86,11 +87,14 @@ export const AddFeedForm: React.FC<AddFeedFormProps> = ({
           </Button>
         </form>
         {feedError && (
-          <div className="mt-3 p-3 bg-danger/10 text-danger border border-danger rounded-lg text-sm" role="alert">
+          <div
+            className="mt-3 rounded-xl bg-danger-soft p-3 text-sm text-danger-soft-foreground"
+            role="alert"
+          >
             {feedError}
           </div>
         )}
-      </Card.Content>
-    </Card>
+      </div>
+    </section>
   );
 };

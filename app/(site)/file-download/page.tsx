@@ -1,42 +1,43 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, Chip, Separator } from '@heroui/react';
-import { FileText, FileJson, FileSpreadsheet, FileDown, Info } from 'lucide-react';
-import { title, subtitle } from '@/components/primitives';
+import { Button } from '@heroui/react';
+import { Check, Download, Loader2 } from 'lucide-react';
+
+import { PageHeader } from '@/components/page-header';
 import jsPDF from 'jspdf';
 
 const downloadCards = [
   {
     id: 'pdf',
-    icon: FileText,
+    filename: 'playwright-demo.pdf',
+    tile: 'bg-terminal text-terminal-accent',
     title: 'PDF Download',
     description: 'Generiert und laedt eine PDF-Datei mit jsPDF herunter.',
-    color: 'primary' as const,
     testId: 'download-pdf-button',
   },
   {
     id: 'json',
-    icon: FileJson,
+    filename: 'test-data.json',
+    tile: 'bg-success-soft text-success-soft-foreground',
     title: 'JSON Download',
     description: 'Laedt eine JSON-Datei mit Testdaten herunter.',
-    color: 'secondary' as const,
     testId: 'download-json-button',
   },
   {
     id: 'csv',
-    icon: FileSpreadsheet,
+    filename: 'benutzer-daten.csv',
+    tile: 'bg-warning-soft text-warning-soft-foreground',
     title: 'CSV Download',
     description: 'Laedt eine CSV-Datei mit Benutzerdaten herunter.',
-    color: 'success' as const,
     testId: 'download-csv-button',
   },
   {
     id: 'text',
-    icon: FileDown,
+    filename: 'demo-text.txt',
+    tile: 'bg-default text-foreground',
     title: 'Text Download',
     description: 'Laedt eine einfache Textdatei herunter.',
-    color: 'warning' as const,
     testId: 'download-text-button',
   },
 ];
@@ -165,120 +166,112 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
     text: handleTextDownload,
   };
 
-  const colorToVariant = {
-    primary: 'primary',
-    secondary: 'secondary',
-    success: 'primary',
-    warning: 'primary',
-  } as const;
+  const isDone = downloadStatus.includes('erfolgreich');
 
   return (
-    <main className="flex flex-col gap-10 py-8 md:py-10">
-      {/* Header */}
-      <section className="flex flex-col items-center justify-center gap-4">
-        <div className="inline-block max-w-2xl text-center">
-          <h1 className={title()} id="download-title">
-            File Download Demo
-          </h1>
-          <p className={subtitle({ class: 'mt-4' })}>
-            Verschiedene Datei-Download-Szenarien f&uuml;r Playwright-Tests
-          </p>
-        </div>
-      </section>
-
-      {/* Download Status */}
-      {downloadStatus && (
-        <div
-          className="flex justify-center"
-          role="status"
-          aria-live="polite"
-        >
-          <Chip
-            color={downloadStatus.includes('erfolgreich') ? 'success' : 'accent'}
-            variant="soft"
-            size="lg"
+    <div className="flex flex-col gap-8 pt-14 pb-24">
+      <PageHeader
+        id="download-title"
+        label="04 · waitForEvent('download')"
+        title="File Download Demo"
+        subtitle="Verschiedene Datei-Download-Szenarien für Playwright-Tests"
+      >
+        {/* Download Status */}
+        {downloadStatus && (
+          <div
+            className={`inline-flex min-h-11 items-center gap-2.5 rounded-full px-4 text-sm font-medium ${
+              isDone
+                ? 'bg-success-soft text-success-soft-foreground'
+                : 'bg-default text-foreground'
+            }`}
+            role="status"
+            aria-live="polite"
           >
+            {isDone ? (
+              <Check className="size-4" strokeWidth={2.5} aria-hidden="true" />
+            ) : (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            )}
             {downloadStatus}
-          </Chip>
-        </div>
-      )}
+          </div>
+        )}
+      </PageHeader>
 
       {/* Download Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {downloadCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <Card
-              key={card.id}
-              className="border border-border hover:border-border transition-colors"
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {downloadCards.map((card) => (
+          <article
+            key={card.id}
+            className="flex gap-5 rounded-2xl border border-border bg-surface p-5"
+          >
+            <div
+              aria-hidden="true"
+              className={`flex h-[108px] w-[88px] shrink-0 items-end rounded-[10px] p-3 font-mono text-lg font-semibold [clip-path:polygon(0_0,72%_0,100%_22%,100%_100%,0_100%)] ${card.tile}`}
             >
-              <Card.Content className="p-6 gap-4">
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`w-12 h-12 rounded-xl bg-${card.color}/10 flex items-center justify-center shrink-0`}
-                  >
-                    <Icon
-                      className={`w-6 h-6 text-${card.color}`}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold mb-1">{card.title}</h3>
-                    <p className="text-sm text-muted mb-4">
-                      {card.description}
-                    </p>
-                    <Button
-                      variant={colorToVariant[card.color]}
-                      onPress={handlers[card.id]}
-                      className="w-full"
-                      data-testid={card.testId}
-                    >
-                      Download {card.id.toUpperCase()}
-                    </Button>
-                  </div>
-                </div>
-              </Card.Content>
-            </Card>
-          );
-        })}
+              {card.id.toUpperCase()}
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <h3 className="font-display text-[22px] font-bold">
+                {card.title}
+              </h3>
+              <p className="text-[15px] text-muted">{card.description}</p>
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-2.5 pt-2.5">
+                <code className="font-mono text-[13px] text-muted">
+                  {card.filename}
+                </code>
+                <Button
+                  variant="outline"
+                  onPress={handlers[card.id]}
+                  className="min-h-11 rounded-full border-foreground font-semibold hover:bg-foreground hover:text-background"
+                  data-testid={card.testId}
+                >
+                  <Download className="size-4" aria-hidden="true" />
+                  Download {card.id.toUpperCase()}
+                </Button>
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
 
-      <Separator />
-
       {/* Testing Information */}
-      <section className="flex flex-col gap-4">
-        <h2 className={title({ size: 'sm', class: 'text-center' })}>
-          Playwright Testing Hinweise
-        </h2>
-        <Card className="border border-border">
-          <Card.Content className="p-6">
-            <div className="flex items-start gap-3 mb-4">
-              <Info className="w-5 h-5 text-accent shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-sm text-muted">
-                Nutze diese Methoden um File Downloads in Playwright zu testen:
-              </p>
+      <section
+        aria-labelledby="download-hints-title"
+        className="flex flex-col gap-5 rounded-[20px] bg-terminal p-8 text-terminal-foreground"
+      >
+        <div className="flex flex-wrap justify-between gap-2">
+          <h2
+            className="font-display text-[28px] font-bold tracking-[-0.01em]"
+            id="download-hints-title"
+          >
+            Playwright Testing Hinweise
+          </h2>
+          <p className="text-terminal-muted">
+            Nutze diese Methoden um File Downloads in Playwright zu testen:
+          </p>
+        </div>
+        <dl className="m-0 grid gap-px overflow-hidden rounded-xl border border-terminal-border bg-terminal-border sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              label: 'Download-Promise',
+              code: "page.waitForEvent('download')",
+            },
+            { label: 'Dateiname', code: 'download.suggestedFilename()' },
+            { label: 'Speichern', code: 'download.saveAs()' },
+            { label: 'Validierung', code: 'download.createReadStream()' },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="flex flex-col gap-1.5 bg-terminal px-[18px] py-4"
+            >
+              <dt className="text-[13px] text-terminal-muted">{item.label}</dt>
+              <dd className="font-mono text-sm text-terminal-accent">
+                {item.code}
+              </dd>
             </div>
-            <div className="grid md:grid-cols-2 gap-3">
-              {[
-                { label: 'Download-Promise', code: "page.waitForEvent('download')" },
-                { label: 'Dateiname', code: 'download.suggestedFilename()' },
-                { label: 'Speichern', code: 'download.saveAs()' },
-                { label: 'Validierung', code: 'download.createReadStream()' },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="p-3 bg-default-soft rounded-lg"
-                >
-                  <p className="text-xs text-muted mb-1">{item.label}</p>
-                  <code className="text-sm text-accent font-mono">
-                    {item.code}
-                  </code>
-                </div>
-              ))}
-            </div>
-          </Card.Content>
-        </Card>
+          ))}
+        </dl>
       </section>
-    </main>
+    </div>
   );
 }
