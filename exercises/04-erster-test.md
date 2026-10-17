@@ -1,9 +1,9 @@
 # Übung 4 – Erster Test mit Assertions
 
-**Ziel:** Du schreibst Tests mit Assertions, die auf Elemente warten, und lernst zwei Debug-Werkzeuge kennen.
-**Zeit:** 25 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/04-erster-test` · **Datei:** `e2e/04-erster-test.spec.ts`
+**Ziel:** Du schreibst Tests mit Assertions, die auf Elemente warten.
+**Zeit:** 20 Min. (Pflicht) · Bonus: +5 Min. · **Startbranch:** `git switch ex/04-erster-test` · **Datei:** `e2e/04-erster-test.spec.ts`
 
-> Roter Faden: Baut auf: Übung 2, du löst die dort aufgeschobenen Assertions auf `/` und `/news/public` ein. · Du gibst weiter: dein Assertion-Vokabular (`expect`, Auto-Waiting), Grundlage für den Feature-Test in Übung 5. · Zurückgefallen? → `git switch ex/04-erster-test` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/04-erster-test ex/05-suche`.
+> Roter Faden: Baut auf: Übung 2, du löst die dort aufgeschobenen Assertions auf `/` und `/news/public` ein. · Du gibst weiter: dein Assertion-Vokabular (`expect`, Auto-Waiting), Grundlage für die Debugging-Übung 4b und den Feature-Test in Übung 5. · Zurückgefallen? → `git switch ex/04-erster-test` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/04-erster-test ex/04b-debugging`.
 
 **Auto-Waiting** heißt: Aktionen und `expect`-Assertions warten selbst, bis ein Element bereit ist. Feste Zahlen (20 Artikel) gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true`).
 
@@ -36,26 +36,14 @@ Auf `/news/public`: Das Suchfeld („Search news articles“, Rolle `textbox`) i
 Assertions: `toBeEditable()`, `toBeEmpty()`, `toHaveValue()`. Die Artikelzahl liest du mit `count()`, den Zähler suchst du per ``getByText(`${n} articles found`, { exact: true })``.
 </details>
 
-### Aufgabe 4 – Debuggen
-Starte deine Datei mit `npx playwright test e2e/04-erster-test.spec.ts --debug`. Gehe mit dem Step-Button durch den ersten Test und beobachte die Actionability-Logs. Starte dann `--ui` und klicke im Zeitstrahl auf einen Schritt.
-
-**Fertig, wenn:** du im Inspector mindestens einen Schritt ausgeführt und im UI-Mode den DOM-Snapshot eines Schritts gesehen hast.
-
-<details><summary>Tipp</summary>
-Der Inspector zeigt dir, worauf Playwright vor einem Klick wartet (sichtbar, stabil, aktiviert). Im UI-Mode gehst du per „Time-Travel“ durch die Aktionen.
-</details>
-
 ### Alles zusammen
 `npx playwright test e2e/04-erster-test.spec.ts`
 
 **Fertig, wenn:** alle Tests in allen Browsern grün sind.
 
 ## Bonus (optional)
-### Bonus A – Theme-Umschalter mit Assertions
+### Bonus – Theme-Umschalter mit Assertions
 Schreibe einen Test, der den sichtbaren Theme-Umschalter (Rolle `switch`) klickt und prüft, dass sich die Klasse von `<html>` ändert und beim zweiten Klick zurückkehrt. **Fertig, wenn:** der Test grün ist.
 
-### Bonus B – Trace
-Führe die Datei mit `--trace on` aus, öffne `npx playwright show-report` und dort den Trace eines Tests. **Fertig, wenn:** du im Trace eine Aktion mit Screenshot gesehen hast.
-
 ## Wenn du nicht weiterkommst
-Musterlösung ansehen: `git diff ex/04-erster-test ex/05-suche` · oder `git switch ex/05-suche`.
+Musterlösung ansehen: `git diff ex/04-erster-test ex/04b-debugging` · oder `git switch ex/04b-debugging`.

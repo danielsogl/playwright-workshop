@@ -1,7 +1,7 @@
 # Übung 18 – KI-gestütztes Testen: Agents, Seed, Planner, Generator, Healer
 
 **Ziel:** Du richtest das offizielle Playwright-KI-Setup ein und lässt dir einen Test planen, generieren und heilen. Dabei erkennst du, wo die KI hilft und wo es dein Testing-Know-how braucht.
-**Zeit:** 50 Min. (Kern: Aufgaben 1–4) · Bonus: +20 Min. · **Startbranch:** `git switch ex/18-ai-assisted` · **Dateien:** `e2e/seed.spec.ts`, `specs/*.md`, `e2e/news-search.spec.ts` (frei benennbar)
+**Zeit:** 35 Min. (Kern: Aufgaben 1–3) · Bonus: +20 Min. · **Startbranch:** `git switch ex/18-ai-assisted` · **Dateien:** `e2e/seed.spec.ts`, `specs/*.md`, `e2e/news-search.spec.ts` (frei benennbar)
 
 > Roter Faden: Baut auf der App auf, die du von Hand getestet hast. Deshalb erkennst du, ob ein generierter Test gut ist. · Du gibst weiter: ein Repo, in dem ein Coding Agent Playwright bedienen kann. · Zurückgefallen? `git switch ex/18-ai-assisted` (Startbranch: enthält die Lösungen der Übungen 1–17, aber noch kein KI-Setup). Die Lösung der Übung (Agent-Dateien, `.mcp.json`, Seed) zeigt `git diff ex/18-ai-assisted ex/end`. Du brauchst keine früheren Übungen, nur die laufende App.
 
@@ -30,22 +30,24 @@ npx playwright init-agents --loop=claude
 
 Schau dir an, was entstanden ist: die drei Agent-Dateien (`.claude/agents/playwright-test-*.md`), `.mcp.json` und der Seed-Test. Öffne `playwright-test-planner.md` und lies die Zeile `tools:`.
 
-**Fertig, wenn:** Drei Agent-Dateien (planner, generator, healer), `.mcp.json` mit dem Server `playwright-test` und `e2e/seed.spec.ts` existieren. Du kannst beantworten, warum der Planner keine Dateien frei schreiben darf (nur über `planner_save_plan`).
+Ersetze danach das leere Skelett `e2e/seed.spec.ts` durch diesen Seed:
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('seed', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveTitle(/Playwright Demo/);
+});
+```
+
+**Fertig, wenn:** Drei Agent-Dateien (planner, generator, healer), `.mcp.json` mit dem Server `playwright-test` und `e2e/seed.spec.ts` existieren, `npx playwright test e2e/seed.spec.ts --project=chromium` ist grün. Du kannst beantworten, warum der Planner keine Dateien frei schreiben darf (nur über `planner_save_plan`).
 
 <details><summary>Tipp</summary>
-`init-agents` überschreibt eine bestehende `.mcp.json`: prüfe nach dem Lauf `git diff`. Nach jedem Playwright-Update erneut ausführen. Wo der Seed landet, steuern `--project`/`--config`.
+`init-agents` überschreibt eine bestehende `.mcp.json`: prüfe nach dem Lauf `git diff`. Nach jedem Playwright-Update erneut ausführen. Wo der Seed landet, steuern `--project`/`--config`. Playwright findet den Seed am Dateinamen (`*seed*`) im `testDir`. Für Flows mit Login würdest du hier die `authenticatedPage`-Fixture aus Übung 8 importieren. Ein schlechter Seed ist teuer: Jeder generierte Test erbt ihn.
 </details>
 
-### Aufgabe 2 – Seed-Test schreiben
-`init-agents` legt `e2e/seed.spec.ts` nur als leeres Skelett an (ein Test ohne Inhalt, Kommentar „generate code here“). Öffne die Datei und schreibe den Seed selbst: Er lädt die Startseite `/` und prüft den Seitentitel (er enthält „Playwright Demo“).
-
-**Fertig, wenn:** `npx playwright test e2e/seed.spec.ts --project=chromium` ist grün und der Seed prüft den Seitentitel (`/Playwright Demo/`).
-
-<details><summary>Tipp</summary>
-Playwright findet den Seed am Dateinamen (`*seed*`) im `testDir` (`e2e/`). Für Flows, die Login brauchen, würdest du hier die `authenticatedPage`-Fixture aus Übung 8 importieren. Ein schlechter Seed ist teuer: jeder generierte Test erbt ihn.
-</details>
-
-### Aufgabe 3 – Planner: Testplan erzeugen und reviewen
+### Aufgabe 2 – Planner: Testplan erzeugen und reviewen
 Starte Claude Code im Repo-Root und gib diesen Prompt:
 
 > Nutze den **playwright-test-planner**, um Tests für die News-Suche auf `/news/public` zu planen.
@@ -58,7 +60,7 @@ Starte Claude Code im Repo-Root und gib diesen Prompt:
 Der Planner kann ein paar Minuten explorieren und fragt eventuell Rechte für Tools ab. Bestätige nur Tools von `playwright-test`. Ein anderer Plan als beim Nachbarn ist normal.
 </details>
 
-### Aufgabe 4 – Generator: Plan zum Test
+### Aufgabe 3 – Generator: Plan zum Test
 Prompt:
 
 > Nutze den **playwright-test-generator** für Szenario 1.1 aus `specs/<dein-plan>.md`.

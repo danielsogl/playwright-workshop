@@ -87,6 +87,9 @@ Mit **429** („Too Many Requests“) meldet eine API: zu viele Anfragen (Rate L
 ### Bonus C – Hängende API
 Beantworte den Request nie (`await page.route(..., () => {})`): Der Ladezustand bleibt stehen und es gibt 0 Artikel.
 
+### Bonus D – Auf die echte Antwort warten
+Mach Übung 12 (`exercises/12-waitforresponse.md`): Statt zu mocken, wartest du mit `page.waitForResponse()` auf die echte Antwort und prüfst sie. Startbranch: `git switch ex/12-waitforresponse`.
+
 ## Wenn du nicht weiterkommst
 
 Musterlösung ansehen: `git diff ex/11-api-mocking ex/12-waitforresponse` oder `git switch ex/12-waitforresponse`.

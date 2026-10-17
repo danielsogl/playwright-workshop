@@ -1,7 +1,7 @@
 # Übung 16 – Mobile Testing
 
 **Ziel:** Du emulierst mobile Geräte und prüfst, dass sich Navigation und News-Grid der Feed App je nach Bildschirmbreite richtig verhalten.
-**Zeit:** 40 Min. (Pflicht) · Bonus: +15 Min. · **Startbranch:** `git switch ex/16-mobile` · **Datei:** `e2e/16-mobile.spec.ts`
+**Zeit:** 25 Min. (Pflicht) · Bonus: +30 Min. · **Startbranch:** `git switch ex/16-mobile` · **Datei:** `e2e/16-mobile.spec.ts`
 
 > Roter Faden: Baut auf Übung 11 auf (Feed mocken) und optional auf Übung 9 (`NewsPage`) · Du gibst weiter: Mobile-Projekte in der Config · Zurückgefallen? `git switch ex/16-mobile` (Startbranch enthält die Lösungen aller früheren Übungen, nicht die von Übung 16). Musterlösung: `git diff ex/16-mobile ex/16b-ci-lokal`.
 
@@ -34,7 +34,13 @@ Lege `e2e/16-mobile.spec.ts` an und schreibe zwei Tests:
 `getByRole('navigation', { name: 'Main navigation', exact: true })` unterscheidet sie von „Main navigation bar“. Unsichtbare Elemente prüfst du mit `toBeHidden()`.
 </details>
 
-### Aufgabe 3 – News-Grid auf drei Viewports
+### Aufgabe 3 – Ausführen
+Starte nacheinander `npx playwright test e2e/16-mobile.spec.ts --project=chromium`, dann `--project="Mobile Chrome"`, dann ohne `--project`.
+**Fertig, wenn:** alle drei Läufe ohne `failed` enden. Der Lauf ohne `--project` nutzt alle Projekte, auch die Mobile-Projekte. Grün ist er nur wegen `testMatch` (Aufgabe 1) und der festen Viewports (Aufgabe 2).
+
+## Bonus (optional)
+
+### Bonus A – News-Grid auf drei Viewports
 Prüfe die Spaltenzahl des Grids (`feed`, Name „News articles“) auf `/news/public`: 3 Spalten bei 1280 px, 2 bei 768 px, 1 bei 375 px. Mocke den Feed wie in Übung 11 (`route.fulfill({ path: 'app/api/feed.json' })`) und warte auf den ersten `article`.
 **Fertig, wenn:** drei Tests grün sind, in allen fünf Projekten.
 <details><summary>Tipp</summary>
@@ -42,13 +48,7 @@ Prüfe die Spaltenzahl des Grids (`feed`, Name „News articles“) auf `/news/p
 `toHaveCSS('grid-template-columns', …)` vergleicht den **berechneten** Wert. Der besteht aus Pixel-Werten, z. B. `"394.656px 394.672px 394.656px"`, nicht aus `repeat(3, …)`. Prüfe mit einem regulären Ausdruck, wie viele Werte es sind, z. B. `/^[\d.]+px [\d.]+px$/` für 2 Spalten.
 </details>
 
-### Aufgabe 4 – Ausführen
-Starte nacheinander `npx playwright test e2e/16-mobile.spec.ts --project=chromium`, dann `--project="Mobile Chrome"`, dann ohne `--project`.
-**Fertig, wenn:** alle drei Läufe ohne `failed` enden. Der Lauf ohne `--project` nutzt alle Projekte, auch die Mobile-Projekte. Grün ist er nur wegen `testMatch` (Aufgabe 1) und der festen Viewports (Aufgaben 2 und 3).
-
-## Bonus (optional)
-
-### Bonus A – Touch-Gesten
+### Bonus B – Touch-Gesten
 Ergänze in derselben Datei einen `describe`-Block mit `test.use({ …devices['iPhone 13'] })`. Tippe in einem Test mit `tap()` auf „Open menu“, dann auf den Link „Navigate to Public News“. Erwartet: URL `/news/public`, erster `article` sichtbar.
 **Fertig, wenn:** der Test grün ist. `tap()` braucht `hasTouch: true`, das setzt die Geräte-Emulation.
 <details><summary>Tipp</summary>
@@ -59,11 +59,11 @@ const { defaultBrowserType: _ignored, ...iPhone13 } = devices['iPhone 13'];
 ```
 </details>
 
-### Bonus B – `window.screen`
+### Bonus C – `window.screen`
 Seit Playwright 1.64 liefert `window.screen` in der Emulation die Größe aus der Gerätebeschreibung. Lies `screen.width` und `screen.height` mit `page.evaluate` unter `iPhone 13` aus und vergleiche mit der Gerätebeschreibung.
 **Fertig, wenn:** der Test grün ist.
 
-### Bonus C – `isMobile`
+### Bonus D – `isMobile`
 Die Test-Variable `isMobile` ist in Mobile-Projekten wahr. Schreibe einen Test, der mit `test.skip(!isMobile, …)` nur dort läuft und das Handy von Hoch- auf Querformat (667 × 375) dreht: Die Artikelzahl bleibt gleich. (`isMobile` wird in Firefox nicht unterstützt.)
 **Fertig, wenn:** der Test in `Mobile Chrome` grün ist und in den Desktop-Projekten als „skipped“ erscheint.
 
