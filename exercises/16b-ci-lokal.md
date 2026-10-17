@@ -87,7 +87,7 @@ Es läuft kein Test, der Push geht durch. Das ist eine Lücke (siehe Bonus A). H
 </details>
 
 ### Bonus C – CI-Vorlage anpassen
-Passe die Vorlage aus `exercises/ci-templates/` für das CI-System in deinem Unternehmen an (GitHub Actions, GitLab, Azure DevOps oder Jenkins). Pinne das Docker-Image passend zur Playwright-Version (`mcr.microsoft.com/playwright:v1.64.0-noble`).
+Passe die Vorlage aus `exercises/ci-templates/` für das CI-System in deinem Unternehmen an (GitHub Actions, GitLab, Azure DevOps oder Jenkins). Pinne das Docker-Image passend zur Playwright-Version (`mcr.microsoft.com/playwright:v1.64.1-noble`).
 **Fertig, wenn:** die Vorlage `npm run ci` aufruft und der Image-Tag zu deiner Playwright-Version passt.
 
 ## Wenn du nicht weiterkommst
