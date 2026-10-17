@@ -1,7 +1,7 @@
 # Übung 17 – Capstone: der komplette User-Flow
 
-**Ziel:** Du führst Fixture, Page Object und Assertions aus den Übungen 7–9 zu einem einzigen End-to-End-Test zusammen: Login → Public News → Private Feeds → Settings → Logout.
-**Zeit:** 60 Min. (Pflicht) · Bonus: +10 Min. · **Startbranch:** `git switch ex/17-capstone` · **Datei:** `e2e/17-capstone.spec.ts`
+**Ziel:** Du führst Fixture, Page Object und Assertions aus den Übungen 7–9 zu einem einzigen End-to-End-Test zusammen: Login → Public News → Private Feeds → Logout. Settings kommen im Bonus dazu.
+**Zeit:** 45 Min. (Pflicht) · Bonus: +20 Min. · **Startbranch:** `git switch ex/17-capstone` · **Datei:** `e2e/17-capstone.spec.ts`
 
 > Roter Faden: Baut auf Übung 7 (API-Login), Übung 8 (`authenticatedPage`-Fixture) und Übung 9 (`NewsPage`) auf. · Du gibst weiter: einen Smoke-Test der kritischen User-Journey. · Zurückgefallen? `git switch ex/17-capstone` (enthält die Lösungen aller früheren Übungen, nicht die dieser Übung). Die Lösung dieser Übung steht im Folgebranch: `git diff ex/17-capstone ex/18-ai-assisted`.
 
@@ -61,27 +61,26 @@ Gehe auf `/news/private` (Überschrift „Your Private News Feeds“). Lege übe
 Einträge zählst du mit `page.getByRole('list', { name: 'Your RSS feeds' }).getByRole('listitem')` und `toHaveCount`. Feste Zahlen gehen nicht, der Test-User kann schon Feeds haben: vergleiche relativ.
 </details>
 
-### Aufgabe 4 – Settings: Name ändern, Session-Update prüfen
-Gehe auf `/settings`. Ändere im Feld `Your name` den Namen auf `Capstone Tester` und sende mit `Submit profile update` ab. Prüfe zwei Dinge: das Success-Banner **und** die Initialen im Avatar der Navbar. Die Initialen stehen im Button `User profile actions menu`; sie beweisen, dass sich die Session über Komponentengrenzen hinweg aktualisiert hat.
-
-**Fertig, wenn:** Der Test sieht `Profile updated successfully!` und der Navbar-Button enthält `CT`.
-
-<details><summary>Tipp</summary>
-Das Feld ist vorbefüllt. Leere es erst (klicken, `ControlOrMeta+a`, `Delete`) und tippe dann mit `pressSequentially()`. Die Initialen sind der erste Buchstabe jedes Namensteils.
-</details>
-
-### Aufgabe 5 – Logout
+### Aufgabe 4 – Logout
 Öffne das User-Menü (`User profile actions menu`) und wähle `Log Out` (Rolle `menuitem`).
 
 **Fertig, wenn:** Der Link `Sign in to your account` ist sichtbar. Der gesamte Test läuft mit `npx playwright test e2e/17-capstone.spec.ts --project=chromium` grün durch (dein 1 Test; das Auth-Setup läuft vorher mit und wird zusätzlich gezählt).
 
 ## Bonus (optional)
 
-### Bonus A – Zweiter Browser
-Lass den Test mit `--project=webkit` laufen. Überlege, was ohne den Test Lock passieren würde, wenn chromium und webkit gleichzeitig laufen (`--project=chromium --project=webkit`).
+### Bonus A – Settings: Name ändern, Session-Update prüfen
+Gehe auf `/settings`. Ändere im Feld `Your name` den Namen auf `Capstone Tester` und sende mit `Submit profile update` ab. Prüfe zwei Dinge: das Success-Banner **und** die Initialen im Avatar der Navbar. Die Initialen stehen im Button `User profile actions menu`; sie beweisen, dass sich die Session über Komponentengrenzen hinweg aktualisiert hat.
 
-### Bonus B – Aufräumen
-Der Namenswechsel in Aufgabe 4 bleibt am Test-User hängen. Setze den Namen am Ende des Tests zurück oder lege dafür eine Fixture mit Cleanup an (Übung 8).
+Füge den Schritt vor dem Logout ein. Der neue Name bleibt am Test-User hängen: Setze ihn am Ende des Tests zurück oder lege dafür eine Fixture mit Cleanup an (Übung 8).
+
+**Fertig, wenn:** Der Test sieht `Profile updated successfully!`, der Navbar-Button enthält `CT` und der ursprüngliche Name ist danach wiederhergestellt.
+
+<details><summary>Tipp</summary>
+Das Feld ist vorbefüllt. Leere es erst (klicken, `ControlOrMeta+a`, `Delete`) und tippe dann mit `pressSequentially()`. Die Initialen sind der erste Buchstabe jedes Namensteils.
+</details>
+
+### Bonus B – Zweiter Browser
+Lass den Test mit `--project=webkit` laufen. Überlege, was ohne den Test Lock passieren würde, wenn chromium und webkit gleichzeitig laufen (`--project=chromium --project=webkit`).
 
 ## Wenn du nicht weiterkommst
 Musterlösung ansehen: `git diff ex/17-capstone ex/18-ai-assisted` · oder `git switch ex/18-ai-assisted` und `e2e/17-capstone.spec.ts` lesen.
