@@ -5,7 +5,7 @@
 
 > Roter Faden: Baut auf: Übung 2, dieselben Elemente (Theme-Umschalter, Suche), jetzt interaktiv. · Du gibst weiter: Interaktions-Muster (`click`, `fill`, `keyboard`) und den Login-Flow, den Übung 7 zum Auth-Setup ausbaut. · Zurückgefallen? → `git switch ex/03-interaktionen` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/03-interaktionen ex/04-erster-test`. Übung 2 ist keine harte Voraussetzung.
 
-Feste Zahlen (20 Artikel, 5 in „Business“) gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true` in deiner `.env`, siehe Übung 1).
+Feste Zahlen (20 Artikel, 5 in „Business“) gelten nur mit dem Offline-Feed (Standard, siehe Übung 1).
 
 Lege `e2e/03-interaktionen.spec.ts` an. Packe die vier Tests in einen gemeinsamen `test.describe`-Block. Von Aufgabe zu Aufgabe bekommst du weniger Anleitung.
 
@@ -43,7 +43,7 @@ Vom Seitenanfang aus liegen Skip-Link und Navbar vor dem Suchfeld, du bräuchtes
 1. leeres Formular absenden: du bleibst auf `/auth/signin`, es erscheint keine Fehlermeldung (die Felder sind Pflichtfelder, der Browser hält das Absenden an),
 2. nur E-Mail ausfüllen und absenden: du bleibst auf `/auth/signin`,
 3. falsches Passwort absenden: die Fehlermeldung „Invalid email or password“ erscheint,
-4. Zugangsdaten aus `.env` (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`) eintragen und absenden: du landest nicht mehr auf `/auth/signin`.
+4. Zugangsdaten des Test-Users (`test@example.com` / `password`) eintragen und absenden: du landest nicht mehr auf `/auth/signin`.
 
 **Fertig, wenn:** der Test grün ist.
 

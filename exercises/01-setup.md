@@ -3,7 +3,7 @@
 **Ziel:** Du prüfst, dass bei dir alles läuft: die Demo-App, Playwright und alle drei Browser. Du schreibst noch keinen eigenen Test.
 **Zeit:** 15 Min. (Pflicht) · Bonus: +15 Min. · **Startbranch:** `git switch ex/01-setup` · **Datei:** keine, du führst `e2e/example.spec.ts` aus
 
-> Roter Faden: Baut auf: nichts, das hier ist der Grundstein. · Du gibst weiter: ein lauffähiges Setup (`.env`, App, Browser), auf dem alle folgenden Übungen aufbauen. · Zurückgefallen? → `git switch ex/01-setup` (Startpunkt). Die Musterlösung der Bonus-Aufgaben zeigt `git diff ex/01-setup ex/01b-codegen`.
+> Roter Faden: Baut auf: nichts, das hier ist der Grundstein. · Du gibst weiter: ein lauffähiges Setup (App, Browser), auf dem alle folgenden Übungen aufbauen. · Zurückgefallen? → `git switch ex/01-setup` (Startpunkt). Die Musterlösung der Bonus-Aufgaben zeigt `git diff ex/01-setup ex/01b-codegen`.
 
 Ein **Smoke-Test** ist ein minimaler Test, der nur prüft, ob die App grundsätzlich läuft. Das Repo bringt mit `e2e/example.spec.ts` schon einen mit.
 
@@ -25,12 +25,10 @@ npx playwright install
 Der Browser-Download dauert ein paar Minuten. Lies in der Zwischenzeit Aufgabe 4. Unter Linux installiert `npx playwright install --with-deps` auch die Systemabhängigkeiten.
 </details>
 
-### Aufgabe 2 – `.env` anlegen und die App starten
-Kopiere `.env.example` nach `.env`. Die Datei enthält die Test-Zugangsdaten, ein `AUTH_SECRET` und `RSS_OFFLINE_MODE=true`.
+### Aufgabe 2 – App starten
+Starte die App mit `npm run dev`, öffne `http://localhost:3000` im Browser und melde dich mit `test@example.com` / `password` an.
 
-Der **Offline-Feed** liefert immer dieselben 20 statischen Artikel statt Live-RSS-Daten. Alle festen Zahlen im Workshop (z. B. 20 Artikel) gelten nur damit. Lass die Variable auf `true`.
-
-Starte die App mit `npm run dev` und öffne `http://localhost:3000` im Browser. Melde dich mit `test@example.com` / `password` an.
+Eine `.env` brauchst du nicht. Ohne sie läuft die App mit dem **Offline-Feed**: immer dieselben 20 statischen Artikel statt Live-RSS-Daten. Alle festen Zahlen im Workshop (z. B. 20 Artikel) gelten nur damit. Die Standardwerte stehen in `.env.example`.
 
 **Fertig, wenn:** du die Startseite mit „Welcome to the Playwright Demo App“ siehst und der Login klappt. Stoppe den Server danach mit `Ctrl+C`.
 
@@ -75,7 +73,7 @@ Lege `e2e/01-setup.spec.ts` an und schreibe einen Test „App ist erreichbar“:
 Schreibe einen zweiten Test, der `/`, `/news/public` und `/auth/signin` in einer Schleife aufruft. Prüfe pro Seite Titel und URL. **Fertig, wenn:** der Test grün ist.
 
 ### Bonus D – Umgebungsvariablen geprüft
-Prüfe in einem dritten Test, dass `process.env.TEST_USER_EMAIL` und `process.env.TEST_USER_PASSWORD` gesetzt sind (`toBeDefined()`). Die Config lädt die `.env` per `dotenv`. **Fertig, wenn:** der Test grün ist.
+Prüfe in einem dritten Test, dass `process.env.TEST_USER_EMAIL` und `process.env.TEST_USER_PASSWORD` gesetzt sind (`toBeDefined()`). Die Config setzt Standardwerte und lädt eine vorhandene `.env` per `dotenv`. **Fertig, wenn:** der Test grün ist.
 
 ## Wenn du nicht weiterkommst
 Musterlösung der Bonus-Aufgaben ansehen: `git diff ex/01-setup ex/01b-codegen` · oder `git switch ex/01b-codegen`.

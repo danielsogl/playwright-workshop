@@ -7,7 +7,7 @@
 
 ## Vorbereitung
 
-- `.env` ist angelegt (Übung 1) und enthält `RSS_OFFLINE_MODE=true`. Nur dann sind die festen Zahlen unten gültig (20 Artikel, 5 in „Business“).
+- Der Offline-Feed ist aktiv (Standard, siehe Übung 1). Nur dann sind die festen Zahlen unten gültig (20 Artikel, 5 in „Business“).
 - Diese Dateien existieren schon auf dem Startbranch, du nutzt sie nur:
   - `e2e/fixtures/auth.fixture.ts` – exportiert `test` und `expect` mit der Fixture `authenticatedPage` (eingeloggte Page).
   - `e2e/pages/NewsPage.ts` – Page Object mit `goto()`, `searchNews()`, `clearSearch()`, `filterByCategory()`, `resultsCount`, `newsFeed`.

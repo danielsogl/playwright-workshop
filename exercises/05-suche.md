@@ -5,7 +5,7 @@
 
 > Roter Faden: Baut auf: Übung 4, Assertions und Locators auf `/news/public`. · Du gibst weiter: deinen ersten vollwertigen Feature-Test. Genau diesen Test refactorierst du in Übung 9 ins Page Object Model, halte ihn griffbereit. Übung 11 (Mocking) greift ihn wieder auf. · Zurückgefallen? → `git switch ex/05-suche` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/05-suche ex/06-accessibility`.
 
-Die Zahlen in dieser Übung (20 Artikel, „Technology“ 9, „Cybersecurity“ 1) gelten nur mit dem Offline-Feed (`RSS_OFFLINE_MODE=true` in deiner `.env`). Der Live-Feed ändert sich laufend.
+Die Zahlen in dieser Übung (20 Artikel, „Technology“ 9, „Cybersecurity“ 1) gelten nur mit dem Offline-Feed (Standard, nur `RSS_OFFLINE_MODE=false` schaltet auf Live-Feeds). Der Live-Feed ändert sich laufend.
 
 ## Aufgaben
 

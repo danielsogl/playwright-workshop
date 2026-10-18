@@ -11,7 +11,7 @@
 
 `expect(page).toHaveScreenshot('name.png')` und `expect(locator).toHaveScreenshot(…)` warten selbst, bis das Bild stabil ist, und schalten Animationen ab. Warte vorher nur auf den erwarteten Inhalt (web-first), nie mit `networkidle` oder `waitForTimeout`.
 
-Die Zahlen und Daten gelten mit `RSS_OFFLINE_MODE=true` (siehe `.env`, Übung 1). Zusätzlich mockst du den Feed, damit sich die Bilder nicht ändern.
+Die Zahlen und Daten gelten mit `RSS_OFFLINE_MODE=true` (Standard, siehe Übung 1). Zusätzlich mockst du den Feed, damit sich die Bilder nicht ändern.
 
 **Das erwartest du beim Ausführen:**
 1. **Lauf 1** (`npx playwright test e2e/15-visual-regression.spec.ts --project=chromium`) schlägt fehl. Es gibt noch keine Baselines, Playwright schreibt sie und meldet Fehler, damit eine Pipeline nicht still grün wird.

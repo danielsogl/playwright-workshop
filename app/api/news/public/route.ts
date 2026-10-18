@@ -11,7 +11,8 @@ const parser = new Parser();
 
 export async function GET() {
   const offlineMode =
-    String(process.env.RSS_OFFLINE_MODE).toLowerCase() === 'true';
+    // Offline-Feed ist Standard, nur RSS_OFFLINE_MODE=false lädt Live-Feeds
+    String(process.env.RSS_OFFLINE_MODE ?? 'true').toLowerCase() === 'true';
 
   if (offlineMode) {
     try {

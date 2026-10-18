@@ -15,7 +15,7 @@
 
 ## Vorbereitung
 
-- Playwright ≥ 1.56 (`npx playwright --version`), App läuft (`npm run dev`) oder startet über `webServer`; `.env` mit `RSS_OFFLINE_MODE=true` (Übung 1).
+- Playwright ≥ 1.56 (`npx playwright --version`), App läuft (`npm run dev`) oder startet über `webServer`; Offline-Feed aktiv (Standard, siehe Übung 1).
 - Du brauchst einen KI-Client. Die Anleitung unten nutzt **Claude Code** (`--loop=claude`). Alternativen laut `npx playwright init-agents --help`: `--loop=copilot` bzw. `vscode` (VS Code mit Copilot), `codex`, `opencode`. Der Ablauf ist gleich, nur die Dateien landen woanders (z. B. `.github/agents/`).
 - KI ist nicht deterministisch: Formulierungen, Plan und Test sehen bei dir anders aus als beim Nachbarn. „Gut genug“ ist bei jedem Schritt unten beschrieben.
 

@@ -3,11 +3,11 @@
 **Ziel:** Du loggst dich einmal per UI ein, speicherst den Login-Zustand und nutzt ihn in allen Tests, die einen eingeloggten User brauchen.
 **Zeit:** 30 Min. (Pflicht) · Bonus: +20 Min. · **Startbranch:** `git switch ex/07-authentifizierung` · **Dateien:** `e2e/auth.setup.ts`, `e2e/07-authentifizierung.spec.ts`, `playwright.config.ts`
 
-> Roter Faden: Baut auf: Übung 3 (Login-Formular) und Übung 1 (`.env` mit `TEST_USER_EMAIL` und `TEST_USER_PASSWORD`). · Du gibst weiter: den gespeicherten Login-Zustand `playwright/.auth/user.json` und die Idee „Login einmal, Tests viele Male“. Die API-Variante (Bonus A) ist die Grundlage der Fixture in Übung 8. · Zurückgefallen? → `git switch ex/07-authentifizierung` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/07-authentifizierung ex/08-fixtures`.
+> Roter Faden: Baut auf: Übung 3 (Login-Formular) und Übung 1 (Test-User, in der Config als `TEST_USER_EMAIL` und `TEST_USER_PASSWORD` verfügbar). · Du gibst weiter: den gespeicherten Login-Zustand `playwright/.auth/user.json` und die Idee „Login einmal, Tests viele Male“. Die API-Variante (Bonus A) ist die Grundlage der Fixture in Übung 8. · Zurückgefallen? → `git switch ex/07-authentifizierung` (Startpunkt mit den Lösungen aller früheren Übungen). Die Musterlösung zeigt `git diff ex/07-authentifizierung ex/08-fixtures`.
 
 Ein **Setup-Projekt** ist ein eigenes Playwright-Projekt, das vor den Browser-Projekten läuft. Dein Login-Test lebt dort und speichert Cookies und Local Storage mit `storageState` in eine Datei (`user.json`). Die Browser-Projekte hängen per `dependencies` an dem Setup, so läuft der Login genau einmal pro Testlauf. Welche Tests den gespeicherten Zustand laden, entscheiden die Specs selbst per `test.use({ storageState })`.
 
-Zugangsdaten der Demo-App (Seed-Daten): Test-User `test@example.com` / `password`, Admin `admin@example.com` / `admin123`. Der Test-User steht auch in deiner `.env`.
+Zugangsdaten der Demo-App (Seed-Daten): Test-User `test@example.com` / `password`, Admin `admin@example.com` / `admin123`. Der Test-User steht in `process.env.TEST_USER_EMAIL` / `TEST_USER_PASSWORD`: Die Config setzt ihn als Standard, eine `.env` kann ihn überschreiben.
 
 ## Aufgaben
 

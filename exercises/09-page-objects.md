@@ -9,7 +9,7 @@ Ein **Page Object** ist eine Klasse, die eine Seite beschreibt: Locators und Akt
 
 ## Vorbereitung
 
-- App läuft mit `RSS_OFFLINE_MODE=true` (steht in `.env.example`, Übung 1 legt `.env` an). Die Übung läuft gegen den Offline-Feed mit 20 Artikeln, der Test bleibt dadurch stabil.
+- App läuft mit `RSS_OFFLINE_MODE=true` (Standard, siehe Übung 1). Die Übung läuft gegen den Offline-Feed mit 20 Artikeln, der Test bleibt dadurch stabil.
 - Alle Locators kennst du schon aus den Übungen 5 und 7. Übernimm sie von dort.
 
 ## Aufgaben

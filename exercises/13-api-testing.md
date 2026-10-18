@@ -5,7 +5,7 @@
 
 > Roter Faden: Baut auf Übung 7 (Login mit `test@example.com` / `password`) · Du gibst weiter: schnelle API-Tests als Ergänzung zu UI-Tests · Zurückgefallen? `git switch ex/13-api-testing`. Der Startbranch enthält die Lösungen der Übungen 1–12, aber nicht die dieser Übung. Musterlösung: `git diff ex/13-api-testing ex/14-clock`.
 
-API-Tests sind schnell, weil kein Browser eine Seite rendert. Die App läuft mit `RSS_OFFLINE_MODE=true` (siehe `.env.example`).
+API-Tests sind schnell, weil kein Browser eine Seite rendert. Die App läuft mit dem Offline-Feed (Standard).
 
 ## Begriffe
 

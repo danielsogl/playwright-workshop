@@ -11,6 +11,10 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+/* Ohne .env gilt der Test-User aus den Seed-Daten (wie in .env.example) */
+process.env.TEST_USER_EMAIL ??= 'test@example.com';
+process.env.TEST_USER_PASSWORD ??= 'password';
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */

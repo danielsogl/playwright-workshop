@@ -18,11 +18,10 @@ npm install
 # 2. Playwright-Browser installieren (mindestens Chromium)
 npx playwright install
 
-# 3. Umgebungsvariablen anlegen
-cp .env.example .env
 ```
 
-Die `.env` enthält:
+Eine `.env` brauchst du nicht: Ohne sie gelten die Standardwerte aus
+`.env.example`. Wer etwas ändern will, kopiert die Datei nach `.env`:
 
 - `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` – Zugangsdaten des Test-Users für die Tests
 - `RSS_OFFLINE_MODE=true` – nutzt statische Feed-Daten (kein Live-Fetch, WLAN-unabhängig)

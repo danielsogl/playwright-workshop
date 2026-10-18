@@ -3,7 +3,7 @@
 **Ziel:** Du nimmst einen Test mit dem Test Generator (Codegen) auf, ergänzt Assertions über die Toolbar und bringst ihn zum Laufen.
 **Zeit:** 15 Min. (Pflicht) · Bonus: +5 Min. · **Startbranch:** `git switch ex/01b-codegen` · **Datei:** `e2e/01b-codegen.spec.ts`
 
-> Roter Faden: Baut auf: Übung 1, lauffähiges Setup mit `.env` (`RSS_OFFLINE_MODE=true`). · Du gibst weiter: einen aufgenommenen Test, dessen Locators du in Übung 2b mit einem schlechten Startcode vergleichst. · Zurückgefallen? → `git switch ex/01b-codegen` (Startpunkt mit den Lösungen aller früheren Übungen). Eine mögliche Aufnahme zeigt `git diff ex/01b-codegen ex/02-locators`.
+> Roter Faden: Baut auf: Übung 1, lauffähiges Setup mit Offline-Feed. · Du gibst weiter: einen aufgenommenen Test, dessen Locators du in Übung 2b mit einem schlechten Startcode vergleichst. · Zurückgefallen? → `git switch ex/01b-codegen` (Startpunkt mit den Lösungen aller früheren Übungen). Eine mögliche Aufnahme zeigt `git diff ex/01b-codegen ex/02-locators`.
 
 **Codegen** öffnet einen Browser und schreibt mit, was du dort tust. Jeder Klick wird zu einer Zeile Testcode mit einem Locator, den Playwright selbst auswählt.
 
