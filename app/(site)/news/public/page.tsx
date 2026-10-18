@@ -155,7 +155,7 @@ export default function PublicNewsPage() {
         </p>
         {isFiltered && (
           <button
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-3.5 text-sm font-medium hover:bg-default"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-3.5 text-sm font-medium transition-colors hover:bg-hover"
             type="button"
             onClick={resetFilters}
           >
@@ -174,7 +174,7 @@ export default function PublicNewsPage() {
           </span>
           {isFiltered && (
             <button
-              className="min-h-11 rounded-full bg-foreground px-[18px] font-semibold text-background"
+              className="min-h-11 rounded-full bg-foreground px-[18px] font-semibold text-background transition-colors hover:bg-accent hover:text-accent-foreground"
               type="button"
               onClick={resetFilters}
             >
@@ -193,7 +193,7 @@ export default function PublicNewsPage() {
         {filteredItems.map((item, index) => (
           <article
             key={index}
-            className="group flex flex-col gap-3.5 rounded-2xl border border-border bg-surface p-[22px] transition-colors hover:border-foreground"
+            className="group flex flex-col gap-3.5 rounded-2xl border border-border bg-surface p-[22px] transition-[border-color,box-shadow] hover:border-accent hover:shadow-[0_12px_24px_-18px_rgba(18,22,19,.45)]"
             aria-labelledby={`news-title-${index}`}
           >
             <div className="flex items-center justify-between gap-2">

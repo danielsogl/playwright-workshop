@@ -110,13 +110,13 @@ export default function Home() {
               <ArrowRight className="size-[18px]" aria-hidden="true" />
             </NextLink>
             <NextLink
-              className={`${pillLink} border border-foreground text-foreground hover:bg-default`}
+              className={`${pillLink} border border-foreground text-foreground hover:border-accent hover:bg-accent-soft hover:text-accent-soft-foreground`}
               href="/news/private"
             >
               View Private News
             </NextLink>
             <NextLink
-              className={`${pillLink} text-foreground underline underline-offset-4 hover:bg-default`}
+              className={`${pillLink} text-foreground underline underline-offset-4 hover:bg-hover`}
               href="/auth/signin"
             >
               Sign In
@@ -189,7 +189,7 @@ export default function Home() {
               <NextLink
                 href={feature.href as Route}
                 aria-labelledby={`${feature.id}-feature-title`}
-                className="group flex flex-1 flex-col gap-[18px] rounded-2xl border border-border bg-surface p-6 text-foreground transition-[border-color,box-shadow] hover:border-foreground hover:shadow-[0_1px_0_var(--foreground),0_12px_24px_-16px_rgba(18,22,19,.35)]"
+                className="group flex flex-1 flex-col gap-[18px] rounded-2xl border border-border bg-surface p-6 text-foreground transition-[border-color,box-shadow] hover:border-accent hover:shadow-[0_1px_0_var(--accent),0_12px_24px_-16px_rgba(18,22,19,.35)]"
               >
                 <div className="flex items-center justify-between">
                   <span className={eyebrow()}>

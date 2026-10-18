@@ -61,7 +61,7 @@ export const Navbar = () => {
                   <NextLink
                     aria-label={`Navigate to ${item.label}`}
                     aria-current={pathname === item.href ? 'page' : undefined}
-                    className="block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-default aria-[current=page]:bg-foreground aria-[current=page]:text-background"
+                    className="block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-hover aria-[current=page]:bg-foreground aria-[current=page]:text-background"
                     href={item.href}
                   >
                     {item.label}
@@ -133,7 +133,7 @@ export const Navbar = () => {
             ) : (
               <NextLink
                 aria-label="Sign in to your account"
-                className="inline-flex min-h-11 items-center rounded-full bg-foreground px-[18px] text-sm font-semibold text-background transition-opacity hover:opacity-85"
+                className="inline-flex min-h-11 items-center rounded-full bg-foreground px-[18px] text-sm font-semibold text-background transition-colors hover:bg-accent hover:text-accent-foreground"
                 href="/auth/signin"
               >
                 Sign In

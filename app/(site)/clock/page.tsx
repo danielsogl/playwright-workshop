@@ -221,7 +221,7 @@ export default function ClockPage() {
                 <Button
                   key={minutes}
                   data-testid={`start-${minutes}min-timer`}
-                  className="min-h-11 rounded-full px-[18px] font-medium border border-field-border bg-surface text-foreground hover:bg-default"
+                  className="min-h-11 rounded-full px-[18px] font-medium border border-field-border bg-surface text-foreground transition-colors hover:border-foreground hover:bg-hover"
                   aria-label={`Start ${minutes} minute timer`}
                   onPress={() => startCountdown(minutes)}
                 >

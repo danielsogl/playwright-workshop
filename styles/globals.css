@@ -47,6 +47,9 @@
   --field-border-width: 1px;
   --focus: var(--accent);
 
+  /* Neutral hover tint, translucent so it works on background and surface */
+  --hover: rgb(18 22 19 / 0.06);
+
   /* Dark "terminal" panels (hero, clock, hints) */
   --terminal: #121613;
   --terminal-foreground: #eef1ee;
@@ -89,6 +92,8 @@
   --field-background: #0e110f;
   --field-border: #3a413c;
 
+  --hover: rgb(238 241 238 / 0.08);
+
   --terminal: #050706;
   --terminal-foreground: #eef1ee;
   --terminal-muted: #9aa39d;
@@ -96,7 +101,17 @@
   --terminal-border: #2a302c;
 }
 
+@layer base {
+  /* Custom links and plain buttons get the same visible focus as HeroUI controls */
+  a:focus-visible,
+  button:not([data-slot]):focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
 @theme inline {
+  --color-hover: var(--hover);
   --color-terminal: var(--terminal);
   --color-terminal-foreground: var(--terminal-foreground);
   --color-terminal-muted: var(--terminal-muted);

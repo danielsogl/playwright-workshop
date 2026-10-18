@@ -79,7 +79,7 @@ export const FeedList: React.FC<FeedListProps> = ({
                 className={`group rounded-[10px] transition-colors ${
                   selectedFeed?.id === feed.id
                     ? 'is-selected bg-foreground text-background'
-                    : 'hover:bg-background'
+                    : 'hover:bg-hover'
                 }`}
                 role="listitem"
               >

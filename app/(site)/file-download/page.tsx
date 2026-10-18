@@ -222,7 +222,7 @@ Erstellt am: ${new Date().toLocaleString('de-DE')}`;
                 <Button
                   variant="outline"
                   onPress={handlers[card.id]}
-                  className="min-h-11 rounded-full border-foreground font-semibold hover:bg-foreground hover:text-background"
+                  className="min-h-11 rounded-full border-foreground font-semibold transition-colors hover:border-accent hover:bg-accent-soft hover:text-accent-soft-foreground"
                   data-testid={card.testId}
                 >
                   <Download className="size-4" aria-hidden="true" />

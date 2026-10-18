@@ -17,7 +17,7 @@ export const ThemeSwitch: FC = () => {
   return (
     <button
       aria-label={`Switch to ${isLight ? 'dark' : 'light'} mode`}
-      className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-default"
+      className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-hover"
       role="switch"
       aria-checked={isLight}
       type="button"

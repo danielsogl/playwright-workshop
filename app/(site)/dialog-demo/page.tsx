@@ -194,7 +194,7 @@ export default function DialogDemoPage() {
                 <Button
                   variant="outline"
                   onPress={btn.handler}
-                  className="mt-auto min-h-11 self-start rounded-full border-foreground font-semibold hover:bg-foreground hover:text-background"
+                  className="mt-auto min-h-11 self-start rounded-full border-foreground font-semibold transition-colors hover:border-accent hover:bg-accent-soft hover:text-accent-soft-foreground"
                   aria-label={`${btn.label} dialog`}
                 >
                   {btn.label}
