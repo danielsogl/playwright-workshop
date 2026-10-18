@@ -2,12 +2,10 @@ import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
 import { RSS_SOURCES } from '@/config/rss-sources';
-import Parser from 'rss-parser';
+import { fetchFeed } from '@/lib/fetch-feed';
 
 // The path to the feed.json file
 const feedJsonPath = path.join(process.cwd(), 'app/api/feed.json');
-
-const parser = new Parser();
 
 export async function GET() {
   const offlineMode =
@@ -34,7 +32,7 @@ export async function GET() {
         await Promise.all(
           RSS_SOURCES.map(async (source) => {
             try {
-              const feed = await parser.parseURL(source.url);
+              const feed = await fetchFeed(source.url);
               return (feed.items || []).map((item) => ({
                 title: item.title || '',
                 link: item.link,
@@ -48,7 +46,10 @@ export async function GET() {
               }));
             } catch (err) {
               // If a single feed fails, log and skip it
-              console.error(`Failed to fetch/parse feed: ${source.url}`, err);
+              // One line instead of a stack trace: a dead feed is expected, not a bug
+              console.warn(
+                `Skipped feed ${source.url}: ${err instanceof Error ? err.message : err}`,
+              );
               return [];
             }
           }),

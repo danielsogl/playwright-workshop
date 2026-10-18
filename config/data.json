@@ -38,15 +38,15 @@
         "category": "Technology"
       },
       {
-        "id": "reuters-financial",
-        "name": "Reuters Financial News",
-        "url": "https://ir.thomsonreuters.com/rss/news-releases.xml",
+        "id": "marketwatch",
+        "name": "MarketWatch",
+        "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
         "category": "Business"
       },
       {
         "id": "bbc-world",
         "name": "BBC World",
-        "url": "http://feeds.bbci.co.uk/news/world/rss.xml",
+        "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
         "category": "World News"
       }
     ],

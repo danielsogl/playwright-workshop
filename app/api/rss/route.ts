@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-import Parser from 'rss-parser';
 import { z } from 'zod';
 
 import { auth } from '@/auth';
-
-const parser = new Parser();
+import { fetchFeed } from '@/lib/fetch-feed';
 
 // Define validation schema for query parameters
 const RssQuerySchema = z.object({
@@ -37,7 +35,7 @@ export async function GET(request: Request) {
   const { feedUrl } = validationResult.data;
 
   try {
-    const feed = await parser.parseURL(feedUrl);
+    const feed = await fetchFeed(feedUrl);
 
     // Return only essential items to keep payload small, or adjust as needed
     const items = feed.items
